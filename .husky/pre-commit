@@ -1,0 +1,18 @@
+# 1. Block commits that change dependencies without the lockfile (and the reverse).
+changed=$(git diff --cached --name-only)
+manifest_changed=$(echo "$changed" | grep -c '^package.json$')
+lock_changed=$(echo "$changed" | grep -c '^package-lock.json$')
+if [ "$manifest_changed" != "$lock_changed" ]; then
+  echo "package.json and package-lock.json must be committed together."
+  exit 1
+fi
+
+# 2. Block env files and key files.
+if echo "$changed" | grep -E '(^|/)\.env($|\.)|\.pem$|\.key$' | grep -v '\.env\.example$'; then
+  echo "Refusing to commit env or key files."
+  exit 1
+fi
+
+# 3. Lint, format and secret-scan the staged files, then run the tests.
+npx lint-staged
+npm test
