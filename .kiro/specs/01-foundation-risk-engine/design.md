@@ -16,8 +16,9 @@ src/
     risk-factors.js          factor registry: one small pure function per factor (R31)
     risk-combine.js          combines factor outputs into a level (the only place that knows the math)
     wind.js                  wind-sector and wind-shift helpers (degrees, season)
+    night-parts.js           split hourly values into early/middle/late using sunset and sunrise
     season.js                season from date and config dates
-    weather-normalize.js     raw API JSON to the Conditions shape (pure)
+    weather-normalize.js     raw API JSON to the Conditions shape, averaged per night part (pure)
   api/weather.js             Open-Meteo history, weather.gov live (fetch, timeout, fallback)
   data/replay-nights.js      labelled replay nights and saved weather snapshots (R26, R28)
   views/ components/         shell, sample-data badge, risk badge
@@ -34,36 +35,41 @@ Dependencies point inward: `lib` imports only other `lib` files. `api/` calls `l
 {
   night: '2026-10-17',
   source: 'replay',                         // 'live' | 'replay' | 'sample' (R7)
-  migration: { level: 0.9, source: 'sample' }, // 0..1, optional
-  weather: {                                 // optional, each field optional
-    windFromDegrees: 200, windSpeedMps: 8,
-    windFromDegreesDawn: 220,                // for the shift check (R17)
-    lowCloudPercent: 85, visibilityKm: 4,
+  migration: {                               // 0..1, optional, per night part (R37)
+    early: 0.8, middle: 0.9, late: 0.7,      // or a single `level` used for all parts
+    source: 'replay',                        // 'replay' (radar) or 'sample' (hand-set)
   },
+  weather: {                                 // optional; each part and field optional
+    early:  { windFromDegrees: 200, windSpeedMps: 8, lowCloudPercent: 85, visibilityKm: 4 },
+    middle: { windFromDegrees: 210, windSpeedMps: 9, lowCloudPercent: 90, visibilityKm: 3 },
+    late:   { windFromDegrees: 240, windSpeedMps: 9, lowCloudPercent: 90, visibilityKm: 3 },
+  },                                         // shift check (R17) compares early with late
   previousNights: [{ migration, weather }, { migration, weather }], // up to 2 (R18)
 }
 
 // Place: one route or building, plain attributes
 { id, kind: 'building' | 'stadium' | 'arena' | 'installation',
-  lit: true, litGlassArea: 0..1, treeNear: boolean, heightMeters }
+  lit: true, litGlassArea: 0..1, treeNear: boolean, heightMeters,
+  lakeDistanceMeters: number | null }        // null when the city has no shoreline reference
 
 // Risk result (R9, R22, R33, R34)
 { level, reasons: string[], missingInputs: string[],
   configVersion, trace: [{ factorId, contribution, evidence }] }
 ```
 
-`litGlassArea` is a 0..1 share of the maximum in the city (a relative proxy for E7). OSM rarely tags glass share, so spec 2 decides how to estimate it. Until then, sample places carry hand-set values labelled "Sample".
+`litGlassArea` is a 0..1 share of lit window area. Dim and covered windows count as unlit, as in the Chicago dataset (R39, `docs/data-profile.md`). It is a relative proxy for E7. OSM rarely tags glass share, so spec 2 decides how to estimate it. Until then, sample places carry hand-set values labelled "Sample".
 
 ## 3. How the engine combines factors
 
 Internal points are an implementation detail. They are never shown (R9, R34).
 
 ```
-nightPoints  = migrationPoints
+nightPoints  = migrationPoints                                  // parts weighted by config (R37)
              + weatherPoints            (wind, shift, visibility)   // scaled by migration level (R15)
              + carryOverPoints                                      // R18
              + seasonPoints                                         // R19
 placePoints  = (litGlass + treeBonus + kindBonus + heightPoints)    // R12, R13, R20, R21
+             + lakeshorePoints                                      // R38: near shore and westerly wind
                * lightMultiplier(cloud, visibility)                 // R14: multiplier, not flat
 total        = nightPoints + placePoints
 level        = threshold lookup on total
@@ -82,7 +88,7 @@ Each factor is a pure function with one job:
 // src/lib/risk-factors.js
 export const NIGHT_FACTORS = [migrationFactor, windFactor, windShiftFactor,
   visibilityFactor, carryOverFactor, seasonFactor];
-export const PLACE_FACTORS = [litGlassFactor, treeFactor, kindFactor, heightFactor];
+export const PLACE_FACTORS = [litGlassFactor, treeFactor, kindFactor, heightFactor, lakeshoreFactor];
 // every factor: (input, config) => { id, points, reasonKey | null, missing: string[] }
 ```
 
@@ -111,9 +117,11 @@ export const DEFAULT_CONFIG = {
     tree:       { weight: 0.05, evidence: ['E6', 'E15'] },
     stadium:    { weight: 0.12, evidence: ['E6', 'E8'] },
     height:     { weight: 0.02, evidence: ['E14'] },
+    lakeshore:  { weight: 0.06, evidence: ['E1', 'E2'], maxDistanceMeters: 1500 }, // distance is an assumption
   },
   lightMultiplier: { lowCloudAbovePercent: 60, lowVisibilityBelowKm: 5,
                      cloudFactor: 1.4, visibilityFactor: 1.3, evidence: ['E2', 'E10', 'E11'] },
+  nightParts: { early: 0.25, middle: 0.5, late: 0.25, evidence: ['E1'] }, // middle highest; exact split is an assumption
   weatherOnly: { floorLevel: 'elevated', capLevel: 'elevated', evidence: ['E2', 'E5'] },
   missingMigrationCap: 'elevated',                                 // assumption (R22)
   wind: {                                                          // degrees the wind comes FROM
@@ -140,7 +148,7 @@ Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the t
 `validateConfig(config)` returns a list of problems. It runs on load and in tests. It rejects:
 1. a weight with no `evidence` array or the string `'assumption'`;
 2. `weights.migration.weight` not the largest;
-3. `weights.height.weight` not below `litGlass`, `stadium` and `tree`;
+3. `weights.height.weight` not below `litGlass`, `stadium` and `tree`; `weights.lakeshore.weight` not above `litGlass`;
 4. `thresholds.elevated >= thresholds.high`, or either outside 0 to 1;
 5. a reason key used by a factor but missing from `reasons`;
 6. a missing season or wind entry.
@@ -161,6 +169,10 @@ Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the t
 | R19 | `seasonFactor` adds `fallBonus` |
 | R20, R21 | `kindFactor`, `treeFactor`; no compass field exists in the Place shape |
 | R22 | `missing` arrays collected; `missingMigrationCap` applied |
+| R37 | `night-parts.js`; `nightParts` weights in config; single-value fallback |
+| R38 | `lakeshoreFactor`; `wind.js` westerly check; city shoreline reference in `config/city.js` |
+| R39 | lit-share input rule documented in Place shape; unit test on the coding helper |
+| R36 | credits component on both views |
 | R25 | `rankPlaces` sort key (level, points, id) |
 | R26 to R29 | `data/replay-nights.js`, `api/weather.js`, `weather-normalize.js` |
 | R1 to R8 | `router.js`, `styles/tokens.css`, `components/sample-badge`, `config/city.js` |
@@ -168,7 +180,7 @@ Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the t
 ## 7. Weather and replay flow
 
 1. User picks a night: Tonight (live) or a replay night.
-2. Replay: `api/weather.js` requests Open-Meteo history for the city center and the night window (hourly wind speed, wind direction, low cloud cover, visibility). The raw JSON goes through `weather-normalize.js` into `Conditions.weather`, including the dawn wind direction.
+2. Replay: `api/weather.js` requests Open-Meteo history for the city center and the night window (hourly wind speed, wind direction, low cloud cover, visibility). The raw JSON goes through `weather-normalize.js`, which uses sunset and sunrise (from `suncalc`, pinned exactly) to average the hours into the three night parts of `Conditions.weather`. Radar nights take migration from the committed derived table (see section 10).
 3. On timeout (5 s) or error: use the saved snapshot in `replay-nights.js`, badge "Saved weather" (R28).
 4. Live: weather.gov for the city center, same normalizer. Migration is the sample level, badge "Sample migration level" (R29).
 5. `assessNight` returns the result. The view shows the level, the reasons and the badges.
@@ -190,3 +202,15 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 3. **Glass share.** OSM seldom has it. Spec 2 must pick a proxy (for example building type plus facade tags), and label it.
 4. **Muenchow 2026.** If it shows height matters in Chicago, change the height weight through config, record it in `notes`, and keep the validator rule so height stays below lit glass.
 5. **Migration source.** Replay levels are hand-set. If BirdCast data becomes usable, only the loader changes. The engine takes the same number.
+
+## 10. Replay data from the Chicago dataset
+
+- A one-off script (location to decide, see point 6 below) reads the raw files kept outside the repo and writes a small committed table, one row per selected night: date, season, migration per night part (percentile within season), wind, cloud and visibility per night part, and a note. The file header carries the attribution text from `docs/data-sources.md` and the script name and date (CC BY 4.0, R36).
+- Night selection: the largest spring and fall mortality events (for example 2018-05-02, 2000-10-15, 2002-05-06, 2013-10-08), plus quiet nights for contrast. The counts stay in `docs/` and fixtures, never in the UI.
+- Radar nights use the dataset's own Midway weather for the saved snapshot, so the "Saved weather" fallback works without any network.
+- News nights (2026-10-17, October 2023) have no radar data here and keep hand-set, labelled migration levels.
+
+### Additional open points
+
+6. **Where the build script lives.** The repo is JavaScript only. Options: a Node script under `tools/` that reads CSVs exported once from the dataset, or a Python script kept in `docs/`. The raw files are R and Excel based, so the first export step needs Python or R either way. Decide before Task 9 and update `structure.md` if a `tools/` folder is added.
+7. **Lake reference.** A single shoreline distance needs a Lake Michigan shoreline line from OSM. Spec 2 supplies it. Until then, sample places carry hand-set `lakeDistanceMeters`, labelled sample.
