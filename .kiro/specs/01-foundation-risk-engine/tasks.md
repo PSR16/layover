@@ -17,7 +17,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 4. Config validator and merge.** (branch `feat/spec1-task-04-config-validator`, commit c3ddb5d)
   `risk-config-validate.js`: `validateConfig` (six rules in design section 5) and `mergeConfig`.
   Requirements: R32, R33. Tests: one unit test per rejection rule, plus property test: any config that passes obeys R10, R13 and ordered thresholds.
-- [ ] **Task 5. Night factors.**
+- [x] **Task 5. Night factors.** (branch `feat/spec1-task-05-night-factors`, commits 8d6c5c1, af46fba, a1d0354)
   In `risk-factors.js`: migration, wind, wind shift, visibility, carry-over, season. Each reads the three night parts and combines them with the `nightParts` weights (a single value is used for all parts). Each returns `{ id, points, reasonKey, missing }`.
   Requirements: R10 to R12, R15 to R19, R22, R37. Tests: unit tests per factor, monotonicity property tests for migration.
 - [ ] **Task 6. Place factors.**
