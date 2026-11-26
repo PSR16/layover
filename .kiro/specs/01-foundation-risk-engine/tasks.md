@@ -20,7 +20,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 5. Night factors.** (branch `feat/spec1-task-05-night-factors`, commits 8d6c5c1, af46fba, a1d0354)
   In `risk-factors.js`: migration, wind, wind shift, visibility, carry-over, season. Each reads the three night parts and combines them with the `nightParts` weights (a single value is used for all parts). Each returns `{ id, points, reasonKey, missing }`.
   Requirements: R10 to R12, R15 to R19, R22, R37. Tests: unit tests per factor, monotonicity property tests for migration.
-- [ ] **Task 6. Place factors.**
+- [x] **Task 6. Place factors.** (branch `feat/spec1-task-06-place-factors`, commits 448acf8, 6289d9a, 1c205fd, 2fb469e)
   In `risk-factors.js`: lit glass, tree, kind (stadium, arena, installation), height, lakeshore. No compass input exists. Dim and covered windows count as unlit.
   Requirements: R12, R13, R20, R21, R38, R39. Tests: lit-glass monotonicity, height weaker than glass, compass direction cannot change the score.
 - [ ] **Task 7. Combine and assess.**
