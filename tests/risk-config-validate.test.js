@@ -150,6 +150,23 @@ describe('validateConfig rejection rules', () => {
     );
   });
 
+  it('treatment discounts must be ordered and full must stay below 1 (R40)', () => {
+    const message = 'treatmentDiscount must satisfy none = 0 <= partial <= full < 1';
+    expect(problemsFor((config) => (config.treatmentDiscount.full = 1))).toContain(message);
+    expect(problemsFor((config) => (config.treatmentDiscount.none = 0.1))).toContain(message);
+    expect(problemsFor((config) => (config.treatmentDiscount.partial = 0.9))).toContain(message);
+    expect(problemsFor((config) => delete config.treatmentDiscount)).toContain(message);
+  });
+
+  it('the weather-only floor must not be above the cap, and floorMinPoints must be a share', () => {
+    expect(problemsFor((config) => (config.weatherOnly.capLevel = 'low'))).toContain(
+      'weatherOnly.floorLevel must not be above weatherOnly.capLevel',
+    );
+    expect(problemsFor((config) => (config.weatherOnly.floorMinPoints = -1))).toContain(
+      'weatherOnly.floorMinPoints must be a number from 0 to 1',
+    );
+  });
+
   it('carry-over must stay below the same-night wind weight (R18)', () => {
     expect(problemsFor((config) => (config.weights.carryOver.weight = 0.15))).toContain(
       'weights.carryOver.weight must be below weights.wind.weight',

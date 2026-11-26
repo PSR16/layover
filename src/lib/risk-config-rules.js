@@ -7,7 +7,14 @@ const EVIDENCE_ENTRY = /^(E\d+|assumption)$/;
 const LEVELS = ['low', 'elevated', 'high'];
 const FULL_CIRCLE = 360;
 const SEASON_NAMES = ['spring', 'fall'];
-const EVIDENCE_GROUPS = ['nightParts', 'lightMultiplier', 'weatherOnly', 'weatherScaling', 'wind'];
+const EVIDENCE_GROUPS = [
+  'nightParts',
+  'lightMultiplier',
+  'weatherOnly',
+  'weatherScaling',
+  'treatmentDiscount',
+  'wind',
+];
 const SUM_TOLERANCE = 1e-6;
 
 export function isPlainObject(value) {
@@ -168,6 +175,9 @@ function checkShares(config) {
   if (!isShare(config.weatherScaling?.minimum)) {
     problems.push('weatherScaling.minimum must be a number from 0 to 1');
   }
+  if (!isShare(config.weatherOnly?.floorMinPoints)) {
+    problems.push('weatherOnly.floorMinPoints must be a number from 0 to 1');
+  }
   if (!isShare(config.wind?.lightWindFactor)) {
     problems.push('wind.lightWindFactor must be a number from 0 to 1');
   }
@@ -217,6 +227,20 @@ function checkLevels(config) {
     .map(([path]) => `${path} must be one of ${LEVELS.join(', ')}`);
 }
 
+/** Treatment discounts: none removes nothing, partial is below full, full stays below 1 (R40). */
+function checkTreatmentDiscount(config) {
+  const { none, partial, full } = config.treatmentDiscount ?? {};
+  const ordered = none === 0 && isShare(partial) && isShare(full) && partial <= full && full < 1;
+  return ordered ? [] : ['treatmentDiscount must satisfy none = 0 <= partial <= full < 1'];
+}
+
+/** The weather-only floor never sits above the cap, or the level rules would clash. */
+function checkFloorBelowCap(config) {
+  const floor = LEVELS.indexOf(config.weatherOnly?.floorLevel);
+  const cap = LEVELS.indexOf(config.weatherOnly?.capLevel);
+  return floor <= cap ? [] : ['weatherOnly.floorLevel must not be above weatherOnly.capLevel'];
+}
+
 /** Rule 5: every reason key a factor can return needs wording in config. */
 function checkReasonKeys(config, requiredReasonKeys) {
   const reasons = config.reasons ?? {};
@@ -238,6 +262,8 @@ export function checkAll(config, requiredReasonKeys) {
     ...checkCarryOverSmaller(config),
     ...checkSeasonsAndWind(config),
     ...checkLevels(config),
+    ...checkTreatmentDiscount(config),
+    ...checkFloorBelowCap(config),
     ...checkReasonKeys(config, requiredReasonKeys),
   ];
 }

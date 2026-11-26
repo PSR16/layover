@@ -31,6 +31,12 @@ export const DEFAULT_CONFIG = {
         'Added place settings: litGlass.reasonAbove, stadium.kinds, height.fullAtMeters (assumptions for the place factors).',
       evidence: ['E6', 'E8', 'E14'],
     },
+    {
+      date: '2026-11-26',
+      change:
+        'Added treatmentDiscount (R40, E22), weatherOnly.floorMinPoints (assumption) and the reasons quiet and birdSafeGlass for the combine step.',
+      evidence: ['E22', 'E2'],
+    },
   ],
 
   // Total points at or above these values give the level (assumption, see design section 3).
@@ -66,7 +72,17 @@ export const DEFAULT_CONFIG = {
   },
 
   // Weather alone: never `high`, at least `elevated` when unfavorable (R15, E2, E5).
-  weatherOnly: { floorLevel: 'elevated', capLevel: 'elevated', evidence: ['E2', 'E5'] },
+  // The floor applies when unfavorable weather adds at least floorMinPoints (assumption).
+  weatherOnly: {
+    floorLevel: 'elevated',
+    capLevel: 'elevated',
+    floorMinPoints: 0.08,
+    evidence: ['E2', 'E5'],
+  },
+
+  // Share of the 'light' group contribution removed by bird-safe glass treatment (R40, E22).
+  // Full is kept well below the reported drop of more than 95% (research rule 10).
+  treatmentDiscount: { none: 0, partial: 0.5, full: 0.85, evidence: ['E22'] },
 
   // Weather points scale from `minimum` (no migration) up to 1 (full migration): weather matters
   // most on heavy nights (E2, E5). Spring low visibility ignores this scale (E2).
@@ -113,5 +129,7 @@ export const DEFAULT_CONFIG = {
     missingMigration:
       'No migration estimate is available, so the level is held at elevated at most.',
     weatherOnlyElevated: 'Weather alone raises the level to elevated.',
+    quiet: 'Conditions look quiet for migrating birds.',
+    birdSafeGlass: 'Bird-safe treatment on the glass lowers the risk here.',
   },
 };
