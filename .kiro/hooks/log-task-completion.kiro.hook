@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Log spec task completion",
+  "description": "When a spec task finishes, make sure docs/kiro-log.md has an entry about it.",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A spec task just finished. Read docs/kiro-log.md and check whether it has an entry about this task (task name or number, files changed, anything the user corrected or rejected). If an entry is missing, add one under the right section, following .kiro/steering/kiro-journal.md. Update the Numbers table and the screenshot checklist if relevant. Do not delete or rewrite earlier entries. If an entry already exists, make no changes."
+  }
+}
