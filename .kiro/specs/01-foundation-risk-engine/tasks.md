@@ -8,7 +8,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 1. Evidence check and research table update.** (branch `docs/spec1-task-01-wind-evidence`)
   Confirm the wind-direction convention ("from" versus "toward") in Chen et al. 2024. Add E18 to E21 rows to `docs/research.md` (Muenchow 2026, Farnsworth 2024, Horton 2019, Klem 2025) with a "how Layover uses it" line each. Record the result in the design (section 9, point 1).
   Requirements: R16, R17, R13. Files: `docs/research.md`, `design.md`. Tests: none.
-- [ ] **Task 2. Season, wind and night-part helpers.**
+- [x] **Task 2. Season, wind and night-part helpers.** (branch `feat/spec1-task-02-season-wind-night-parts`, commits db8dacd, eb7eb38, 2406dab, bc8e151)
   `season.js` (season from a date and config dates), `wind.js` (is a direction inside a sector, including the 0/360 wrap; shift between two directions; westerly check) and `night-parts.js` (average hourly values into early, middle and late using sunset and sunrise). Adds `suncalc` as an exact-pinned dependency (`package.json` and lock together).
   Requirements: R16, R17, R19, R37, R38. Tests: unit tests at the 0/360 boundary, season edges, and night parts on a short and a long night.
 - [ ] **Task 3. Default config.**
