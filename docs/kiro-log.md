@@ -28,6 +28,8 @@ How to use this file:
 - Requirements / evidence: R1 to R29; E1 to E8, E10, E11, E14, E15, E17
 - Tests: none yet (requirements only)
 - Commits: dcfe529 (steering wind rule), 67c0d4c (spec 1 requirements, design, tasks)
+- Update: My instruction: "make sure to use branches too and update any steering docs for this". Branch `chore/branch-workflow-steering` adds a Branches section to `.kiro/steering/git.md` (no commits on `main`, one branch per spec task, naming pattern, merge only when asked), a note in `tech.md`, and a branch check in the test-and-commit hook prompt. The earlier spec 1 commits (dcfe529, 67c0d4c, 825d517) were made directly on `main` before this rule existed.
+- Update: Task 1 on branch `docs/spec1-task-01-wind-evidence` (stacked on the steering branch). Chen et al. 2024 abstract is consistent with "wind from" (full text paywalled, not read). New finding: spring low visibility roughly triples collisions independent of migration traffic, so R15 now treats it as unfavorable even without migration data. Added E18 to E21 to docs/research.md. The Muenchow abstract states hypotheses only, so it changes no weight.
 - Update: I said "this is a fine start". Kiro then wrote tasks.md (16 tasks in 3 phases, with a requirement coverage check).
 - My correction (quoted): "if that's too much right now, we don't have to have those linked. Just have the data shown next to an individual as 'trained'" (trained status is a flag, no approval flow). Also chose Chicago as the first city and the Oct 2026 Northwestern event as a replay night.
 - Note: `.kiro/steering/research.md` conflicted with E2 on wind direction and cited E1 to E14 only. Flagged as an open question in the requirements.
