@@ -14,7 +14,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 3. Default config.** (branch `feat/spec1-task-03-default-config`, commits 946ae94, 075e528)
   `risk-config.js` with weights, evidence IDs or "assumption", thresholds, wind sectors, season dates, reason text and `notes`.
   Requirements: R23, R30, R35, R37, R38. Tests: shape test (every weight has evidence; `nightParts` sums to 1).
-- [ ] **Task 4. Config validator and merge.**
+- [x] **Task 4. Config validator and merge.** (branch `feat/spec1-task-04-config-validator`, commit c3ddb5d)
   `risk-config-validate.js`: `validateConfig` (six rules in design section 5) and `mergeConfig`.
   Requirements: R32, R33. Tests: one unit test per rejection rule, plus property test: any config that passes obeys R10, R13 and ordered thresholds.
 - [ ] **Task 5. Night factors.**
