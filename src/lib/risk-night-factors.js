@@ -4,12 +4,8 @@
  * Weights and wording come from the config; evidence IDs are listed per factor (R23).
  * To add a factor, write one more object and add it to NIGHT_FACTORS (R31).
  */
+import { factorResult, clampShare } from './risk-factor-result.js';
 import { migrationLevel, seasonOf, summarizeWeather, weatherScale } from './risk-inputs.js';
-
-function result(id, group, points, details = {}) {
-  const { reasonKey = null, missing = [] } = details;
-  return { id, group, points, reasonKey, missing };
-}
 
 function weightOf(config, name) {
   return config.weights[name].weight;
@@ -43,10 +39,12 @@ const migrationFactor = {
   evaluate(conditions, config) {
     const level = migrationLevel(conditions.migration, config);
     if (level === undefined) {
-      return result('migration', 'migration', 0, { missing: ['migration'] });
+      return factorResult('migration', 'migration', 0, { missing: ['migration'] });
     }
-    const points = weightOf(config, 'migration') * Math.min(Math.max(level, 0), 1);
-    return result('migration', 'migration', points, { reasonKey: migrationReason(level, config) });
+    const points = weightOf(config, 'migration') * clampShare(level);
+    return factorResult('migration', 'migration', points, {
+      reasonKey: migrationReason(level, config),
+    });
   },
 };
 
@@ -59,10 +57,10 @@ const windFactor = {
   evaluate(conditions, config) {
     const { weather, scale } = readNight(conditions, config);
     if (weather.wind === undefined) {
-      return result('wind', 'weather', 0, { missing: ['wind'] });
+      return factorResult('wind', 'weather', 0, { missing: ['wind'] });
     }
     const points = weightOf(config, 'wind') * weather.wind * scale;
-    return result('wind', 'weather', points, {
+    return factorResult('wind', 'weather', points, {
       reasonKey: weather.wind > 0 ? 'windUnfavorable' : null,
     });
   },
@@ -77,9 +75,9 @@ const windShiftFactor = {
   evaluate(conditions, config) {
     const { weather, scale } = readNight(conditions, config);
     if (!weather.windShift) {
-      return result('windShift', 'weather', 0);
+      return factorResult('windShift', 'weather', 0);
     }
-    return result('windShift', 'weather', weightOf(config, 'windShift') * scale, {
+    return factorResult('windShift', 'weather', weightOf(config, 'windShift') * scale, {
       reasonKey: 'windShift',
     });
   },
@@ -107,12 +105,12 @@ const visibilityFactor = {
   evaluate(conditions, config) {
     const { season, weather, scale } = readNight(conditions, config);
     if (weather.sky === undefined) {
-      return result('visibility', 'weather', 0, { missing: ['visibility'] });
+      return factorResult('visibility', 'weather', 0, { missing: ['visibility'] });
     }
     const springIgnoresMigration = season === 'spring' && weather.lowVisibility > 0;
     const points =
       weightOf(config, 'visibility') * weather.sky * (springIgnoresMigration ? 1 : scale);
-    return result('visibility', 'weather', points, {
+    return factorResult('visibility', 'weather', points, {
       reasonKey: visibilityReason(season, weather),
     });
   },
@@ -138,9 +136,9 @@ const carryOverFactor = {
     const recent = (conditions.previousNights ?? []).slice(0, 2);
     const qualifies = recent.some((night) => qualifiesForCarryOver(night, season, config));
     if (!qualifies) {
-      return result('carryOver', 'carryOver', 0);
+      return factorResult('carryOver', 'carryOver', 0);
     }
-    return result('carryOver', 'carryOver', weightOf(config, 'carryOver'), {
+    return factorResult('carryOver', 'carryOver', weightOf(config, 'carryOver'), {
       reasonKey: 'carryOver',
     });
   },
@@ -154,9 +152,11 @@ const seasonFactor = {
   reasonKeys: ['fallSeason'],
   evaluate(conditions, config) {
     if (seasonOf(conditions.night, config) !== 'fall') {
-      return result('season', 'season', 0);
+      return factorResult('season', 'season', 0);
     }
-    return result('season', 'season', weightOf(config, 'fallBonus'), { reasonKey: 'fallSeason' });
+    return factorResult('season', 'season', weightOf(config, 'fallBonus'), {
+      reasonKey: 'fallSeason',
+    });
   },
 };
 
