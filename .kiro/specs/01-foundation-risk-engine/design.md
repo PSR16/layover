@@ -199,6 +199,14 @@ Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the t
 
 Open-Meteo history may lag by a few days, which is fine for past nights.
 
+### Built in Task 8: weather source findings
+
+- **Visibility needs the historical-forecast endpoint.** The archive endpoint (`archive-api.open-meteo.com`) returns null visibility for every hour. `historical-forecast-api.open-meteo.com` gives visibility in metres, but only for recent years (the 2022 start is from memory, to confirm). Use it for news replay nights. The two endpoints also disagree on wind direction and cloud for the same hour, so the source is part of the data and is named in the night's note.
+- **Radar nights (2000 to 2020) use saved weather**, the dataset's own Midway records, not a live call (design section 10).
+- **weather.gov gives total sky cover, not low cloud.** The normalizer uses it as a cautious stand-in and returns the note `lowCloudFromSkyCover`. Its gridpoint visibility and ceiling lists were empty in the sample, so live visibility is usually missing and is reported as `visibilityMissing`.
+- **Normalizers return `{ weather, notes }`.** Notes are keys, not text. The interface turns them into plain wording in Task 15.
+- **First look at 2026-10-16 (forecast-model data, not observations).** Wind from the north-northwest at 4 to 6 m/s, low cloud 29 to 47%, visibility 23 to 29 km. That is favorable for migrants and not unfavorable for collisions under E2, so the night-level result with migration at 0.95 is `elevated` (0.48), while a lit glass tower scores `high` (0.77) and the same tower with full treatment `elevated` (0.54). This is the main input for Task 11: the deadliest recent nights had migration-friendly weather (E4), and migration alone can never reach the `high` threshold at the current weights.
+
 ## 8. Test plan
 
 - **Unit tests** (one file per module): wind sectors at the 0/360 boundary, season dates, normalizer on recorded API samples, validator for each rejection rule, reason keys all present.
