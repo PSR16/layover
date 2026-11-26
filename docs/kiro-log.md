@@ -1,91 +1,91 @@
-# Kiro Build Log: Kiroween 2026
+# Kiro build log · Layover (Kiroween 2026)
 
-A running, factual record of how Kiro was used to build this project. Entries are append-only. Corrections are added as dated "Update" lines, never by deleting earlier text.
+How to use this file:
+- Kiro adds entries automatically (see .kiro/steering/kiro-journal.md and the log-check hook).
+- Lines starting with **Me:** are written by me, not Kiro. Those are my own judgments and comparisons.
+- Never delete entries. Add "Update:" lines instead.
+
+---
 
 ## Timeline
+<!-- One entry per task, hook, agent, MCP change or notable moment. Newest at the bottom. -->
+<!-- Format:
+### YYYY-MM-DD · Task N / short title
+- Surface: IDE | CLI | Web | Crew
+- What Kiro did:
+- Files:
+- Requirements / evidence: R?, E?
+- Tests: added / passing / failing
+- Commits: abc1234, def5678
+- My correction (quoted):
+- Screenshot: yes/no (file name)
+-->
 
-### 2026-11-26: Build tracking set up
-- **Phase/task:** Project setup.
-- **What Kiro did:** Created this log, the always-on steering file that keeps it current, and a hook that checks the log whenever a spec task finishes.
-- **Files changed:**
-  - `docs/kiro-log.md` (created)
-  - `.kiro/steering/kiro-journal.md` (created, `inclusion: always`)
-  - `.kiro/hooks/log-task-completion.kiro.hook` (created, trigger: post task execution)
-- **Corrected or rejected:** Nothing yet.
+---
 
-### 2026-11-26: Product, tech and structure steering
-- **Phase/task:** Project setup.
-- **What Kiro did:** Wrote three always-on steering files from the user's brief: product (purpose, two views, night-airport theme, safety rules), tech (Vite, vanilla JS, Leaflet, Overpass, Vitest, fast-check, pure `src/lib`, escaping) and structure (folder layout, dependency direction).
-- **Files changed:**
-  - `.kiro/steering/product.md` (created, `inclusion: always`)
-  - `.kiro/steering/tech.md` (created, `inclusion: always`)
-  - `.kiro/steering/structure.md` (created, `inclusion: always`)
-- **Commit:** `641b4af`
+## 1. Surfaces (IDE, CLI, Web, Crew)
+| Task | Surface | Time taken | What worked | What didn't |
+|---|---|---|---|---|
 
-### 2026-11-26: Earlier setup files committed
-- **Phase/task:** Project setup.
-- **What Kiro did:** Committed files created before this entry, in three commits: git and journal steering (`a219ad1`), risk evidence table `docs/research.md` with `.kiro/steering/research.md` (`59e903c`), and the hooks in `.kiro/hooks/` (`61d6f96`).
-- **Corrected or rejected:** Nothing.
-- **Corrected or rejected:** User: "Do not brand with things like lights out or too good to go as these are insirpiration". Kiro's first draft had no inspiration names in the files, and a rule now forbids using them. The first draft's slot description ("surplus-food apps") was kept generic.
+**Me:** How they felt different, and when I'd pick each one.
 
-## Surfaces
+## 2. Custom agents
+| Agent | Allowed tools | Can edit | Surface used | What it produced | Impact on the build |
+|---|---|---|---|---|---|
+| research-scout | consensus, fetch | docs/research.md | | | |
+| field-tester | playwright | docs/field-test.md | | | |
 
-_No entries yet._ Record work done in Kiro IDE, CLI, Web or Crew, and how they compared.
+**Me:** Did limiting tools keep agents focused? Example.
 
-## Spec-driven development
+## 3. Agent hooks
+| Hook | Trigger | Action | Times fired | Times it caught something | Example catch |
+|---|---|---|---|---|---|
+| Log check | Spec task finished | Adds missing log entry | | | |
+| Test on save | src/lib saved | npm test, propose fix | | | |
+| Evidence check | risk.js saved | Weights without E-ids | | | |
+| Data guard | src/data changed | Validate routes, sample labels | | | |
+| Commit | Spec task finished | Test, small commits, log hashes | | | |
+| Mobile check | Manual | Playwright 390px screenshots | | | |
 
-_No entries yet._ Record spec structure, changes to requirements, design or tasks and why, and where the spec prevented rework compared with vibe coding.
+**Me:** Which hook saved the most time or caught the most important problem?
 
-## Steering
+## 4. Spec-driven development
+- Spec structure: requirements (EARS, with evidence IDs) → design (weights table with sources) → tasks (ordered, IDs per task)
+- Requirements I changed (before → after, why):
+- Design changes I pushed for:
+- Task order changes:
+- Moments the spec prevented rework:
 
-- `.kiro/steering/product.md`, `tech.md`, `structure.md`: inclusion `always`. Purpose: product rules, stack conventions and folder layout in every session. Before/after examples: none yet.
-- `.kiro/steering/kiro-journal.md`: inclusion `always` (loaded in every session). Purpose: makes Kiro update this log before reporting work done. Before/after examples: none yet.
+**Vibe-coding comparison (deliberate experiment):**
+- Feature tried without a spec:
+- Result vs spec-driven version (time, bugs, rework):
 
-## Hooks
+**Me:** Overall comparison in 2–3 sentences.
 
-- **log-task-completion** (`.kiro/hooks/log-task-completion.kiro.hook`)
-  - Trigger: a spec task finishes (post task execution).
-  - Automates: checks `docs/kiro-log.md` for an entry about the task and adds one if missing.
-  - Caught so far: nothing yet.
+## 5. Steering
+| File | Inclusion | Purpose |
+|---|---|---|
+| product.md | always | |
+| tech.md | always | |
+| structure.md | always | |
+| research.md | fileMatch (risk, specs, tests) | |
+| git.md | always | |
+| kiro-journal.md | always | |
 
-## MCP
+**Before/after examples** (same prompt with and without a steering file):
+- Prompt:
+- Without steering:
+- With steering:
 
-_No entries yet._ Record each server, its use, and what it made possible.
+**Me:** The strategy that made the biggest difference, and why.
 
-## Custom agents
+## 6. MCP
+| Server | Used for | What it enabled | Would it have been hard without it? |
+|---|---|---|---|
+| consensus | Finding peer-reviewed studies → evidence table | | |
+| playwright | Mobile testing, screenshots | | |
+| fetch | Reading API docs (Overpass, weather.gov) | | |
+| github | Branches, PRs | | |
 
-_No entries yet._ Record each agent, its allowed tools, the surface it ran in, and what it produced.
-
-## Property-based testing
-
-_No entries yet._ Record each property, its requirement or evidence ID, and any bug found that unit tests missed (with the failing example).
-
-## Powers
-
-_No entries yet._
-
-## Research
-
-_No entries yet._ Record evidence IDs added, and where research changed the design or the weights. See `docs/research.md`.
-
-## Mistakes and fixes
-
-_No entries yet._ Record what Kiro got wrong, how it was caught, and the fix.
-
-## Numbers
-
-| Metric | Value |
-| --- | --- |
-| Tasks completed | 0 |
-| Unit tests | 0 |
-| Property-based tests | 0 |
-| Bugs caught by tests | 0 |
-| Bugs caught by hooks | 0 |
-| Hours spent | 0 |
-
-## Screenshots to take
-
-- [ ] `.kiro/hooks/log-task-completion.kiro.hook` in the Agent Hooks panel
-- [ ] `.kiro/steering/kiro-journal.md` showing `inclusion: always`
-- [ ] The three new steering files (`product.md`, `tech.md`, `structure.md`) in the Steering panel
-- [ ] First hook run adding a log entry after a spec task
+## 7. Property-based testing
+> Update 2026-11-26: the earlier timeline entries were dropped when this file was reformatted; they remain in git history (commit 3aa598a).
