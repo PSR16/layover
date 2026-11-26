@@ -21,6 +21,19 @@ How to use this file:
 - Screenshot: yes/no (file name)
 -->
 
+### Spec 1 · Foundation and risk engine: requirements draft
+- Surface: IDE
+- What Kiro did: Read the idea brief and docs/research.md, asked clarifying questions, proposed a 4-spec split (foundation and risk, map and data, slots and volunteer journey, coordinator tools; shared claims optional). Drafted spec 1 requirements R1 to R29 in EARS form with evidence IDs and a property-test table.
+- Files: .kiro/specs/01-foundation-risk-engine/requirements.md
+- Requirements / evidence: R1 to R29; E1 to E8, E10, E11, E14, E15, E17
+- Tests: none yet (requirements only)
+- Commits: dcfe529 (steering wind rule), 67c0d4c (spec 1 requirements, design, tasks)
+- Update: I said "this is a fine start". Kiro then wrote tasks.md (16 tasks in 3 phases, with a requirement coverage check).
+- My correction (quoted): "if that's too much right now, we don't have to have those linked. Just have the data shown next to an individual as 'trained'" (trained status is a flag, no approval flow). Also chose Chicago as the first city and the Oct 2026 Northwestern event as a replay night.
+- Note: `.kiro/steering/research.md` conflicted with E2 on wind direction and cited E1 to E14 only. Flagged as an open question in the requirements.
+- Update: Applied the recommended answers (R15 floor at `elevated`, missing-migration cap, surge rule to spec 4). My request: "make sure this engine is designed in an easily editable way". Added R30 to R35 (config as data, factor registry, validator, config override, trace) and wrote design.md with module layout, factor registry, config shape and validator rules.
+- Update: I explained the conflict (favorable wind drives migration volume, unfavorable wind raises collisions on heavy nights). User said "yes", so I rewrote steering rule 3 into two parts and changed the range to E1 to E17. Design task added to confirm wind-direction convention in Chen et al. 2024.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)
