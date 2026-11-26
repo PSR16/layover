@@ -23,7 +23,8 @@
     "unused": "knip"
   },
   "dependencies": {
-    "leaflet": "1.9.4"
+    "leaflet": "1.9.4",
+    "suncalc": "2.1.4"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.4",
