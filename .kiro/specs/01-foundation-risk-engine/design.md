@@ -72,8 +72,8 @@ nightPoints  = migrationPoints                                  // parts weighte
              + seasonPoints                                         // R19
 placePoints  = (litGlass + treeBonus + kindBonus) * lightMultiplier  // R12, R14, R20, R21 ('light' group)
              + heightPoints                                         // R13, 'place' group, not multiplied
-             + lakeshorePoints                                      // R38: near shore and westerly wind
-               * lightMultiplier(cloud, visibility)                 // R14: multiplier, not flat
+             + lakeshorePoints                                      // R38: near shore and westerly wind, 'place' group
+lightMultiplier = cloud and visibility factors from config, applied to the 'light' group only (R14)
 total        = nightPoints + placePoints
 level        = threshold lookup on total
 then apply: weather-only cap (no `high`), weather-only floor (`elevated`), missing-migration cap (R22)
