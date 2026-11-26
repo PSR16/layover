@@ -25,4 +25,5 @@ Departures board for route lists, boarding passes for claimed slots. Dark navy b
 - All sample or demo data is visibly labelled as sample data.
 - Every interactive control is at least 44x44 px.
 - Do not use the branding, names or logos of inspiration products or existing groups. Layover has its own identity.
+- Exception: plain-text credits and outbound links that name a data source or a resource the user can visit (for example the migration forecast dashboard, OpenStreetMap, the dataset authors) are allowed and encouraged. No logos, no look-alike styling, and no wording that suggests partnership or endorsement.
 - Risk logic follows the evidence rules in `research.md`.
