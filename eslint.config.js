@@ -59,6 +59,11 @@ export default [
     },
   },
   {
+    // The risk config is the one place where raw numbers belong (R30).
+    files: ['src/lib/risk-config.js'],
+    rules: { 'no-magic-numbers': 'off' },
+  },
+  {
     files: ['tests/**/*.js', '**/*.config.js'],
     languageOptions: { globals: globals.node },
     rules: {
