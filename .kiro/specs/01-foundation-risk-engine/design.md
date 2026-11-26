@@ -78,7 +78,8 @@ lightMultiplier = cloud and visibility factors from config, applied to the 'ligh
 treatmentMultiplier = 1 - treatmentDiscount[place.birdSafeTreatment], applied to the 'light' group only (R40, E22)
 total        = nightPoints + placePoints
 level        = threshold lookup on total
-then apply: weather-only cap (no `high`), weather-only floor (`elevated`), missing-migration cap (R22)
+then apply: light-migration cap (no `high`), missing-migration cap (R22), and the weather floor (`elevated`)
+when unfavorable weather adds at least `weatherOnly.floorMinPoints` (R15)
 ```
 
 `assessNight(conditions, config)` runs the night factors only. `assessPlace(place, conditions, config)` runs night factors plus place factors. `rankPlaces(places, conditions, config)` sorts by level, then points, then `id` (stable, R25).
@@ -226,3 +227,11 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 
 6. **Where the build script lives.** The repo is JavaScript only. Options: a Node script under `tools/` that reads CSVs exported once from the dataset, or a Python script kept in `docs/`. The raw files are R and Excel based, so the first export step needs Python or R either way. Decide before Task 9 and update `structure.md` if a `tools/` folder is added.
 7. **Lake reference.** A single shoreline distance needs a Lake Michigan shoreline line from OSM. Spec 2 supplies it. Until then, sample places carry hand-set `lakeDistanceMeters`, labelled sample.
+
+### Built in Task 7: notes and limits
+
+- **Result shape.** `{ level, reasons, missingInputs, configVersion, trace, internal }`. `trace` holds each factor's final contribution (after the light and treatment multipliers). `internal` holds the total points and multipliers for ranking and tests. The UI never renders either.
+- **Floor is general.** The weather floor applies on any night where unfavorable weather adds enough points, not only light-migration nights. This keeps the level from dropping when migration rises past the "light" band (a monotonicity property test found the need for it while designing). The cap applies only on light-migration nights and on nights with no migration data.
+- **Engines are built from factor lists** (`createRiskEngine`). A factor with a reason key missing from the config makes the engine refuse to start (validator rule 5).
+- **Limit: place levels are dominated by the night.** A place's total is night points plus place points on the same thresholds. On a heavy night almost every place scores `high`, so the level separates places poorly and the points break the ties. Task 11 (replay checks) and spec 1b should decide whether places need their own thresholds or a relative rating.
+- **Limit: 0.9 migration with rough fall weather scores 0.69**, just under the `high` threshold of 0.70. The thresholds are placeholders until calibration.
