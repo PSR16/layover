@@ -1,7 +1,7 @@
 # 1. Block commits that change dependencies without the lockfile (and the reverse).
 changed=$(git diff --cached --name-only)
-manifest_changed=$(echo "$changed" | grep -c '^package.json$')
-lock_changed=$(echo "$changed" | grep -c '^package-lock.json$')
+manifest_changed=$(echo "$changed" | grep -c '^package.json$' || true)
+lock_changed=$(echo "$changed" | grep -c '^package-lock.json$' || true)
 if [ "$manifest_changed" != "$lock_changed" ]; then
   echo "package.json and package-lock.json must be committed together."
   exit 1
