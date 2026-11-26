@@ -4,7 +4,7 @@
  * when the input is missing (missing is not the same as zero, R22).
  */
 import { findSeason } from './season.js';
-import { isInAnySector, turnedUnfavorable } from './wind.js';
+import { isInAnySector, isWesterly, turnedUnfavorable } from './wind.js';
 
 const PARTS = ['early', 'middle', 'late'];
 
@@ -120,4 +120,15 @@ function windShiftOf(readings, season, config) {
     return undefined;
   }
   return turnedUnfavorable(early, late, config.wind[season].unfavorableFrom) ? 1 : 0;
+}
+
+/** Share of the night with wind from the west (1 = all parts, 0 = none, undefined = no data). */
+export function westerlyShare(weather, config) {
+  const readings = expandToParts(weather);
+  const byPart = scoreByPart(readings, (reading) =>
+    isFiniteNumber(reading?.windFromDegrees)
+      ? Number(isWesterly(reading.windFromDegrees))
+      : undefined,
+  );
+  return combineParts(byPart, config);
 }
