@@ -13,7 +13,9 @@ src/
     risk.js                  assessNight, assessPlace, rankPlaces (entry points)
     risk-config.js           DEFAULT_CONFIG data only (R30)
     risk-config-validate.js  validateConfig, mergeConfig (R32, R33)
-    risk-factors.js          factor registry: one small pure function per factor (R31)
+    risk-inputs.js           read conditions: night parts, season, wind and sky scores (pure helpers)
+    risk-night-factors.js    night factors, one small object per factor (R31)
+    risk-place-factors.js    place factors (Task 6)
     risk-combine.js          combines factor outputs into a level (the only place that knows the math)
     wind.js                  wind-sector and wind-shift helpers (degrees, season)
     night-parts.js           split hourly values into early/middle/late using sunset and sunrise
@@ -85,11 +87,14 @@ Why two levels: a coordinator needs "tonight is high" (surge decision, spec 4) a
 Each factor is a pure function with one job:
 
 ```js
-// src/lib/risk-factors.js
+// src/lib/risk-night-factors.js and risk-place-factors.js
 export const NIGHT_FACTORS = [migrationFactor, windFactor, windShiftFactor,
   visibilityFactor, carryOverFactor, seasonFactor];
 export const PLACE_FACTORS = [litGlassFactor, treeFactor, kindFactor, heightFactor, lakeshoreFactor];
-// every factor: (input, config) => { id, points, reasonKey | null, missing: string[] }
+// every factor is an object { id, group, evidence, reasonKeys, evaluate(input, config) }
+// evaluate returns { id, group, points, reasonKey | null, missing: string[] }
+// `group` ('migration' | 'weather' | 'carryOver' | 'season' | 'place') lets the combine step
+// apply the weather-only cap and floor (R15). NIGHT_REASON_KEYS feeds validator rule 5.
 ```
 
 - Adding a factor: write the function, add it to the list, add its entry to the config. `risk-combine.js` loops over the list and does not change (R31).
@@ -122,6 +127,7 @@ export const DEFAULT_CONFIG = {
   lightMultiplier: { lowCloudAbovePercent: 60, lowVisibilityBelowKm: 5,
                      cloudFactor: 1.4, visibilityFactor: 1.3, evidence: ['E2', 'E10', 'E11'] },
   nightParts: { early: 0.25, middle: 0.5, late: 0.25, evidence: ['E1'] }, // middle highest; exact split is an assumption
+  weatherScaling: { minimum: 0.4, evidence: ['E2', 'E5'] },   // weather points grow with migration
   weatherOnly: { floorLevel: 'elevated', capLevel: 'elevated', evidence: ['E2', 'E5'] },
   missingMigrationCap: 'elevated',                                 // assumption (R22)
   wind: {                                                          // degrees the wind comes FROM
