@@ -19,6 +19,12 @@ export const DEFAULT_CONFIG = {
         'Initial placeholder weights. Order follows research rules: migration largest, lit glass above height.',
       evidence: ['E1', 'E5', 'E14'],
     },
+    {
+      date: '2026-11-26',
+      change:
+        'Added weatherScaling (weather points grow with migration, E2/E5) and wind.lightWindFactor (assumption) for the night factors.',
+      evidence: ['E2', 'E5'],
+    },
   ],
 
   // Total points at or above these values give the level (assumption, see design section 3).
@@ -56,6 +62,10 @@ export const DEFAULT_CONFIG = {
   // Weather alone: never `high`, at least `elevated` when unfavorable (R15, E2, E5).
   weatherOnly: { floorLevel: 'elevated', capLevel: 'elevated', evidence: ['E2', 'E5'] },
 
+  // Weather points scale from `minimum` (no migration) up to 1 (full migration): weather matters
+  // most on heavy nights (E2, E5). Spring low visibility ignores this scale (E2).
+  weatherScaling: { minimum: 0.4, evidence: ['E2', 'E5'] },
+
   // Level cap when migration data is missing (R22, assumption).
   missingMigrationCap: 'elevated',
 
@@ -70,6 +80,7 @@ export const DEFAULT_CONFIG = {
       ],
     },
     strongMps: 6,
+    lightWindFactor: 0.5, // share of the wind weight when unfavorable wind is below strongMps (assumption)
     evidence: ['E1', 'E2', 'E4'],
   },
 

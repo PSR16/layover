@@ -131,6 +131,21 @@ describe('validateConfig rejection rules', () => {
     expect(flat).toContain('nightParts.middle must be the largest part');
   });
 
+  it('weather scaling and light-wind share must be shares from 0 to 1', () => {
+    expect(problemsFor((config) => (config.weatherScaling.minimum = 1.5))).toContain(
+      'weatherScaling.minimum must be a number from 0 to 1',
+    );
+    expect(problemsFor((config) => delete config.wind.lightWindFactor)).toContain(
+      'wind.lightWindFactor must be a number from 0 to 1',
+    );
+  });
+
+  it('carry-over must stay below the same-night wind weight (R18)', () => {
+    expect(problemsFor((config) => (config.weights.carryOver.weight = 0.15))).toContain(
+      'weights.carryOver.weight must be below weights.wind.weight',
+    );
+  });
+
   it('level names must be real levels', () => {
     expect(problemsFor((config) => (config.missingMigrationCap = 'severe'))).toContain(
       'missingMigrationCap must be one of low, elevated, high',

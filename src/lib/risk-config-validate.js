@@ -7,7 +7,7 @@ const EVIDENCE_ENTRY = /^(E\d+|assumption)$/;
 const LEVELS = ['low', 'elevated', 'high'];
 const FULL_CIRCLE = 360;
 const SEASON_NAMES = ['spring', 'fall'];
-const EVIDENCE_GROUPS = ['nightParts', 'lightMultiplier', 'weatherOnly', 'wind'];
+const EVIDENCE_GROUPS = ['nightParts', 'lightMultiplier', 'weatherOnly', 'weatherScaling', 'wind'];
 const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 const SUM_TOLERANCE = 1e-6;
 
@@ -159,6 +159,27 @@ function checkSeasonsAndWind(config) {
   ]);
 }
 
+function isShare(value) {
+  return Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
+/** Weather scaling and light-wind share are shares from 0 to 1. */
+function checkShares(config) {
+  const problems = [];
+  if (!isShare(config.weatherScaling?.minimum)) {
+    problems.push('weatherScaling.minimum must be a number from 0 to 1');
+  }
+  if (!isShare(config.wind?.lightWindFactor)) {
+    problems.push('wind.lightWindFactor must be a number from 0 to 1');
+  }
+  return problems;
+}
+
+/** Carry-over is smaller than a same-night contribution (R18). */
+function checkCarryOverSmaller(config) {
+  return mustBeBelow(config, 'carryOver', 'wind');
+}
+
 /** Level names used by the caps and floors must be real levels. */
 function checkLevels(config) {
   const named = {
@@ -194,6 +215,8 @@ export function validateConfig(config, options = {}) {
     ...checkWeightOrder(config),
     ...checkThresholds(config),
     ...checkNightParts(config),
+    ...checkShares(config),
+    ...checkCarryOverSmaller(config),
     ...checkSeasonsAndWind(config),
     ...checkLevels(config),
     ...checkReasonKeys(config, options.requiredReasonKeys ?? []),

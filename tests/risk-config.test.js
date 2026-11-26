@@ -13,7 +13,7 @@ function everyEvidenceList(config) {
     `weights.${name}`,
     entry.evidence,
   ]);
-  for (const key of ['nightParts', 'lightMultiplier', 'weatherOnly', 'wind']) {
+  for (const key of ['nightParts', 'lightMultiplier', 'weatherOnly', 'weatherScaling', 'wind']) {
     lists.push([key, config[key].evidence]);
   }
   for (const [index, note] of config.notes.entries()) {
