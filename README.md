@@ -20,7 +20,15 @@ The data in the demo is sample data and is labelled as such in the app.
 
 ## Development
 
-Setup instructions will be added with the project scaffold.
+Requires Node 22.12 or newer.
+
+```
+npm ci          # install and set up git hooks
+npm run dev     # start the dev server
+npm run check   # lint, format, secret scan, tests, build
+```
+
+Commits use Conventional Commits and are checked by git hooks.
 
 ## License
 

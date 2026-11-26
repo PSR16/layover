@@ -15,3 +15,10 @@ inclusion: always
 - Risk factors and weights follow `research.md` (evidence IDs in comments).
 - Controls are at least 44px tall and wide.
 - Never commit `.env` files or keys.
+
+## Quality gates
+- Git hooks (Husky): pre-commit runs lint-staged (ESLint, Prettier, secretlint) and `npm test`; commit-msg runs commitlint; pre-push runs `npm run check`. Never bypass with `--no-verify`.
+- Readability limits are ESLint errors: complexity 8, cognitive complexity 10, depth 3, 40 lines per function, names of 3+ characters, no abbreviations, no nested ternaries. Write small functions with descriptive names and early returns.
+- `package.json` and `package-lock.json` change together. Dependencies are pinned exactly (`.npmrc`).
+- Node 22.12 or newer (`.nvmrc`).
+- CI: GitHub Actions. Deploy: Railway, linked to the GitHub repo, builds on push to `main`. Vite `base` stays `/`.
