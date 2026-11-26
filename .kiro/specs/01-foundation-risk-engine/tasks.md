@@ -25,7 +25,8 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
   Requirements: R12, R13, R20, R21, R38, R39. Tests: lit-glass monotonicity, height weaker than glass, compass direction cannot change the score.
 - [ ] **Task 7. Combine and assess.**
   `risk-combine.js` and `risk.js`: `assessNight`, `assessPlace`, `rankPlaces`. Includes the light multiplier, thresholds, weather-only cap and floor, missing-migration cap, trace and `configVersion`. Reasons come from config text.
-  Requirements: R9, R14, R15, R22, R24, R25, R31, R33, R34. Tests: the full property table in `requirements.md`, including determinism, stable ranking, "never empty reasons", "add a dummy factor changes only its own trace entry".
+  Also adds `treatmentDiscount` to the config and validator (none 0, partial below full, full below 1) and applies it with the light multiplier (R40).
+  Requirements: R9, R14, R15, R22, R24, R25, R31, R33, R34, R40. Tests: the full property table in `requirements.md`, including determinism, stable ranking, "never empty reasons", "add a dummy factor changes only its own trace entry".
 
 ## Phase 2: Data and weather
 
@@ -36,7 +37,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
   Decide where the build script lives (design point 6). Read the raw dataset (outside the repo), pick nights (design section 10), scale radar migration to percentile within season, average weather per night part, and write a small derived file with the attribution header.
   Requirements: R26, R36. Tests: unit tests on the percentile scaling and night-part averaging using a tiny fixture.
 - [ ] **Task 9. Replay-night data.**
-  `data/replay-nights.js`: the radar nights from Task 9a plus 2026-10-17 and an October 2023 night, each with a labelled migration level, a note on its source, and a saved weather snapshot. All records carry `source`.
+  `data/replay-nights.js`: the radar nights from Task 9a plus the night of 2026-10-16 and the night of 2023-10-04, each with a labelled migration level, a note on its source, and a saved weather snapshot. All records carry `source`.
   Requirements: R7, R26, R28. Tests: every record has a source and a note; missing source is treated as `sample`.
 - [ ] **Task 10. Weather API client.**
   `api/weather.js`: Open-Meteo history, weather.gov live, 5 s timeout, fall back to the saved snapshot with a "Saved weather" flag.
@@ -75,4 +76,4 @@ Tasks 12 to 14 can run in parallel with Phase 1 once Task 3 exists, since they d
 
 ## Coverage check
 
-R1, R2 (13); R3, R4, R8 (12); R5 to R7 (9, 14); R36 (9a, 14); R37 (2, 3, 5); R38 (2, 3, 6, 12); R39 (6); R9 (7, 15); R10 to R12 (5, 6, 7); R13 (1, 4, 6); R14 (7); R15 (5, 7, 11); R16, R17 (1, 2, 5); R18, R19 (5); R20, R21 (6); R22 (5, 7); R23 (3); R24 (7, 15); R25 (7); R26 (9a, 9, 11); R27 to R29 (8, 10, 15); R30 to R35 (3, 4, 7).
+R1, R2 (13); R3, R4, R8 (12); R5 to R7 (9, 14); R36 (9a, 14); R37 (2, 3, 5); R38 (2, 3, 6, 12); R39 (6); R9 (7, 15); R10 to R12 (5, 6, 7); R13 (1, 4, 6); R14 (7); R15 (5, 7, 11); R16, R17 (1, 2, 5); R18, R19 (5); R20, R21 (6); R22 (5, 7); R23 (3); R24 (7, 15); R25 (7); R26 (9a, 9, 11); R27 to R29 (8, 10, 15); R30 to R35 (3, 4, 7); R40 (7).

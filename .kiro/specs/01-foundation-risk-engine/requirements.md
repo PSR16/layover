@@ -1,7 +1,7 @@
 # Spec 1: Foundation and risk engine (requirements)
 
 Status: DRAFT for review. Design and tasks drafted. Updated for night parts (R37), radar replay nights (R26), lakeshore (R38) and lit-share coding (R39).
-Evidence IDs (E1 to E21) refer to `docs/research.md`. Requirements marked **[assumption]** have no direct evidence and say so.
+Evidence IDs (E1 to E23) refer to `docs/research.md`. Requirements marked **[assumption]** have no direct evidence and say so.
 
 ## Scope
 
@@ -57,6 +57,7 @@ Out (later specs): map and Overpass (spec 2), slots and volunteer journey (spec 
 - **R37.** Weather and migration inputs SHALL be given per night part (early, middle, late). The engine SHALL weight the parts by config, with the middle part weighted highest. (E1: the middle third of the night was the most informative.) **[assumption on exact part weights]** WHEN only a single whole-night value exists, the engine SHALL use it for all three parts.
 - **R38.** WHEN a place is near the Lake Michigan shoreline and the wind comes from the west (blowing toward the lake side), in either season, the engine SHALL add a lakeshore contribution and a reason that says so. (E1: westerly winds concentrated collisions at the lakefront building; E2: westerly winds raised collisions in both seasons.) **[assumption: distance threshold]** The city config SHALL hold the shoreline reference, so other cities can supply their own or none.
 - **R39.** WHEN a place's lighting is described as a share of lit window area, the engine SHALL count dim and covered windows as unlit. (E1, E7)
+- **R40.** The engine SHALL accept a bird-safe treatment status for a place (`none`, `partial`, `full`) and SHALL reduce the 'light' group contribution by a configured discount for `partial` and `full`. The discounts SHALL stay below the reduction reported at McCormick Place (E22) and the full discount SHALL stay below 1. WHEN the status is missing, the engine SHALL treat it as `none`. (E22, E23; research rule 10: prefer the more cautious reading.)
 
 ## C2. Editability of the risk engine
 
@@ -71,7 +72,7 @@ Out (later specs): map and Overpass (spec 2), slots and volunteer journey (spec 
 
 - **R26.** The app SHALL include a replay-night file with two kinds of Chicago night, each carrying a migration level (0 to 1), a `source` and a note on where the level came from:
   - **Radar nights** drawn from the 2000 to 2020 McCormick Place dataset (E1), including at least one spring and one fall night with a large mortality event and one quiet night. The level is the local radar bird density scaled by percentile within its season. `source: 'replay'`, label "Replay night, radar-derived migration".
-  - **News nights**: 2026-10-17 and a night in October 2023, which fall outside the dataset. The level is hand-set from public BirdCast maps and the news reports. `source: 'sample'`, label "Sample migration level".
+  - **News nights**: the night of 2026-10-16 (collisions found on the morning of 2026-10-17) and the night of 2023-10-04 (collisions found 2023-10-05; confirm the date), both outside the dataset. For 2026-10-16 the news report cites more than 5 million birds over Cook County. The level is hand-set from that figure, public maps and the reports. `source: 'sample'`, label "Sample migration level".
 - **R27.** WHEN a replay night is selected, the app SHALL load weather for that date from the Open-Meteo historical API (wind speed and direction, low cloud cover, visibility) and average it into the three night parts (R37). The app SHALL show the weather as real data and label the migration level according to R26.
 - **R28.** IF the weather request fails or times out, THEN the app SHALL fall back to a stored weather snapshot for that night, labelled "Saved weather", and still show a risk result.
 - **R29.** WHEN no replay night is selected, the app SHALL use live weather from weather.gov for the city center and the sample migration level for tonight. The migration level SHALL be labelled "Sample migration level".
@@ -92,11 +93,16 @@ Out (later specs): map and Overpass (spec 2), slots and volunteer journey (spec 
 | Increasing the middle-part migration raises the level at least as much as the same change in the early or late part | R37 |
 | Lakeshore contribution is zero when wind is not from the west or the place is beyond the threshold | R38 |
 | Windows coded dim or covered add zero lit area | R39 |
+| Raising treatment from none to partial to full never raises the points | R40 |
 | Removing any one input still returns a result and lists that input as missing | R22 |
 | Same input always gives the same ranking order | R25 |
 | Reasons list is never empty | R9, R24 |
 
-Example-based tests: the 2026-10-17 replay night scores `elevated` or `high` given heavy migration and the stored weather (value to be confirmed against real weather in design).
+Example-based tests: the 2026-10-16 replay night scores `elevated` or `high` given heavy migration and the stored weather (value to be confirmed against real weather in design).
+
+## Calibration note
+
+The Chicago collision dataset (E1) describes McCormick Place before its 2024 treatment (E22). Use it to learn how migration, wind and lighting interact. Do not use it as a list of dangerous buildings today.
 
 ## Open questions
 

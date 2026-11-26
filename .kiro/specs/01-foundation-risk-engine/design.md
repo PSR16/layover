@@ -35,7 +35,7 @@ Dependencies point inward: `lib` imports only other `lib` files. `api/` calls `l
 ```js
 // Conditions: input for one night
 {
-  night: '2026-10-17',
+  night: '2026-10-16',
   source: 'replay',                         // 'live' | 'replay' | 'sample' (R7)
   migration: {                               // 0..1, optional, per night part (R37)
     early: 0.8, middle: 0.9, late: 0.7,      // or a single `level` used for all parts
@@ -52,7 +52,8 @@ Dependencies point inward: `lib` imports only other `lib` files. `api/` calls `l
 // Place: one route or building, plain attributes
 { id, kind: 'building' | 'stadium' | 'arena' | 'installation',
   lit: true, litGlassArea: 0..1, treeNear: boolean, heightMeters,
-  lakeDistanceMeters: number | null }        // null when the city has no shoreline reference
+  lakeDistanceMeters: number | null,
+  birdSafeTreatment: 'none' | 'partial' | 'full' }  // missing counts as 'none' (R40)        // null when the city has no shoreline reference
 
 // Risk result (R9, R22, R33, R34)
 { level, reasons: string[], missingInputs: string[],
@@ -74,6 +75,7 @@ placePoints  = (litGlass + treeBonus + kindBonus) * lightMultiplier  // R12, R14
              + heightPoints                                         // R13, 'place' group, not multiplied
              + lakeshorePoints                                      // R38: near shore and westerly wind, 'place' group
 lightMultiplier = cloud and visibility factors from config, applied to the 'light' group only (R14)
+treatmentMultiplier = 1 - treatmentDiscount[place.birdSafeTreatment], applied to the 'light' group only (R40, E22)
 total        = nightPoints + placePoints
 level        = threshold lookup on total
 then apply: weather-only cap (no `high`), weather-only floor (`elevated`), missing-migration cap (R22)
@@ -127,6 +129,7 @@ export const DEFAULT_CONFIG = {
   },
   lightMultiplier: { lowCloudAbovePercent: 60, lowVisibilityBelowKm: 5,
                      cloudFactor: 1.4, visibilityFactor: 1.3, evidence: ['E2', 'E10', 'E11'] },
+  treatmentDiscount: { none: 0, partial: 0.5, full: 0.85, evidence: ['E22'] }, // below the >95% reported drop (assumption)
   nightParts: { early: 0.25, middle: 0.5, late: 0.25, evidence: ['E1'] }, // middle highest; exact split is an assumption
   weatherScaling: { minimum: 0.4, evidence: ['E2', 'E5'] },   // weather points grow with migration
   weatherOnly: { floorLevel: 'elevated', capLevel: 'elevated', evidence: ['E2', 'E5'] },
@@ -148,7 +151,7 @@ export const DEFAULT_CONFIG = {
 };
 ```
 
-Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the threshold order. They must be checked against the 2026-10-17 and 2023 replay nights during implementation, and any change gets a `notes` entry (R35). The wind sectors depend on the "from versus toward" check (below).
+Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the threshold order. They must be checked against the 2026-10-16 and 2023 replay nights during implementation, and any change gets a `notes` entry (R35). The wind sectors depend on the "from versus toward" check (below).
 
 ### Validator (R32)
 
@@ -178,6 +181,7 @@ Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the t
 | R22 | `missing` arrays collected; `missingMigrationCap` applied |
 | R37 | `night-parts.js`; `nightParts` weights in config; single-value fallback |
 | R38 | `lakeshoreFactor`; `wind.js` westerly check; city shoreline reference in `config/city.js` |
+| R40 | `treatmentDiscount` in config; applied in `risk-combine.js` to the 'light' group; validator checks order and full < 1 |
 | R39 | lit-share input rule documented in Place shape; unit test on the coding helper |
 | R36 | credits component on both views |
 | R25 | `rankPlaces` sort key (level, points, id) |
@@ -198,7 +202,7 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 
 - **Unit tests** (one file per module): wind sectors at the 0/360 boundary, season dates, normalizer on recorded API samples, validator for each rejection rule, reason keys all present.
 - **Property tests (fast-check):** the table in `requirements.md`, plus: results are deterministic for the same config; `mergeConfig` with an empty override equals the default.
-- **Replay tests:** 2026-10-17 and the 2023 night against stored weather. Expected levels are set after the wind-direction check and reviewed by you before they become assertions.
+- **Replay tests:** the night of 2026-10-16 and the 2023 night against stored weather. Expected levels are set after the wind-direction check and reviewed by you before they become assertions.
 - **UI checks:** hash routing and unknown-hash fallback; sample badge present wherever a replay or sample value is shown; controls at least 44 px (manual Playwright check later).
 
 ## 9. Risks and open points
@@ -216,7 +220,7 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 - A one-off script (location to decide, see point 6 below) reads the raw files kept outside the repo and writes a small committed table, one row per selected night: date, season, migration per night part (percentile within season), wind, cloud and visibility per night part, and a note. The file header carries the attribution text from `docs/data-sources.md` and the script name and date (CC BY 4.0, R36).
 - Night selection: the largest spring and fall mortality events (for example 2018-05-02, 2000-10-15, 2002-05-06, 2013-10-08), plus quiet nights for contrast. The counts stay in `docs/` and fixtures, never in the UI.
 - Radar nights use the dataset's own Midway weather for the saved snapshot, so the "Saved weather" fallback works without any network.
-- News nights (2026-10-17, October 2023) have no radar data here and keep hand-set, labelled migration levels.
+- News nights (night of 2026-10-16, night of 2023-10-04) have no radar data here and keep hand-set, labelled migration levels.
 
 ### Additional open points
 
