@@ -21,6 +21,11 @@ A running, factual record of how Kiro was used to build this project. Entries ar
   - `.kiro/steering/tech.md` (created, `inclusion: always`)
   - `.kiro/steering/structure.md` (created, `inclusion: always`)
 - **Commit:** `641b4af`
+
+### 2026-11-26: Earlier setup files committed
+- **Phase/task:** Project setup.
+- **What Kiro did:** Committed files created before this entry, in three commits: git and journal steering (`a219ad1`), risk evidence table `docs/research.md` with `.kiro/steering/research.md` (`59e903c`), and the hooks in `.kiro/hooks/` (`61d6f96`).
+- **Corrected or rejected:** Nothing.
 - **Corrected or rejected:** User: "Do not brand with things like lights out or too good to go as these are insirpiration". Kiro's first draft had no inspiration names in the files, and a rule now forbids using them. The first draft's slot description ("surplus-food apps") was kept generic.
 
 ## Surfaces
