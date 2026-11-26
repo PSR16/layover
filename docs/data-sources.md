@@ -32,3 +32,10 @@ Use this text in the app credits and in any committed derived file's header.
 ## OpenStreetMap
 
 Map and building data. Credit "© OpenStreetMap contributors" (ODbL) wherever the map or derived building data appears. Already required by the Leaflet attribution rule.
+
+## BirdCast migration dashboard (outbound link only, no data used)
+
+- Regional migration estimates by state or county, from weather radar. There is no public API, so Layover only links to it.
+- URL pattern: `https://dashboard.birdcast.org/region/US-<state>` for a state, `.../region/US-<state>-<county FIPS>` for a county (for example `US-OH-049`), with `?night=YYYY-MM-DD` for a night. Cook County, IL should be `US-IL-031` (to verify before use).
+- Label the link in plain text ("BirdCast migration dashboard") and open it in a new tab. No logo. Say nothing that suggests partnership or endorsement (see the exception in `product.md`).
+- The pages load their charts with JavaScript, so Layover cannot read numbers from them.
