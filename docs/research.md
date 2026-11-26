@@ -22,6 +22,10 @@ Summaries are paraphrased. IDs (E1, E2…) are referenced from requirements, des
 | E16 | In northwestern Illinois, collisions at 20 buildings rose with window area and fell with surrounding development. Juveniles collided more than adults. Predicted annual deaths varied from 0 to 52 per building. | Hager et al. 2013, PLoS ONE | Per-building risk varies a lot, so rank spots individually. Glass area is a core input. |
 | E17 | In Minneapolis, most spring American woodcock collisions (11 of 15) came during two snowstorms. Collisions followed strong north winds and a low cloud base two nights earlier. | Loss et al. 2020, Wildlife Biology | Severe-weather spikes in spring. Lagged low-cloud signal supports multi-night carry-over (E4). |
 
+| E18 | Chicago GIS project using 40 years of Field Museum specimens, 3D building models, luminosity and Doppler radar. The abstract states hypotheses (tall, bright buildings near Lake Michigan have more strikes) and reports no results. | Muenchow 2026, Research Days (abstract only) | Data lead and Chicago context. Changes no weight. Height stays weak (E14) until the results are read. |
+| E19 | Estimates of 388 to 965 million US building-collision deaths a year. Light attracts and disorients birds. Bird-safe glass and lighting reductions exist. | Farnsworth et al. 2024, PNAS (commentary) | Background for coordinator messaging only. Not used in scoring. Never shown as a prediction. |
+| E20 | Two decades of radar and satellite data show where and when the most migrants are exposed to light pollution across the contiguous US. | Horton et al. 2019, Frontiers in Ecology and the Environment | Supports lit-city and season timing. Basis for a later skyglow layer (E12). Not used for weights in v0.1. |
+| E21 | Review: window collisions are a leading source of wild bird mortality. Lights and vegetation draw birds near windows. Treated glass prevents collisions. | Klem 2025, The Wilson Journal of Ornithology | Context. Supports the product rule that mitigation is about glass and lights, not about handling birds. |
 ## Where studies disagree
 - E2 found low visibility and low clouds raised risk. E5 found clear, cool fall days were worst. Treat "big flight" as the dependable signal and weather as a modifier.
 - Most evidence comes from single cities in the Northern Hemisphere. Weights in Layover are a heuristic until calibrated with local finds.
@@ -44,3 +48,7 @@ Summaries are paraphrased. IDs (E1, E2…) are referenced from requirements, des
 - Cleveland campus study (2020) Seasonal, taxonomic, and local habitat components of bird-window collisions on an urban university campus in Cleveland, OH. Authors and venue not listed in the Consensus record; confirm before citing externally.
 - Hager SB et al. (2013) Window area and development drive spatial variation in bird-window collisions in an urban landscape. PLoS ONE.
 - Loss SR et al. (2020) Inclement weather and American woodcock building collisions during spring migration. Wildlife Biology.
+- Muenchow R (2026) Geographical Information Systems: Abundance of Bird Strikes in Chicago is Influenced by Building Height and Luminosity. Research Days. Abstract only; confirm the results before citing.
+- Farnsworth A et al. (2024) To mitigate bird collisions, enforce the Migratory Bird Treaty Act. PNAS.
+- Horton KG et al. (2019) Bright lights in the big cities: migratory birds' exposure to artificial light. Frontiers in Ecology and the Environment.
+- Klem D (2025) Bird-window collisions: a critical review. The Wilson Journal of Ornithology.
