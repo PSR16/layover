@@ -6,9 +6,9 @@ fileMatchPattern: ["src/lib/risk*", "src/lib/**/*.js", ".kiro/specs/**/*.md", "t
  
 The full evidence table is in #[[file:docs/research.md]]. Follow these rules whenever you write or change risk logic, requirements or tests.
  
-1. Every risk factor and weight must cite at least one evidence ID (E1–E14) in a code comment and in the design doc. If a factor has no evidence, say so and mark it "assumption".
+1. Every risk factor and weight must cite at least one evidence ID (E1–E17) in a code comment and in the design doc. If a factor has no evidence, say so and mark it "assumption".
 2. Migration volume is the largest single factor (E1, E3, E5). Weather is a modifier that matters most when migration is heavy (E2).
-3. Wind rules are season-specific. Fall: north winds mean heavy flights. Spring: south winds. Flag a tailwind that turns into a headwind near dawn (E2, E4).
+3. Keep two wind effects separate, and never score the same wind twice. (a) Favorable wind (fall: from the north; spring: from the south) means more migration. It belongs in the migration input, not in the collision score (E13). (b) Unfavorable wind on a heavy-migration night raises collision risk. Fall: from the south or west. Spring: from the north or west (E2, E17). Flag a tailwind that turns into a headwind before dawn (E4). Wind directions are the direction the wind comes from; confirm this against Chen et al. 2024 before fixing thresholds.
 4. Low cloud ceiling and fog increase how strongly lights attract birds (E10, E11). Apply them as multipliers on lit-venue risk, not as flat points.
 5. Lit glass matters more than building height (E1, E7, E14). Rank buildings by glass and night lighting first, nearby vegetation second (E6), height last.
 6. Stadiums and high-intensity light installations are major hazards (E6, E8).
