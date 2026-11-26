@@ -21,4 +21,4 @@ inclusion: always
 - Readability limits are ESLint errors: complexity 8, cognitive complexity 10, depth 3, 40 lines per function, names of 3+ characters, no abbreviations, no nested ternaries. Write small functions with descriptive names and early returns.
 - `package.json` and `package-lock.json` change together. Dependencies are pinned exactly (`.npmrc`).
 - Node 22.12 or newer (`.nvmrc`).
-- CI: GitHub Actions. Deploy: Railway, linked to the GitHub repo, builds on push to `main`. Vite `base` stays `/`.
+- CI: GitHub Actions. Deploy: Railway, linked to the GitHub repo, builds on push to `main`. Work happens on branches and reaches `main` only when the user merges (see git.md). Vite `base` stays `/`.
