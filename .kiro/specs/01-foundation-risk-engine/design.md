@@ -184,7 +184,8 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 
 ## 9. Risks and open points
 
-1. **Wind direction convention.** Confirm "from" versus "toward" in Chen et al. 2024 before the sector numbers are final. Until then they are assumptions.
+1. **Wind direction convention (checked, Task 1).** The Chen et al. 2024 abstract reports northerly and westerly winds in spring, and southerly and westerly winds in fall, as the unfavorable ones. In standard weather usage a northerly wind comes from the north, and a spring northerly is a headwind for birds flying north. That matches the "from" convention used in the config. I could not read the full text (the publisher page requires a login and the PDF was not fetchable), so this rests on the abstract wording and meteorological usage. The sectors stay marked as assumptions on exact degree ranges. Open-Meteo reports wind direction as the direction the wind comes from, so no flip is needed in the normalizer.
+   **New finding:** the abstract says low visibility in spring roughly triples collision rates independent of migration traffic. That is an exception to "weather matters most on heavy nights" (R15). The `elevated` floor for weather-only nights covers it. Task 5 must make spring low visibility a case that works without migration data.
 2. **Floor effect on surge.** The R15 floor makes more nights `elevated`. That is fine for display, but spec 4 must base surge on `high` only (research rule 8). The floor is a config value, so it can be dropped.
 3. **Glass share.** OSM seldom has it. Spec 2 must pick a proxy (for example building type plus facade tags), and label it.
 4. **Muenchow 2026.** If it shows height matters in Chicago, change the height weight through config, record it in `notes`, and keep the validator rule so height stays below lit glass.

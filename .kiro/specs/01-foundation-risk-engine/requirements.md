@@ -1,7 +1,7 @@
 # Spec 1: Foundation and risk engine (requirements)
 
 Status: DRAFT for review. Design and tasks are not started.
-Evidence IDs (E1 to E17) refer to `docs/research.md`. Requirements marked **[assumption]** have no direct evidence and say so.
+Evidence IDs (E1 to E21) refer to `docs/research.md`. Requirements marked **[assumption]** have no direct evidence and say so.
 
 ## Scope
 
@@ -37,7 +37,7 @@ Out (later specs): map and Overpass (spec 2), slots and volunteer journey (spec 
 - **R12.** WHEN other inputs are equal, more lit-glass area at venues or buildings SHALL NOT lower the risk level. (E1, E7)
 - **R13.** The engine SHALL treat building height as a weak signal, with a weight below every lit-glass weight. (E1, E7, E14)
 - **R14.** WHEN low cloud ceiling or low visibility is present, the engine SHALL multiply the lit-venue contribution instead of adding flat points. (E10, E11, E2)
-- **R15.** WHEN migration is light, weather SHALL NOT raise the level to `high` by itself. WHEN migration is light and weather is unfavorable (E2 wind or low visibility), the level SHALL be at least `elevated`. The floor SHALL be a config value. (E2, E5; research rule 10: prefer the more conservative behavior where studies disagree.)
+- **R15.** WHEN migration is light, weather SHALL NOT raise the level to `high` by itself. WHEN migration is light and weather is unfavorable (E2 wind or low visibility), the level SHALL be at least `elevated`. The floor SHALL be a config value. Spring low visibility SHALL count as unfavorable even when migration data is missing, because E2 found it roughly triples collisions independent of migration traffic. (E2, E5; research rule 10: prefer the more conservative behavior where studies disagree.)
 - **R16.** The engine SHALL apply season-specific wind rules. Fall: south and west winds raise risk; spring: north and west winds raise risk. (E2) **[assumption on thresholds]**
 - **R17.** WHEN wind changes from favorable to unfavorable for migrants between the start of the night and dawn, the engine SHALL raise risk and include a reason that names the shift. (E4)
 - **R18.** WHEN either of the previous 2 nights was high-migration with unfavorable weather, the engine SHALL add a carry-over contribution that is smaller than a same-night contribution. (E4, E17)
@@ -86,6 +86,6 @@ Example-based tests: the 2026-10-17 replay night scores `elevated` or `high` giv
 
 ## Open questions
 
-1. **Steering conflict (resolved).** `.kiro/steering/research.md` rule 3 now separates favorable wind (more migration, belongs in the migration input) from unfavorable wind (raises collisions on heavy nights, E2). R16 follows the second. The evidence range is now E1–E17. **Design task:** confirm the wind-direction convention ("from" versus "toward") in Chen et al. 2024 before fixing thresholds.
+1. **Steering conflict (resolved).** `.kiro/steering/research.md` rule 3 now separates favorable wind (more migration, belongs in the migration input) from unfavorable wind (raises collisions on heavy nights, E2). R16 follows the second. The evidence range is now E1–E21. **Checked in Task 1:** the Chen et al. 2024 abstract is consistent with the "wind from" convention (full text not read). See design section 9.
 2. **E5 versus E2.** E5 found clear, cool fall days were worst, and E2 found low visibility raised risk. R15 handles it by making migration the main signal and weather a modifier. Is that the behavior you want?
 3. **Muenchow 2026 (Chicago, height and luminosity).** If it finds height matters in Chicago, R13 may need a Chicago-specific note.
