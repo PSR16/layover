@@ -70,7 +70,8 @@ nightPoints  = migrationPoints                                  // parts weighte
              + weatherPoints            (wind, shift, visibility)   // scaled by migration level (R15)
              + carryOverPoints                                      // R18
              + seasonPoints                                         // R19
-placePoints  = (litGlass + treeBonus + kindBonus + heightPoints)    // R12, R13, R20, R21
+placePoints  = (litGlass + treeBonus + kindBonus) * lightMultiplier  // R12, R14, R20, R21 ('light' group)
+             + heightPoints                                         // R13, 'place' group, not multiplied
              + lakeshorePoints                                      // R38: near shore and westerly wind
                * lightMultiplier(cloud, visibility)                 // R14: multiplier, not flat
 total        = nightPoints + placePoints
@@ -206,6 +207,7 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
    **New finding:** the abstract says low visibility in spring roughly triples collision rates independent of migration traffic. That is an exception to "weather matters most on heavy nights" (R15). The `elevated` floor for weather-only nights covers it. Task 5 must make spring low visibility a case that works without migration data.
 2. **Floor effect on surge.** The R15 floor makes more nights `elevated`. That is fine for display, but spec 4 must base surge on `high` only (research rule 8). The floor is a config value, so it can be dropped.
 3. **Glass share.** OSM seldom has it. Spec 2 must pick a proxy (for example building type plus facade tags), and label it.
+4a. **Trees: studies disagree.** E6 and E15 found more collisions near trees, E14 found fewer within 5 m. The tree factor follows E6 and E15 (the cautious reading, research rule 10), is weak, and only applies to glass that is lit (bonus scaled by lit share). Spec 1b should check this against the Chicago data.
 4. **Muenchow 2026.** If it shows height matters in Chicago, change the height weight through config, record it in `notes`, and keep the validator rule so height stays below lit glass.
 5. **Migration source.** Replay levels are hand-set. If BirdCast data becomes usable, only the loader changes. The engine takes the same number.
 
