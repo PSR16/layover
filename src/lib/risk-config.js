@@ -25,6 +25,12 @@ export const DEFAULT_CONFIG = {
         'Added weatherScaling (weather points grow with migration, E2/E5) and wind.lightWindFactor (assumption) for the night factors.',
       evidence: ['E2', 'E5'],
     },
+    {
+      date: '2026-11-26',
+      change:
+        'Added place settings: litGlass.reasonAbove, stadium.kinds, height.fullAtMeters (assumptions for the place factors).',
+      evidence: ['E6', 'E8', 'E14'],
+    },
   ],
 
   // Total points at or above these values give the level (assumption, see design section 3).
@@ -40,10 +46,10 @@ export const DEFAULT_CONFIG = {
     visibility: { weight: 0.1, evidence: ['E2'] },
     carryOver: { weight: 0.06, evidence: ['E4', 'E17'] },
     fallBonus: { weight: 0.05, evidence: ['E5'] },
-    litGlass: { weight: 0.3, evidence: ['E1', 'E7', 'E16'] },
+    litGlass: { weight: 0.3, evidence: ['E1', 'E7', 'E16'], reasonAbove: 0.5 }, // wording shown from half lit (assumption)
     tree: { weight: 0.05, evidence: ['E6', 'E15'] },
-    stadium: { weight: 0.12, evidence: ['E6', 'E8'] },
-    height: { weight: 0.02, evidence: ['E14'] },
+    stadium: { weight: 0.12, evidence: ['E6', 'E8'], kinds: ['stadium', 'arena', 'installation'] },
+    height: { weight: 0.02, evidence: ['E14'], fullAtMeters: 100 }, // full weight at this height (assumption)
     lakeshore: { weight: 0.06, evidence: ['E1', 'E2'], maxDistanceMeters: 1500 },
   },
 

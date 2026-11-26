@@ -175,6 +175,32 @@ function checkShares(config) {
   return problems;
 }
 
+function checkVenueKinds(config) {
+  const kinds = config.weights?.stadium?.kinds;
+  const valid =
+    Array.isArray(kinds) && kinds.length > 0 && kinds.every((kind) => typeof kind === 'string');
+  return valid ? [] : ['weights.stadium.kinds must list venue kinds like "stadium"'];
+}
+
+function checkPositiveSettings(config) {
+  const weights = config.weights ?? {};
+  return [
+    ['weights.height.fullAtMeters', weights.height?.fullAtMeters],
+    ['weights.lakeshore.maxDistanceMeters', weights.lakeshore?.maxDistanceMeters],
+  ]
+    .filter(([, value]) => !Number.isFinite(value) || value <= 0)
+    .map(([path]) => `${path} must be a number above 0`);
+}
+
+/** Place settings used by the place factors. */
+function checkPlaceSettings(config) {
+  const problems = [...checkVenueKinds(config), ...checkPositiveSettings(config)];
+  if (!isShare(config.weights?.litGlass?.reasonAbove)) {
+    problems.push('weights.litGlass.reasonAbove must be a number from 0 to 1');
+  }
+  return problems;
+}
+
 /** Carry-over is smaller than a same-night contribution (R18). */
 function checkCarryOverSmaller(config) {
   return mustBeBelow(config, 'carryOver', 'wind');
@@ -216,6 +242,7 @@ export function validateConfig(config, options = {}) {
     ...checkThresholds(config),
     ...checkNightParts(config),
     ...checkShares(config),
+    ...checkPlaceSettings(config),
     ...checkCarryOverSmaller(config),
     ...checkSeasonsAndWind(config),
     ...checkLevels(config),
