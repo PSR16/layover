@@ -23,7 +23,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 6. Place factors.** (branch `feat/spec1-task-06-place-factors`, commits 448acf8, 6289d9a, 1c205fd, 2fb469e)
   In `risk-factors.js`: lit glass, tree, kind (stadium, arena, installation), height, lakeshore. No compass input exists. Dim and covered windows count as unlit.
   Requirements: R12, R13, R20, R21, R38, R39. Tests: lit-glass monotonicity, height weaker than glass, compass direction cannot change the score.
-- [ ] **Task 7. Combine and assess.**
+- [x] **Task 7. Combine and assess.** (branch `feat/spec1-task-07-combine-assess`, commits 480332e, a250775, d91fc54, c0c887c)
   `risk-combine.js` and `risk.js`: `assessNight`, `assessPlace`, `rankPlaces`. Includes the light multiplier, thresholds, weather-only cap and floor, missing-migration cap, trace and `configVersion`. Reasons come from config text.
   Also adds `treatmentDiscount` to the config and validator (none 0, partial below full, full below 1) and applies it with the light multiplier (R40).
   Requirements: R9, R14, R15, R22, R24, R25, R31, R33, R34, R40. Tests: the full property table in `requirements.md`, including determinism, stable ranking, "never empty reasons", "add a dummy factor changes only its own trace entry".
