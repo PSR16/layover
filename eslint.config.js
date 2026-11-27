@@ -59,6 +59,12 @@ export default [
     },
   },
   {
+    // Build tools run in Node and may print to the console.
+    files: ['tools/**/*.js'],
+    languageOptions: { globals: globals.node },
+    rules: { 'no-console': 'off', 'no-magic-numbers': 'off' },
+  },
+  {
     // The risk config is the one place where raw numbers belong (R30).
     files: ['src/lib/risk-config.js'],
     rules: { 'no-magic-numbers': 'off' },
