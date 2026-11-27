@@ -33,7 +33,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 8. Weather normalizer.** (branch `feat/spec1-task-08-weather-normalizer`, commits 9e2d2b4, f2f677e)
   `weather-normalize.js`: Open-Meteo and weather.gov JSON to `Conditions.weather`, including dawn wind direction.
   Requirements: R27, R29. Tests: unit tests against recorded sample responses saved under `tests/fixtures/`.
-- [ ] **Task 9a. Build the radar-night table.**
+- [x] **Task 9a. Build the radar-night table.** (branch `feat/spec1-task-09a-radar-night-table`, commits 5c4b9e8, dcc2999, b5e948f, a92c76d, 4e89eb3)
   Decide where the build script lives (design point 6). Read the raw dataset (outside the repo), pick nights (design section 10), scale radar migration to percentile within season, average weather per night part, and write a small derived file with the attribution header.
   Requirements: R26, R36. Tests: unit tests on the percentile scaling and night-part averaging using a tiny fixture.
 - [ ] **Task 9. Replay-night data.**
