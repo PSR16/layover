@@ -126,6 +126,7 @@ function evaluate({ label, candidates, assess, thresholdsFor, splitYear }) {
 }
 
 const asConfigured = () => DEFAULT_CONFIG.thresholds;
+const asConfiguredForPlace = () => DEFAULT_CONFIG.placeThresholds;
 const fromQuantiles = (points) => ({
   elevated: quantile(points, 1 - TOP_FRACTION - 0.2),
   high: quantile(points, 1 - TOP_FRACTION),
@@ -211,35 +212,42 @@ const LOCAL_WIND = {
   wind: { spring: { unfavorableFrom: [[135, 225]] }, fall: { unfavorableFrom: [[225, 315]] } },
 };
 
-function experiments(baseline) {
-  const placeAssess = (engine, overrides) => (candidate) =>
+function assessors(baseline) {
+  const place = (engine, overrides) => (candidate) =>
     engine.assessPlace(venue(candidate.litShare), conditionsOf(candidate), overrides);
-  const nightAssess = (overrides) => (candidate) =>
+  const night = (overrides) => (candidate) =>
     baseline.assessNight(conditionsOf(candidate), overrides);
+  return { place, night };
+}
+
+function experiments(baseline) {
+  const { place, night } = assessors(baseline);
   const list = [
-    ['A. building, engine as built', placeAssess(baseline), asConfigured],
+    ['A. building, config as it is now (default sectors)', place(baseline), asConfiguredForPlace],
     [
-      'B. building, thresholds from the top 15% of train nights',
-      placeAssess(baseline),
-      fromQuantiles,
+      'A2. building, config as it is now with the Chicago overlay',
+      place(baseline, LOCAL_WIND),
+      asConfiguredForPlace,
     ],
+    ['B. building, thresholds from the top 15% of train nights', place(baseline), fromQuantiles],
     [
       'D. building, Chicago wind sectors, quantile thresholds',
-      placeAssess(baseline, LOCAL_WIND),
+      place(baseline, LOCAL_WIND),
       fromQuantiles,
     ],
-    ['N0. night only, default wind sectors, quantile thresholds', nightAssess(), fromQuantiles],
-    ['N1. night only, engine as built', nightAssess(), asConfigured],
+    ['N0. night only, default wind sectors, quantile thresholds', night(), fromQuantiles],
+    ['N1. night only, config as it is now (default sectors)', night(), asConfigured],
     [
-      'N2. night only, Chicago wind sectors, quantile thresholds',
-      nightAssess(LOCAL_WIND),
-      fromQuantiles,
+      'N1b. night only, config as it is now with the Chicago overlay',
+      night(LOCAL_WIND),
+      asConfigured,
     ],
+    ['N2. night only, Chicago wind sectors, quantile thresholds', night(LOCAL_WIND), fromQuantiles],
   ];
   for (const minimum of [0.4, 0.1]) {
     const scaled = engineWith(scaledByMigration(PLACE_FACTORS, minimum));
     const label = `C. building, lit factors scaled by migration (minimum ${minimum}), quantile thresholds`;
-    list.push([label, placeAssess(scaled), fromQuantiles]);
+    list.push([label, place(scaled), fromQuantiles]);
   }
   return list;
 }

@@ -1,6 +1,6 @@
 # Calibration report 1: the risk engine against Chicago dawn counts
 
-Status: findings and proposals. **Nothing in the engine or config has been changed yet.** Applying them is waiting for approval.
+Status: findings, and the changes applied for Task 11 (P1 to P3 below, approved). Config version 0.2.0, and the Chicago overlay 0.2.0-chicago-lakefront.
 
 Data: 3,141 survey nights from the McCormick Place dataset (Van Doren et al. 2021, CC BY 4.0, see `data-sources.md`) that have radar. Each night is scored as the survey building (untreated, kind "building", trees near, 300 m from the lake, that day's real lit share) with the night's radar migration percentile and Midway weather. Years up to 2012 are the **train** set and later years the **test** set. An **event night** is 10 or more birds found (289 nights, 9%). Birds found are used only to judge the engine and are never shown in the app.
 
@@ -19,15 +19,21 @@ Reproduce with `npx vite-node tools/calibrate-risk.js` (needs the exported table
 4. **Making lit glass depend on migration did not help.** Scaling the light factors by migration gave AUC 0.79, no better than as built. The additive form already captures most of what the two inputs can tell us here.
 5. **A night's count is noisy.** Even the best variants put 41 to 43% of birds on the top 15% of nights, against 67% for a perfect ranking. That fits the authors' own model error (about 3 birds per night). The engine is a planning guide, not a forecast.
 
-## Proposed changes (not applied)
+## Applied changes
 
-| # | Change | Test-year effect |
+| # | Change | Test-year effect (config now, with the Chicago overlay) |
 |---|---|---|
-| P1 | Add separate `placeThresholds` to the config, set so `high` is about the top 15% of nights on the train set, and recalibrate the night thresholds the same way. Night: elevated 0.37, high 0.47. Building: elevated 0.67, high 0.79. | `high` nights average 8 to 9 birds, `elevated` about 4, `low` about 2 (about 5 times more on `high` than `low`). As built: `high` 7.1, `elevated` 2.1, `low` 0.5 but `low` holds only 6% of nights. |
-| P2 | Add a Chicago lakefront overlay with spring south and fall west wind sectors (spring [135, 225], fall [225, 315]). The default config keeps the E2 sectors. | Top 15% share 37% to 42%, `high` birds per night 8.1 to 9.3. AUC about the same (0.798 to 0.799). |
-| P3 | Label the overlay "Chicago lakefront, one site, untreated building" and add a dated config note citing this dataset as local evidence. | None (honesty). |
+| P1 | `thresholds` (night) 0.37 and 0.47, and a new `placeThresholds` 0.67 and 0.79, set so `high` is about the top 15% of train nights. The validator checks both pairs and that place thresholds are not below night thresholds. | Building: `high` 11% of nights at 9.5 birds per night, `elevated` 24% at 4.2, `low` 65% at 1.8. Night: `high` 12% at 8.8, `elevated` 24% at 3.6, `low` 64% at 1.9. So `high` nights have about 5 times the birds of `low`. Before: building `high` 7.1, `elevated` 2.1, `low` 0.5 but `low` held only 6% of nights, and night-level `high` never fired. |
+| P2 | `src/config/chicago-risk.js`: spring south wind [135, 225] and fall west wind [225, 315] count as unfavorable. The default config keeps the E2 sectors. | Share of birds on the top 15% of nights 37% to 42% (building). AUC about the same, 0.798 to 0.799. |
+| P3 | The overlay carries a dated config note and exports the label "Chicago lakefront, one site, untreated building" for the interface. | None. |
 
-Left alone: the migration weight, lit-glass weight, light multiplier and the cap and floor rules. Raising the wind weight to 0.25 or 0.35 added about 0.003 AUC, which is not worth changing.
+Not changed: the migration weight, lit-glass weight, light multiplier, and the cap and floor rules. A higher wind weight added about 0.003 AUC.
+
+## The 18 replay nights, pinned (`tests/replay-calibration.test.js`)
+
+Under the overlay: all 4 quiet nights are `low` at both levels. 6 of the 8 mortality events are `high` at building level, 1 is `elevated` and 1 (2004-03-20, 80 birds on a night with modest migration) is a miss. Every event night except that one scores above every quiet night of its season. The 2023 night with south-southwest wind and thickening cloud scores above the 2026 night with favorable north-northwest wind.
+
+**Known false alarms** (pinned on purpose, so they stay visible): three busy-migration nights with 0 or 1 bird found are still `high`: 2007-09-07, 2016-05-10 (dense fog, 56% lit) and 2018-05-21 (low visibility, 92% lit). Seven spring heavy-migration nights with visibility under 5 km had no events at all, so the spring low-visibility boost (from E2, New York) may not hold at this site. The sample is small, so it is left as is and listed as an open question.
 
 ## Caveats
 
@@ -58,9 +64,13 @@ Event rate on heavy-migration nights (middle part at or above 0.7), by wind dire
   fall   train: wind from north  13% of  90, other  26% of 224  |  test: wind from north   9% of  58, other  28% of 137
   fall   train: wind from east   4% of  49, other  26% of 265  |  test: wind from east   6% of  32, other  26% of 163
 
-A. building, engine as built  [elevated 0.35, high 0.70]
-  train  AUC 0.777  rho 0.467  top15%   39%  | high   28% nights   58% birds   7.7/night | elevated   67% nights   42% birds   2.4/night | low    4% nights    0% birds   0.2/night
-  test   AUC 0.798  rho 0.451  top15%   37%  | high   24% nights   53% birds   7.1/night | elevated   71% nights   46% birds   2.1/night | low    6% nights    1% birds   0.5/night
+A. building, config as it is now (default sectors)  [elevated 0.67, high 0.79]
+  train  AUC 0.777  rho 0.467  top15%   39%  | high   15% nights   39% birds   9.9/night | elevated   28% nights   30% birds   4.0/night | low   57% nights   31% birds   2.1/night
+  test   AUC 0.798  rho 0.451  top15%   37%  | high   11% nights   29% birds   8.1/night | elevated   30% nights   37% birds   3.9/night | low   59% nights   35% birds   1.9/night
+
+A2. building, config as it is now with the Chicago overlay  [elevated 0.67, high 0.79]
+  train  AUC 0.789  rho 0.484  top15%   41%  | high   14% nights   40% birds  10.6/night | elevated   24% nights   27% birds   4.2/night | low   62% nights   33% birds   2.0/night
+  test   AUC 0.799  rho 0.458  top15%   42%  | high   11% nights   32% birds   9.5/night | elevated   24% nights   31% birds   4.2/night | low   65% nights   37% birds   1.8/night
 
 B. building, thresholds from the top 15% of train nights  [elevated 0.67, high 0.79]
   train  AUC 0.777  rho 0.467  top15%   39%  | high   15% nights   39% birds   9.9/night | elevated   28% nights   30% birds   4.0/night | low   57% nights   31% birds   2.1/night
@@ -70,9 +80,17 @@ D. building, Chicago wind sectors, quantile thresholds  [elevated 0.67, high 0.7
   train  AUC 0.789  rho 0.484  top15%   41%  | high   15% nights   41% birds  10.5/night | elevated   24% nights   26% birds   4.2/night | low   61% nights   33% birds   2.0/night
   test   AUC 0.799  rho 0.458  top15%   42%  | high   11% nights   33% birds   9.3/night | elevated   24% nights   31% birds   4.1/night | low   65% nights   36% birds   1.8/night
 
-N1. night only, engine as built  [elevated 0.35, high 0.70]
-  train  AUC 0.727  rho 0.355  top15%   31%  | high    0% nights    0% birds   0.0/night | elevated   49% nights   70% birds   5.4/night | low   51% nights   30% birds   2.2/night
-  test   AUC 0.765  rho 0.382  top15%   34%  | high    0% nights    0% birds   0.0/night | elevated   48% nights   72% birds   4.8/night | low   52% nights   28% birds   1.7/night
+N0. night only, default wind sectors, quantile thresholds  [elevated 0.37, high 0.46]
+  train  AUC 0.727  rho 0.355  top15%   31%  | high   15% nights   32% birds   7.9/night | elevated   30% nights   34% birds   4.4/night | low   55% nights   34% birds   2.3/night
+  test   AUC 0.765  rho 0.382  top15%   34%  | high   13% nights   30% birds   7.3/night | elevated   30% nights   36% birds   3.8/night | low   57% nights   35% birds   1.9/night
+
+N1. night only, config as it is now (default sectors)  [elevated 0.37, high 0.47]
+  train  AUC 0.727  rho 0.355  top15%   31%  | high   13% nights   30% birds   8.3/night | elevated   32% nights   37% birds   4.4/night | low   55% nights   33% birds   2.3/night
+  test   AUC 0.765  rho 0.382  top15%   34%  | high   12% nights   27% birds   7.3/night | elevated   32% nights   39% birds   3.9/night | low   56% nights   33% birds   1.9/night
+
+N1b. night only, config as it is now with the Chicago overlay  [elevated 0.37, high 0.47]
+  train  AUC 0.741  rho 0.376  top15%   34%  | high   14% nights   33% birds   8.7/night | elevated   25% nights   30% birds   4.7/night | low   61% nights   36% birds   2.3/night
+  test   AUC 0.768  rho 0.387  top15%   39%  | high   12% nights   34% birds   8.8/night | elevated   24% nights   27% birds   3.6/night | low   64% nights   39% birds   1.9/night
 
 N2. night only, Chicago wind sectors, quantile thresholds  [elevated 0.37, high 0.47]
   train  AUC 0.741  rho 0.376  top15%   34%  | high   15% nights   34% birds   8.5/night | elevated   25% nights   30% birds   4.6/night | low   60% nights   36% birds   2.3/night
