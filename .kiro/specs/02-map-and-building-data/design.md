@@ -56,8 +56,8 @@ interface Hotspot {
   id: string;                 // 'mccormick-lakeside' ...
   name: string;
   match: { buildingId?: string; osmId?: string; near: Coordinate; maxDistanceMeters: number };
-  kind: string;               // 'convention-center', 'stadium', 'university' ...
-  litGlassShare: number;      // hand-set, 0 to 1
+  kind?: string;              // only kinds the engine knows ('stadium', 'arena', 'installation')
+  litGlassShare?: number;     // hand-set, 0 to 1, left out when unknown
   treeNear?: boolean;
   birdSafeTreatment?: 'none' | 'partial' | 'full';
   note: { text: string; date: string; evidence: string[] };   // where each value came from (R6)
@@ -117,7 +117,7 @@ A building is scored only when it has a height, a class that maps to a kind, or 
 | R1, R2 | `tools/build-building-extract.ts`, extract header, budget check |
 | R3, R4 | `buildings.ts`, `place-builder.ts` |
 | R5 | `lib/credits.ts` gains an Overture and OpenStreetMap entry when building data is shown |
-| R6 to R10 | `data/hotspots.ts`, `hotspots.ts`, config kind `convention-center` |
+| R6 to R10 | `data/hotspots.ts`, `hotspots.ts` (no new engine kind) |
 | R11 to R14 | `api/overpass.ts`, `overpass-parse.ts` |
 | R15, R16 | `tools/build-shoreline.ts`, `shoreline.ts`, `config/city.ts` |
 | R17 to R20 | `place-builder.ts`, `place-ranking.ts` |

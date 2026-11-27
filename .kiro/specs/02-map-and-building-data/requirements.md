@@ -31,7 +31,7 @@ Out (later specs): routes and slots (spec 3), coordinator tools (spec 4), shared
 - **R6.** The app SHALL hold a curated list of Chicago light-hazard sites, each with a name, a reason, hand-set attributes (kind, lit glass share, treatment status) and a dated note saying where the value came from. Starting list: McCormick Place Lakeside Center (E1, E22, E23), Soldier Field, Kellogg Global Hub in Evanston.
 - **R7.** Every hotspot attribute that is not read from the map SHALL be shown as sample data. The place score for a hotspot SHALL carry the "Sample data" label.
 - **R8.** WHEN a hotspot matches a building in the extract (by ID, or by name and distance), the record SHALL use the building's footprint and the hotspot's attributes. WHEN it matches none, the app SHALL still list the hotspot at its coordinates.
-- **R9.** The engine's venue kinds SHALL include a `convention-center` kind for McCormick Place, since the map data has no class for it. (`docs/overture-check.md`, point 3) This is a config change under spec 1 R35.
+- **R9.** McCormick Place SHALL be scored through its lit glass share and treatment status, the way the spec 1 calibration scored it, and SHALL NOT get a venue kind. Adding a `convention-center` kind would count the lights twice and push 7 of the 18 replay nights from elevated to high, beyond the calibrated thresholds. (Revised 2026-11-27; the first draft added the kind.)
 - **R10.** The hotspot list SHALL be plain data in `src/data/`, editable without touching code. A coordinator or the user can change a value and see the score change.
 
 ## C. Sources and live OpenStreetMap queries
@@ -56,7 +56,7 @@ Decision (2026-11-27): the first version runs on the static extract for three st
 
 - **R17.** WHEN the user chooses a night (spec 1), the app SHALL score each hotspot and each building with a known height through `assessPlace` for that night's conditions, using the Chicago overlay. Buildings with nothing known except a footprint SHALL NOT be scored.
 - **R30.** The app SHALL NOT let anyone set whether a building is lit on a given night. Nobody knows that reliably, so tonight's lit status is not an input in this spec or the next one. Hotspots carry one fixed, hand-set lighting assumption (R6), shown as sample.
-- **R18.** WHEN lighting is unknown (the usual case outside hotspots), the app SHALL say "Lighting not known" and SHALL NOT assume lit or unlit. The reason text SHALL say the level uses what is known. (Spec 1 R22)
+- **R18.** WHEN lighting is unknown (the usual case outside hotspots), the app SHALL say "Lighting not known". The engine counts a place with no lit flag as lit, the cautious choice (spec 1 research rule 10), so the reason text SHALL say the level assumes the lights are on and uses what is known. Glass share is never guessed: when it is missing the score lists it in `missingInputs`. (Revised 2026-11-27 to match the engine.)
 - **R19.** The map and list SHALL show only `low`, `elevated` or `high`, each with plain reasons. They SHALL NOT show a number, a bird count or a casualty figure. (Product rule)
 - **R20.** Scoring SHALL be a pure function of the night's conditions and the building records, with no DOM, and SHALL give the same ranking for the same inputs.
 

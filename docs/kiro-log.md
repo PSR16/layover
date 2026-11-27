@@ -144,6 +144,17 @@ How to use this file:
 - Update: Left out on purpose: small harbour and pier pieces that do not join the main line. The OpenStreetMap credit is not yet shown for the shoreline, since the night panel does not use it; it comes with the place list (Task 7).
 - Commits: 2483165, 1614539.
 
+
+### 2026-11-27 · Spec 2 · Task 4 / hotspots, and a change to R9
+- Surface: IDE
+- What Kiro did: Added `Hotspot` to `types.ts`, the list in `src/data/hotspots.ts` (McCormick Place Lakeside Center, Soldier Field, Kellogg Global Hub) and `src/lib/hotspots.ts` (`matchHotspot`: by building ID, then OpenStreetMap ID, then name and distance). The three real buildings were matched by name in the extract and are recorded by Overture ID.
+- Files: src/data/hotspots.ts, src/lib/hotspots.ts, src/lib/types.ts, tests/hotspots.test.ts, spec 2 requirements, design and tasks
+- Requirements / evidence: spec 2 R6 to R10, R18; E1, E6, E7, E8, E22, E23
+- Tests: 13 added; 552 passing. Mutation checks: matching by name before ID, and a 1,000 times larger distance limit, both made tests fail.
+- Update: Spec change, R9. The draft said to add a `convention-center` venue kind for McCormick Place. Kiro scored all 18 replay nights both ways before building it: with the kind, 7 nights move from elevated to high, past the thresholds the calibration set. The calibration already scores the McCormick survey building through its measured lit glass, so a kind would count the lights twice. R9 now says no kind.
+- Update: Spec change, R18. The draft said never to assume lit or unlit. The engine counts a place with no lit flag as lit (research rule 10, cautious), so R18 now says the app states that assumption in the reason text.
+- Update: Hand-set values and where they come from: McCormick lit glass 0.71 (dataset median, evidence E1), trees near (assumption from calibration), treatment `partial` (cautious reading of E22). Soldier Field has a kind from the map and no glass value. Kellogg's lit glass 0.6 is an explicit assumption to replace when a monitoring group can say better.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)

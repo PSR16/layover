@@ -1,6 +1,6 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Tasks 1 to 3 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Tasks 1 to 4 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
@@ -10,7 +10,7 @@ Status: IN PROGRESS (Tasks 1 to 3 done). Format: `Task N. Title` then requiremen
   Requirements: R1, R2, R3, R5. Tests: helpers (simplify keeps the ring closed, rounding, determinism: same input, same bytes). Decision point: if the budget fails, stop and tell the user before dropping more.
 - [x] **Task 3. Shoreline.** (branch `feat/spec2-task-03-shoreline`, commits 2483165, 1614539) `tools/build-shoreline.ts` (OSM coastline for Lake Michigan near Chicago and Evanston, at most 200 points), `shoreline-core.ts` (join, simplify; distance already existed in `geo.ts`), replace the sample shoreline in `config/city.ts`, update the credit.
   Requirements: R15, R16, spec 1 R38. Tests: distance is 0 on the line and never negative; a missing shoreline gives no distance. Re-run the Chicago calibration pins and report any change.
-- [ ] **Task 4. Hotspots.** `data/hotspots.ts` (McCormick Place, Soldier Field, Kellogg Global Hub, each with a dated note and evidence), `hotspots.ts` matching, `convention-center` added to `stadium.kinds` in the config with a dated note. Match each hotspot to its real building IDs by hand and record them.
+- [x] **Task 4. Hotspots.** (branch `feat/spec2-task-04-hotspots`) `data/hotspots.ts` (McCormick Place, Soldier Field, Kellogg Global Hub, each with a dated note and evidence), `hotspots.ts` matching, no new venue kind (see R9, revised): McCormick scores through its lit glass share. Match each hotspot to its real building IDs by hand and record them.
   Requirements: R6 to R10, spec 1 R35. Tests: matching by ID, by name and distance, no match keeps the coordinates; config validator still passes; pinned replay results unchanged or noted.
 - [ ] **Task 5. Place builder and ranking.** `place-builder.ts`, `place-ranking.ts`. Not scored without height, kind or hotspot. Stable order.
   Requirements: R17 to R20, R30. Tests: unit; properties: order independent, no lit reason without lit data, dropping a field never raises the level past what the engine allows.
