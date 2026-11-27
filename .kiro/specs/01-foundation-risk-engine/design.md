@@ -285,3 +285,9 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 - **Theme.** `src/styles/tokens.css` (navy surfaces, amber accent, risk and sample colors, 44 px control size, 18 px base text) and `src/styles/base.css` (page defaults, the 44 by 44 px rule for buttons, links styled as controls, inputs, selects and summaries, a visible focus ring). `main.js` loads both.
 - **Contrast is tested.** `tests/styles-tokens.test.js` reads the token file and checks every text color against all three surfaces at 4.5:1 or better, dark text on the amber button, control edges and the focus ring at 3:1, the 44 px size, and that the base styles use no hard-coded colors. Lowest text contrast: muted text on the raised surface, 7.8:1.
 - **Not yet seen in a browser.** The checks are numeric. A real 390 px screenshot is part of Task 15.
+
+### Built in Task 13: router and shell
+
+- `src/lib/route.js` (`resolveRoute`, pure), `src/router.js` (`startRouter`, takes the window as a parameter so tests use a fake one), `src/views/app-shell.js` (header, two view links with `aria-current` on the active one, a main area), placeholder `volunteer-view.js` and `org-view.js`, and `main.js` wiring them. An empty or unknown hash is rewritten to `#volunteer` with `replaceState`, so it adds no history entry and the back button is not trapped.
+- Views are built with DOM calls and `textContent`, never `innerHTML` (R5).
+- **DOM tests** run in `happy-dom` (exact-pinned dev dependency) in files named `*.dom.test.js`, which get browser globals in the lint config. `main.dom.test.js` starts the real `main.js` and checks all four hash cases.
