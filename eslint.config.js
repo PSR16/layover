@@ -70,6 +70,11 @@ export default [
     rules: { 'no-magic-numbers': 'off' },
   },
   {
+    // Tests that run in a fake browser (happy-dom) may use document and window.
+    files: ['tests/**/*.dom.test.js'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
+  {
     files: ['tests/**/*.js', '**/*.config.js'],
     languageOptions: { globals: globals.node },
     rules: {
