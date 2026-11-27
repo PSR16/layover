@@ -55,24 +55,23 @@ describe('Chicago city config', () => {
     expect(Object.keys(CITIES)).toEqual(['chicago']);
   });
 
-  it('carries the Chicago risk overlay and its label, and a sample-labelled shoreline', () => {
+  it('carries the Chicago risk overlay and its label, and a map-sourced shoreline (spec 2 R15)', () => {
     expect(CHICAGO.riskOverrides).toBe(CHICAGO_RISK_OVERRIDES);
     expect(CHICAGO.riskLabel).toBe(CHICAGO_RISK_LABEL);
-    expect(CHICAGO.shoreline.source).toBe('sample');
-    expect(CHICAGO.shoreline.note).toMatch(/sample/i);
+    expect(CHICAGO.shoreline.source).toBe('map');
+    expect(CHICAGO.shoreline.note).toContain('OpenStreetMap contributors');
   });
 
-  it('lists the shoreline from south to north inside the Chicago area', () => {
+  it('has at most 200 points, starts in the south, and stays inside the Chicago area (R15)', () => {
     const { points } = CHICAGO.shoreline;
     expect(points.length).toBeGreaterThanOrEqual(8);
-    for (const [index, entry] of points.entries()) {
+    expect(points.length).toBeLessThanOrEqual(200);
+    expect(points[0].latitude).toBeLessThan(points.at(-1).latitude);
+    for (const entry of points) {
       expect(entry.latitude).toBeGreaterThan(41.6);
       expect(entry.latitude).toBeLessThan(42.15);
       expect(entry.longitude).toBeGreaterThan(-87.8);
       expect(entry.longitude).toBeLessThan(-87.4);
-      if (index > 0) {
-        expect(entry.latitude).toBeGreaterThan(points[index - 1].latitude);
-      }
     }
   });
 
@@ -89,7 +88,7 @@ describe('Chicago city config', () => {
 });
 
 describe('lakeDistanceMeters (R38)', () => {
-  it('puts the lakefront venues close to the shore and the Loop farther inland (sample shoreline)', () => {
+  it('puts the lakefront venues close to the shore and the Loop farther inland', () => {
     const mccormick = lakeDistanceMeters(CHICAGO, MCCORMICK_PLACE);
     const soldier = lakeDistanceMeters(CHICAGO, SOLDIER_FIELD);
     const willis = lakeDistanceMeters(CHICAGO, WILLIS_TOWER);
@@ -97,6 +96,14 @@ describe('lakeDistanceMeters (R38)', () => {
     expect(soldier).toBeLessThan(1000);
     expect(willis).toBeGreaterThan(1500);
     expect(lakeDistanceMeters(CHICAGO, KELLOGG_HUB)).toBeLessThan(800);
+  });
+
+  it('is never negative, is 0 on the line and is large in the middle of the lake (R16)', () => {
+    const onLine = CHICAGO.shoreline.points[50];
+    expect(lakeDistanceMeters(CHICAGO, onLine)).toBeCloseTo(0, 3);
+    expect(lakeDistanceMeters(CHICAGO, { latitude: 41.88, longitude: -87.45 })).toBeGreaterThan(
+      8000,
+    );
   });
 
   it('gives null for a city with no shoreline, so the lakeshore factor adds nothing', () => {
