@@ -179,7 +179,10 @@ function conditionRows({
 const TOTAL_COVER_REASON = 'Heavy cloud cover may pull birds toward lit buildings.';
 
 /** Config overrides for this night: the city's own, plus honest wording when cloud is total cover. */
-function overridesFor(city: City | undefined, weatherResult: WeatherResult): RiskConfigOverrides {
+export function overridesFor(
+  city: City | undefined,
+  weatherResult: WeatherResult,
+): RiskConfigOverrides {
   const overrides: RiskConfigOverrides = { ...city?.riskOverrides };
   if ((weatherResult.notes ?? []).includes('lowCloudFromSkyCover')) {
     overrides.reasons = { lowCloud: TOTAL_COVER_REASON };
@@ -187,7 +190,7 @@ function overridesFor(city: City | undefined, weatherResult: WeatherResult): Ris
   return overrides;
 }
 
-function sampleMigration(sampleLevel: string): Migration {
+export function sampleMigration(sampleLevel: string): Migration {
   const sample = SAMPLE_LEVELS[sampleLevel] ?? SAMPLE_LEVELS[DEFAULT_SAMPLE_LEVEL];
   return { level: sample.level, source: 'sample' };
 }
