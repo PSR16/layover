@@ -110,6 +110,16 @@ How to use this file:
 - Update: My correction: "they wouldn't know and right now it's a bit too far fetched to have this feature". Kiro had asked whether coordinators should set Lit, Not lit or Not known per night. Removed that question and added R30: no per-night lit status input; hotspots keep one fixed sample lighting assumption.
 - Update: My decision: "3 study areas, static extract but eventually a way to connect to it bc the hackathon is trying to combine stuff...and OSM". Kiro added a `BuildingSource` interface (R31 to R33) with merge rules, kept live OpenStreetMap as a later task, and wrote design.md (9 sections) and tasks.md (12 tasks in 5 phases).
 
+
+### 2026-11-27 · Spec 2 · Task 1 / building types and validation
+- Surface: IDE
+- What Kiro did: Added `BuildingRecord` to `src/lib/types.ts` and `src/lib/buildings.ts` (`validateBuilding`, `isValidBuilding`, `keepValidBuildings`). Bad records are dropped and counted, missing height, name and kind stay missing.
+- Files: src/lib/buildings.ts, src/lib/types.ts, tests/buildings.test.ts, tests/buildings.property.test.ts
+- Requirements / evidence: spec 2 R3, R4, R14
+- Tests: 10 added (8 unit, 2 property: non-finite point never passes, never throws); 500 passing in total.
+- Update: Mutation check: closing the footprint check made a test fail. Removing `Number.isFinite` on longitude did not, because `Math.abs(NaN) <= 180` is already false, so that check is redundant and the mutant is equivalent.
+- Update: The first version of the "outside the globe" test used the wrong axis and passed for the wrong reason; the test failed against the code, so Kiro fixed the test.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)

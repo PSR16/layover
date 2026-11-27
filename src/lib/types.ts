@@ -262,3 +262,20 @@ export interface CreditEntry {
   text: string;
   href?: string;
 }
+/** A point on a footprint ring: [longitude, latitude] in degrees (the GeoJSON order). */
+export type RingPoint = [number, number];
+/** One building from a map source (spec 2 R3, R4). Missing values stay missing. */
+export interface BuildingRecord {
+  /** Stable ID from the source data (the Overture ID). */
+  id: string;
+  osmId?: string;
+  name?: string;
+  /** A closed ring: the first and last points are the same. */
+  footprint: RingPoint[];
+  centroid: Coordinate;
+  heightMeters?: number;
+  kind?: string;
+  source: 'map' | 'sample';
+  /** Every source that contributed to this record (spec 2 R32). */
+  sources: string[];
+}

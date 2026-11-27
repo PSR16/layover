@@ -1,10 +1,10 @@
 # Spec 2: Map and building data (tasks)
 
-Status: DRAFT, nothing started. Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Task 1 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
-- [ ] **Task 1. Building types and validation.** `buildings.ts`: `BuildingRecord`, `validateBuilding` (finite coordinates, closed ring, ID present), height and kind stay missing when missing. Types go in `types.ts`.
+- [x] **Task 1. Building types and validation.** (branch `feat/spec2-task-01-building-types`) `buildings.ts`: `BuildingRecord`, `validateBuilding` (finite coordinates, closed ring, ID present), height and kind stay missing when missing. Types go in `types.ts`.
   Requirements: R3, R4, R14. Tests: unit; property: an invalid record never passes validation.
 - [ ] **Task 2. Extract build script and budget check.** `tools/build-building-extract.ts` and its pure helpers (filter, Douglas-Peucker, rounding, sort). Run on the three Overture GeoJSON files, print per-area size and what each rule dropped, write the three JSON files with a header. Fail above 500 kB gzipped.
   Requirements: R1, R2, R3, R5. Tests: helpers (simplify keeps the ring closed, rounding, determinism: same input, same bytes). Decision point: if the budget fails, stop and tell the user before dropping more.
