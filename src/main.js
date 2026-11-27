@@ -1,5 +1,6 @@
 import './styles/tokens.css';
 import './styles/base.css';
+import './styles/components.css';
 import { startRouter } from './router.js';
 import { createShell } from './views/app-shell.js';
 import { renderOrgView } from './views/org-view.js';

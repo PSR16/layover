@@ -1,0 +1,60 @@
+/* Badges and credits. Uses only tokens from tokens.css. Every badge carries words, not color alone. */
+.badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border: 2px solid currentcolor;
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  line-height: var(--line-height);
+}
+
+.badge[data-tone='live'] {
+  color: var(--color-risk-low);
+}
+
+.badge[data-tone='replay'],
+.badge[data-tone='sample'] {
+  color: var(--color-sample);
+}
+
+.badge[data-tone='notice'] {
+  color: var(--color-text-muted);
+}
+
+.risk-badge {
+  font-family: var(--font-board);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.risk-low {
+  color: var(--color-risk-low);
+}
+
+.risk-elevated {
+  color: var(--color-risk-elevated);
+}
+
+.risk-high {
+  color: var(--color-risk-high);
+}
+
+.credits {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-control-edge);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+.credits-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-small);
+}
+
+.credits ul {
+  margin: 0;
+  padding-left: var(--space-5);
+}

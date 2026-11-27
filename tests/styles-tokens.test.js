@@ -3,6 +3,10 @@ import { describe, it, expect } from 'vitest';
 
 const tokensCss = readFileSync(new URL('../src/styles/tokens.css', import.meta.url), 'utf8');
 const baseCss = readFileSync(new URL('../src/styles/base.css', import.meta.url), 'utf8');
+const componentsCss = readFileSync(
+  new URL('../src/styles/components.css', import.meta.url),
+  'utf8',
+);
 
 function readTokens(css) {
   const tokens = {};
@@ -112,5 +116,31 @@ describe('base styles', () => {
 
   it('show a visible keyboard focus ring', () => {
     expect(baseCss).toMatch(/:focus-visible\s*\{[^}]*outline:\s*3px solid var\(--color-focus\)/);
+  });
+});
+
+describe('component styles', () => {
+  it('use only colors from the tokens, never a hard-coded color', () => {
+    expect(componentsCss).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(componentsCss).not.toMatch(/\brgb\(/i);
+  });
+
+  it('only use token colors that were checked for contrast against every surface', () => {
+    const used = new Set(
+      [...componentsCss.matchAll(/var\((--color-[a-z-]+)\)/g)].map((match) => match[1]),
+    );
+    const checked = new Set([...TEXT_COLORS, '--color-control-edge', '--color-focus']);
+    for (const name of used) {
+      expect(checked.has(name), name).toBe(true);
+    }
+  });
+
+  it('style a badge for every tone the code can produce', () => {
+    for (const tone of ['live', 'replay', 'sample', 'notice']) {
+      expect(componentsCss).toContain(`data-tone='${tone}'`);
+    }
+    for (const level of ['low', 'elevated', 'high']) {
+      expect(componentsCss).toContain(`.risk-${level}`);
+    }
   });
 });
