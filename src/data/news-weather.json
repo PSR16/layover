@@ -1,0 +1,59 @@
+{
+  "source": "Open-Meteo historical-forecast API (forecast-model data, not station observations)",
+  "location": {
+    "name": "Chicago, Illinois",
+    "latitude": 41.88,
+    "longitude": -87.63
+  },
+  "savedOn": "2026-11-26",
+  "nights": {
+    "2026-10-16": {
+      "weather": {
+        "early": {
+          "windFromDegrees": 343.48,
+          "windSpeedMps": 6.15,
+          "lowCloudPercent": 29,
+          "visibilityKm": 28.68
+        },
+        "middle": {
+          "windFromDegrees": 335.74,
+          "windSpeedMps": 4.41,
+          "lowCloudPercent": 29.75,
+          "visibilityKm": 26.23
+        },
+        "late": {
+          "windFromDegrees": 316.8,
+          "windSpeedMps": 4.03,
+          "lowCloudPercent": 47.2,
+          "visibilityKm": 23.32
+        }
+      },
+      "notes": [],
+      "requestUrl": "https://historical-forecast-api.open-meteo.com/v1/forecast?latitude=41.88&longitude=-87.63&start_date=2026-10-16&end_date=2026-10-17&hourly=wind_speed_10m%2Cwind_direction_10m%2Ccloud_cover_low%2Cvisibility&wind_speed_unit=ms&timezone=GMT"
+    },
+    "2023-10-04": {
+      "weather": {
+        "early": {
+          "windFromDegrees": 194.25,
+          "windSpeedMps": 3.53,
+          "lowCloudPercent": 59.25,
+          "visibilityKm": 43.5
+        },
+        "middle": {
+          "windFromDegrees": 217.25,
+          "windSpeedMps": 4.09,
+          "lowCloudPercent": 74.25,
+          "visibilityKm": 19.95
+        },
+        "late": {
+          "windFromDegrees": 203.06,
+          "windSpeedMps": 2.25,
+          "lowCloudPercent": 99.75,
+          "visibilityKm": 11.85
+        }
+      },
+      "notes": [],
+      "requestUrl": "https://historical-forecast-api.open-meteo.com/v1/forecast?latitude=41.88&longitude=-87.63&start_date=2023-10-04&end_date=2023-10-05&hourly=wind_speed_10m%2Cwind_direction_10m%2Ccloud_cover_low%2Cvisibility&wind_speed_unit=ms&timezone=GMT"
+    }
+  }
+}
