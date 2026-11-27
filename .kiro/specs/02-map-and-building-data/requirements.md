@@ -8,7 +8,7 @@ Spec 1 can score a night and a place, but it has no places. The coordinator ques
 
 ## Scope
 
-In: a Leaflet map of the Chicago study areas, a static building extract, live OpenStreetMap queries with a saved fallback, a real lake shoreline, a short curated list of known light-hazard sites, place scoring through the spec 1 engine, and a text list of the same places.
+In: a Leaflet map of the three Chicago study areas, a static building extract, a building-source seam so other sources can connect (live OpenStreetMap first), the live OpenStreetMap source with a saved fallback, a real lake shoreline, a short curated list of known light-hazard sites, place scoring through the spec 1 engine, and a text list of the same places.
 Out (later specs): routes and slots (spec 3), coordinator tools (spec 4), shared data (spec 5), building history from finds (spec 6), the user's own location.
 
 ## Glossary
@@ -34,7 +34,13 @@ Out (later specs): routes and slots (spec 3), coordinator tools (spec 4), shared
 - **R9.** The engine's venue kinds SHALL include a `convention-center` kind for McCormick Place, since the map data has no class for it. (`docs/overture-check.md`, point 3) This is a config change under spec 1 R35.
 - **R10.** The hotspot list SHALL be plain data in `src/data/`, editable without touching code. A coordinator or the user can change a value and see the score change.
 
-## C. Live map queries
+## C. Sources and live OpenStreetMap queries
+
+Decision (2026-11-27): the first version runs on the static extract for three study areas. The data layer is built so other sources can connect later, because the hackathon rewards combining data. Live OpenStreetMap is the first extra source and is built after the static path works.
+
+- **R31.** All building data SHALL reach the app through one `BuildingSource` interface: `load(area) -> Promise<{ buildings, source, savedOn }>`. The static extract, the live OpenStreetMap query and any later source SHALL implement it. Views, scoring and the map SHALL NOT know which source a record came from, except through its `source` label.
+- **R32.** WHEN more than one source gives the same building (same OpenStreetMap ID, or footprints that overlap by more than half), the app SHALL merge them into one record. Values from the static extract win, a source SHALL only fill fields that are missing, and the record SHALL list every source that contributed. **[assumption]**
+- **R33.** Adding a source SHALL need no change to scoring, the list or the map, only a new module and an entry in the source list.
 
 - **R11.** WHEN the user opens the map, the app MAY ask Overpass for venues and the shoreline in the visible area. Requests SHALL time out after 8 seconds **[assumption]**, SHALL NOT be repeated for the same area within a session, and SHALL be cached in `localStorage` with the date saved.
 - **R12.** WHEN Overpass times out, rate-limits, fails or returns nothing, the map SHALL keep working from the static extract and SHALL say so in one line ("Using saved map data from 2026-11-26. Try again.") with a Retry button. (Product rule: visible fallback)
@@ -81,10 +87,14 @@ Out (later specs): routes and slots (spec 3), coordinator tools (spec 4), shared
 | Any text from map data appears as text, never as markup | R27 |
 | The extract build is deterministic: same input file, same output | R1 |
 
+## Decided
+
+- Three study areas (Loop, lakefront, Evanston), not all of Chicago.
+- Static extract first. Other sources connect through `BuildingSource` (R31). Live OpenStreetMap is built after the static path works.
+- No per-night lit status input (R30).
+
 ## Open questions
 
-1. **Area.** Three study areas (about 4,000 buildings) or all of Chicago? Whole-city data is far larger than the 500 kB budget. Three areas fit the demo and the three sites in the news.
-2. **Overpass in the browser.** Is a live query worth the failure modes for a demo, or should the first version use only the static extract and add Overpass later? The product notes call for Overpass with a fallback.
-3. **Hotspot list.** Who curates it and how often? Only the three sites above are backed by the news and the dataset. Adding more needs a source for each.
-4. **Tiles.** OpenStreetMap's public tile server is for light use. Is a demo fine, or do we pick a hosted tile provider with a free tier?
-5. **Names.** Many buildings have no name (about 10% to 44% do). Is "Unnamed building near <street>" enough, or do we need a reverse lookup?
+Defaults I will use unless you say otherwise: OpenStreetMap tiles for the demo, and "Unnamed building" with no reverse lookup.
+
+1. **Hotspot list.** Who curates it and how often? Only the three sites above are backed by the news and the dataset. Adding more needs a source for each.

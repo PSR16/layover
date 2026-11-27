@@ -108,6 +108,7 @@ How to use this file:
 - Tests: none yet (requirements only)
 - Update: Marked as assumptions: the 500 kB extract budget, the 8 s Overpass timeout, the 200-point shoreline and the OSM tile policy.
 - Update: My correction: "they wouldn't know and right now it's a bit too far fetched to have this feature". Kiro had asked whether coordinators should set Lit, Not lit or Not known per night. Removed that question and added R30: no per-night lit status input; hotspots keep one fixed sample lighting assumption.
+- Update: My decision: "3 study areas, static extract but eventually a way to connect to it bc the hackathon is trying to combine stuff...and OSM". Kiro added a `BuildingSource` interface (R31 to R33) with merge rules, kept live OpenStreetMap as a later task, and wrote design.md (9 sections) and tasks.md (12 tasks in 5 phases).
 
 ---
 
