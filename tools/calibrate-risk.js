@@ -228,6 +228,7 @@ function experiments(baseline) {
       placeAssess(baseline, LOCAL_WIND),
       fromQuantiles,
     ],
+    ['N0. night only, default wind sectors, quantile thresholds', nightAssess(), fromQuantiles],
     ['N1. night only, engine as built', nightAssess(), asConfigured],
     [
       'N2. night only, Chicago wind sectors, quantile thresholds',
