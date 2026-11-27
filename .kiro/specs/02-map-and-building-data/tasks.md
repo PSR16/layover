@@ -1,6 +1,6 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Tasks 1 to 4 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Tasks 1 to 5 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
@@ -12,7 +12,7 @@ Status: IN PROGRESS (Tasks 1 to 4 done). Format: `Task N. Title` then requiremen
   Requirements: R15, R16, spec 1 R38. Tests: distance is 0 on the line and never negative; a missing shoreline gives no distance. Re-run the Chicago calibration pins and report any change.
 - [x] **Task 4. Hotspots.** (branch `feat/spec2-task-04-hotspots`) `data/hotspots.ts` (McCormick Place, Soldier Field, Kellogg Global Hub, each with a dated note and evidence), `hotspots.ts` matching, no new venue kind (see R9, revised): McCormick scores through its lit glass share. Match each hotspot to its real building IDs by hand and record them.
   Requirements: R6 to R10, spec 1 R35. Tests: matching by ID, by name and distance, no match keeps the coordinates; config validator still passes; pinned replay results unchanged or noted.
-- [ ] **Task 5. Place builder and ranking.** `place-builder.ts`, `place-ranking.ts`. Not scored without height, kind or hotspot. Stable order.
+- [x] **Task 5. Place builder and ranking.** (branch `feat/spec2-task-05-place-ranking`) `place-builder.ts`, `place-ranking.ts`. Not scored without height, kind or hotspot. Stable order.
   Requirements: R17 to R20, R30. Tests: unit; properties: order independent, no lit reason without lit data, dropping a field never raises the level past what the engine allows.
 
 ## Phase 2: Sources

@@ -98,7 +98,7 @@ Phase order: the static source and the whole scoring, list and map path ship fir
 - If a hotspot matches (`hotspots.ts`): `kind`, `litGlassShare`, `treeNear` and `birdSafeTreatment` come from the hotspot, and the place gets `source: 'sample'` so the UI shows the label (R7, R8).
 - No lit data otherwise: the `lit` field stays undefined and the engine lists it in `missingInputs` (R18).
 
-`place-ranking.ts` calls `assessPlace` per place with the night's conditions and the Chicago overlay, then sorts by level, then by the engine's internal ordering, then by name, then by ID, so the order is stable (R20). The UI receives level, reasons and missing names only (spec 1 R9, R34).
+`place-ranking.ts` calls `assessPlace` per place with the night's conditions and the Chicago overlay, then uses the engine's own order: level, then its internal points, then ID, so the order is stable (R20). Names are not used for ordering. The UI receives level, reasons and missing names only (spec 1 R9, R34).
 
 A building is scored only when it has a height, a class that maps to a kind, or a hotspot match (R17). Everything else is drawn as a quiet outline with no level.
 

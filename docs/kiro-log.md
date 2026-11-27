@@ -155,6 +155,17 @@ How to use this file:
 - Update: Spec change, R18. The draft said never to assume lit or unlit. The engine counts a place with no lit flag as lit (research rule 10, cautious), so R18 now says the app states that assumption in the reason text.
 - Update: Hand-set values and where they come from: McCormick lit glass 0.71 (dataset median, evidence E1), trees near (assumption from calibration), treatment `partial` (cautious reading of E22). Soldier Field has a kind from the map and no glass value. Kellogg's lit glass 0.6 is an explicit assumption to replace when a monitoring group can say better.
 
+
+### 2026-11-27 · Spec 2 · Task 5 / place builder and ranking
+- Surface: IDE
+- What Kiro did: `src/lib/place-builder.ts` turns buildings and hotspots into scorable places (a building is scored only with a height or a map venue kind; a matched hotspot appears once; hotspot values sit on top of the map; lake distance from the real shoreline; `lit` never set). `src/lib/place-ranking.ts` ranks them with the engine and returns only level, reasons, missing names and an `assumesLit` flag.
+- Files: src/lib/place-builder.ts, src/lib/place-ranking.ts, tests/place-builder.test.ts, tests/place-ranking.test.ts, tests/place-ranking.property.test.ts, tests/helpers/buildings.ts
+- Requirements / evidence: spec 2 R16 to R20, R30
+- Tests: 23 added (5 property: input order does not matter, exactly the scorable buildings are ranked, levels never rise down the list, removing a height never raises a level, no lit-glass reason without glass data); 575 passing.
+- Update: With the real extract the list holds a few thousand scored places. Soldier Field ranks in the top five on the 2023 night; no place scores high on the quiet 2008 night.
+- Update: Mutation checks: scoring bare footprints, listing a hotspot twice and hiding the lit assumption all made tests fail. Preferring the map kind over the hotspot kind did NOT, because Soldier Field has the same kind in both. Kiro added a test with differing kinds and the mutant now fails.
+- Update: Design change: ties are broken by the engine order (level, points, id), not by name. A name tie-break adds nothing.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)
