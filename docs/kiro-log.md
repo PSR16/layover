@@ -99,6 +99,15 @@ How to use this file:
 - Update: Before the build I asked two questions and you said yes to both: the org view shows the same panel with no placeholder text, and the sample level picker moves under Details.
 - Update: Credits stay visible below Details instead of inside it, because the dataset needs a visible credit (CC BY 4.0). That differs from what I proposed.
 
+
+### 2026-11-27 · Spec 2 requirements draft (map and building data)
+- Surface: IDE
+- What Kiro did: Drafted 29 requirements in 7 groups (building extract, curated hotspots, live Overpass queries with fallback, shoreline, place scoring, map and list, where it appears), 7 planned property tests and 6 open questions. Built from `docs/overture-check.md` and the spec 6 draft.
+- Files: .kiro/specs/02-map-and-building-data/requirements.md
+- Requirements / evidence: R1 to R29 (spec 2 numbering); E1, E22, E23
+- Tests: none yet (requirements only)
+- Update: Marked as assumptions: the 500 kB extract budget, the 8 s Overpass timeout, the 200-point shoreline and the OSM tile policy.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)
