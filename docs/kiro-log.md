@@ -175,6 +175,17 @@ How to use this file:
 - Update: Mutation checks all caught: later-wins precedence (4 tests), overlap threshold 0 and 0.99 (1 each), overlap share forced to 1 (1), fill without the missing check (2). One survivor: `<` to `<=` in the bounding-box prefilter. It is equivalent, since a shared edge gives no sample points inside both footprints anyway.
 - Update: The first property test was wrong, not the code: it forbade the later source from filling a missing name. Fixed the test. New types went to `source-types.ts` because adding them put `types.ts` over the 250-line limit. "Smaller" footprint is judged by bounding box area, a heuristic (design risk 6).
 
+### 2026-11-27 · Spec 2 · Task 7 / place list
+- Surface: IDE. Branch `feat/spec2-task-07-place-list`, cut from `feat/spec2-task-06-building-source` because Task 6 is not merged to main yet.
+- What Kiro did: `src/lib/place-description.ts` (plain words per ranked place: "Unnamed building", height, "Not known: ...", the lighting-assumed note), `night-conditions.ts` (the same conditions and overrides the night panel uses), `components/place-row.ts` (a button row with an expandable detail, all text via textContent), `views/places-section.ts` (top 10, "Show more" appends 10 and moves focus to the first new row, loading, empty and failed states). The org view now has the night panel, then the list. `loadAllAreas` in `api/sources.ts` joins the three areas. Credits gain Overture and OpenStreetMap whenever the list shows building data (R5, pulled forward from Task 8).
+- Files: src/lib/place-description.ts, night-conditions.ts, credits.ts, src/components/place-row.ts, src/views/places-section.ts, org-view.ts, night-section.ts (new `onScoring` callback), src/context.ts and app.ts (`loadBuildings`), src/api/sources.ts, src/styles/components.css, tests/places-section.dom.test.ts, place-description.test.ts
+- Requirements / evidence: spec 2 R19, R22 to R24, R27, R28; R5, R18
+- Tests: 17 added (DOM: loading, 10 then 20 rows, focus, empty, failed load, re-rank without reload, one detail open, hostile name as text, org versus volunteer view); 614 passing, `npm run check` passes. Commits: 63165cb, 7d8cf7d, 939e399.
+- Update: Mutation checks, all caught: names set with innerHTML (1 test), Show more not capping (1), low places not filtered out (2).
+- Update: Decisions that go beyond the task text. The list hides places rated low, so the empty state "No places score above low for this night" can occur. `hotspots` is an option on the section so tests can leave the three real sites out. The selected row stays local to the section for now; lifting it into the selection store (design section 6) waits for the map in Task 8. No Retry button: the live source arrives in Task 11, so the failed state says to reload.
+- Update: Real finding from the screenshot: with the real extract, the 2023 news night lists only the three hotspots. Ordinary buildings with a height alone stay low, and only Soldier Field has a venue kind from the map. The list is short until more buildings get a kind or lit-glass data.
+- Screenshot: yes (docs/screenshots/places-list-390px.png, places-list-1280px.png; no horizontal overflow at either width). Headless Chrome ignored the 390 px window and cropped the page, so the shots were retaken with Playwright.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)

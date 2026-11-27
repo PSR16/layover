@@ -1,6 +1,6 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Tasks 1 to 6 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Tasks 1 to 7 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
@@ -22,7 +22,7 @@ Status: IN PROGRESS (Tasks 1 to 6 done). Format: `Task N. Title` then requiremen
 
 ## Phase 3: Screens
 
-- [ ] **Task 7. Place list.** `place-row.ts`, `places-section.ts`: ranked list, top 10, "Show more", detail, empty and loading states, hostile-text test. Added to the org view under the night panel.
+- [x] **Task 7. Place list.** (branch `feat/spec2-task-07-place-list`, cut from the unmerged Task 6 branch; commits 63165cb, 7d8cf7d, 939e399) `place-row.ts`, `places-section.ts`: ranked list, top 10, "Show more", detail, empty and loading states, hostile-text test. Added to the org view under the night panel.
   Requirements: R19, R22 to R24, R27, R28. Tests: DOM tests. Screenshots at 390 and 1280 px.
 - [ ] **Task 8. Map.** `map-view.ts` with the Leaflet module passed in, dynamic import, tile layer and attribution, text markers, 44 px controls, reduced motion, "Show map" button, selection kept in step with the list. Credits gain Overture and OpenStreetMap.
   Requirements: R5, R21, R22, R25, R26. Tests: fake Leaflet checks markers, attribution and focus. Bundle check. Screenshots.
