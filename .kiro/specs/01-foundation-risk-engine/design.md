@@ -114,7 +114,8 @@ One plain object in `src/lib/risk-config.js`. Pure data, no functions, so it can
 export const DEFAULT_CONFIG = {
   version: '0.1.0',
   notes: [{ date: '2026-xx-xx', change: 'initial', evidence: ['E1'] }],
-  thresholds: { elevated: 0.35, high: 0.7 },                      // assumption
+  thresholds: { elevated: 0.37, high: 0.47 },       // night, from Chicago train nights (Task 11)
+  placeThresholds: { elevated: 0.67, high: 0.79 },  // building, same method (R41)
   weights: {
     migration:  { weight: 0.45, evidence: ['E1', 'E3', 'E5'] },
     wind:       { weight: 0.15, evidence: ['E2', 'E17'] },
@@ -267,3 +268,12 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 - `src/lib/tonight.js`: `nightOfTonight(now, location)` picks the night whose sunrise is still ahead, using the city's time zone. The city config (Task 12) must therefore include `timeZone`.
 - **Dependencies are injected** (`fetchFn`, `timeoutMs`, `now`, `cache`), so tests use fake responses saved in `tests/fixtures` and the helpers in `tests/helpers/fake-fetch.js`. No test touches the network.
 - **Not yet checked in a real browser:** weather.gov and Open-Meteo are believed to allow cross-origin requests from a web page, and a browser sends its own User-Agent. Check both when the tonight panel is built (Task 15). If weather.gov blocks the page, a small server-side proxy on Railway is the fix.
+
+### Built in Task 11: calibration
+
+- **Method.** `tools/calibrate-risk.js` scores all 3,141 survey nights with radar as the survey building (untreated, that day's real lit share), trains on years to 2012 and tests on later years. The statistics are in `tools/calibration-metrics.js` (tested). Full results and caveats are in `docs/calibration-report.md`.
+- **Config 0.2.0.** New night thresholds 0.37 and 0.47 and new `placeThresholds` 0.67 and 0.79, so `high` is about the top 15% of train nights. The validator (`risk-config-rules.js`) checks both pairs and that the place pair is not below the night pair. `combine` picks the pair by whether a place is given.
+- **Chicago overlay.** `src/config/chicago-risk.js` replaces the wind sectors (spring south [135, 225], fall west [225, 315]) and adds a dated note; label "Chicago lakefront, one site, untreated building". It is passed as the override argument. The default config keeps the E2 (New York) sectors. R41 and R42 record both rules.
+- **Pins.** `tests/replay-calibration.test.js` pins the night-level and building-level result for each of the 18 replay nights and checks the patterns the research expects. Known false alarms (three busy nights with 0 or 1 bird found) and one miss (2004-03-20) are pinned on purpose.
+- **Tried and dropped.** Scaling lit glass by migration did not improve AUC. A higher wind weight added about 0.003 AUC.
+- **Open question.** The spring low-visibility boost (E2) is not visible at this site (7 spring heavy nights under 5 km visibility, no events). Left as is because the sample is small. Spec 1b can revisit it with more weather detail.
