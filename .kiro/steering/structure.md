@@ -13,6 +13,7 @@ layover/
     components/         Reusable UI pieces (departures board row, boarding pass, risk badge)
     map/                Leaflet setup and layers
     api/                Overpass and other fetch code
+    config/             City and risk overlay config (for example the Chicago lakefront overlay)
     data/               Labelled sample data
     styles/             CSS (navy and amber tokens, 44px control sizes)
   tools/                One-off build scripts (Node, plus one Python export). Not part of the app bundle.

@@ -42,7 +42,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 10. Weather API client.** (branch `feat/spec1-task-10-weather-client`, commits 43ef557, 83a4978, 1758a8c, 1b9c3a5, b7458a2)
   `api/weather.js`: Open-Meteo history, weather.gov live, 5 s timeout, fall back to the saved snapshot with a "Saved weather" flag.
   Requirements: R27 to R29. Tests: mocked fetch for success, timeout and error.
-- [ ] **Task 11. Replay-night assessment checks.**
+- [x] **Task 11. Replay-night assessment checks.** (branch `feat/spec1-task-11-replay-calibration`, commits 12abf03, 2cca071, 0a594df, 3545abf, a5ac44c, ecbddb4, 4ea0f8c)
   Run the engine on every replay night with the stored weather. Check that radar nights with large mortality events score `elevated` or `high` and the quiet night scores `low`. Review the resulting levels with the user, then pin them as assertions. Adjust config through `notes` if a level is clearly wrong, and record the reason.
   Requirements: R15, R26. Tests: example-based replay tests.
 
@@ -76,4 +76,4 @@ Tasks 12 to 14 can run in parallel with Phase 1 once Task 3 exists, since they d
 
 ## Coverage check
 
-R1, R2 (13); R3, R4, R8 (12); R5 to R7 (9, 14); R36 (9a, 14); R37 (2, 3, 5); R38 (2, 3, 6, 12); R39 (6); R9 (7, 15); R10 to R12 (5, 6, 7); R13 (1, 4, 6); R14 (7); R15 (5, 7, 11); R16, R17 (1, 2, 5); R18, R19 (5); R20, R21 (6); R22 (5, 7); R23 (3); R24 (7, 15); R25 (7); R26 (9a, 9, 11); R27 to R29 (8, 10, 15); R30 to R35 (3, 4, 7); R40 (7).
+R1, R2 (13); R3, R4, R8 (12); R5 to R7 (9, 14); R36 (9a, 14); R37 (2, 3, 5); R38 (2, 3, 6, 12); R39 (6); R9 (7, 15); R10 to R12 (5, 6, 7); R13 (1, 4, 6); R14 (7); R15 (5, 7, 11); R41, R42 (11); R16, R17 (1, 2, 5); R18, R19 (5); R20, R21 (6); R22 (5, 7); R23 (3); R24 (7, 15); R25 (7); R26 (9a, 9, 11); R27 to R29 (8, 10, 15); R30 to R35 (3, 4, 7); R40 (7).
