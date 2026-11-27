@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createShell } from '../src/views/app-shell.js';
 import { renderOrgView } from '../src/views/org-view.js';
 import { renderVolunteerView } from '../src/views/volunteer-view.js';
+import { fakeContext, settle } from './helpers/app-context.js';
 
 let root;
 
@@ -52,14 +53,17 @@ describe('createShell', () => {
 });
 
 describe('views', () => {
-  it('render their heading into the container, replacing what was there', () => {
+  it('render their heading into the container, replacing what was there', async () => {
     const container = document.createElement('div');
     container.textContent = 'old';
-    renderVolunteerView(container);
+    const stopVolunteer = renderVolunteerView(container, fakeContext());
     expect(container.querySelector('h2').textContent).toBe('Volunteer');
     expect(container.textContent).not.toContain('old');
-    renderOrgView(container);
+    stopVolunteer();
+    const stopOrg = renderOrgView(container, fakeContext());
     expect(container.querySelector('h2').textContent).toBe('Organization');
     expect(container.querySelectorAll('h2')).toHaveLength(1);
+    stopOrg();
+    await settle();
   });
 });
