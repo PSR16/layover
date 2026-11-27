@@ -51,7 +51,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 12. City config and theme tokens.** (branch `feat/spec1-task-12-city-config-theme`, commits 16a5e79, 52669a5, 08fd76a)
   `config/city.js` (Chicago default) and `styles/tokens.css` (navy, amber, 44 px control size, contrast of at least 4.5:1).
   Requirements: R3, R4, R8, R38. Tests: city config shape (includes shoreline reference); contrast check of token pairs in a unit test.
-- [ ] **Task 13. Hash router.**
+- [x] **Task 13. Hash router.** (branch `feat/spec1-task-13-hash-router`, commits e4662b7, 0791ad7, 65d0c86, 903ff07, 19887f4)
   `router.js` and `main.js`: `#volunteer`, `#org`, unknown or empty hash falls back to `#volunteer`.
   Requirements: R1, R2. Tests: unit tests with a fake location object; no DOM needed in the router logic.
 - [ ] **Task 14. Sample-data badge and risk badge.**
