@@ -1,7 +1,7 @@
 /*
  * Design tokens for the night-airport theme: dark navy with warm amber (product rules).
  * Every text color is at least 4.5:1 against the surfaces it sits on, and control edges and the
- * focus ring are at least 3:1. tests/styles-tokens.test.js checks this, so change a color there
+ * focus ring are at least 3:1. tests/styles-tokens.test.ts checks this, so change a color there
  * first. Risk is never shown by color alone: badges also carry a word (low, elevated, high).
  */
 :root {

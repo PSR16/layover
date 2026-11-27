@@ -1,0 +1,294 @@
+/**
+ * Rules that check a risk config against the research rules (R32).
+ * Every check returns a list of plain-text problems, so a bad edit says exactly what to fix.
+ */
+import type { RiskLevel, Season } from './types.ts';
+
+/**
+ * A config that may be incomplete or wrong. These rules are the trust boundary: they check it at
+ * run time, so the compiler is told to let them look at any shape.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LooseConfig = Record<string, any>;
+
+const EVIDENCE_ENTRY = /^(E\d+|assumption)$/;
+const LEVELS: RiskLevel[] = ['low', 'elevated', 'high'];
+const FULL_CIRCLE = 360;
+const SEASON_NAMES: Season[] = ['spring', 'fall'];
+const EVIDENCE_GROUPS = [
+  'nightParts',
+  'lightMultiplier',
+  'weatherOnly',
+  'weatherScaling',
+  'treatmentDiscount',
+  'wind',
+];
+const SUM_TOLERANCE = 1e-6;
+
+export function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isValidEvidence(evidence: unknown): boolean {
+  return (
+    Array.isArray(evidence) &&
+    evidence.length > 0 &&
+    evidence.every((entry) => EVIDENCE_ENTRY.test(entry))
+  );
+}
+
+function weightOf(config: LooseConfig, name: string): number | undefined {
+  const value = config.weights?.[name]?.weight;
+  return Number.isFinite(value) ? value : undefined;
+}
+
+/** Rule 1: every weight and group needs evidence IDs or the word "assumption". */
+function checkEvidence(config: LooseConfig): string[] {
+  const problems: string[] = [];
+  const entries: [string, LooseConfig | undefined][] = Object.entries(config.weights ?? {}).map(
+    ([name, entry]) => [`weights.${name}`, entry as LooseConfig],
+  );
+  for (const group of EVIDENCE_GROUPS) {
+    entries.push([group, config[group]]);
+  }
+  for (const [path, entry] of entries) {
+    if (!isValidEvidence(entry?.evidence)) {
+      problems.push(`${path}.evidence must list evidence IDs like "E1" or "assumption"`);
+    }
+  }
+  return problems;
+}
+
+/** Weights must be numbers from 0 to 1. */
+function checkWeightValues(config: LooseConfig): string[] {
+  if (!isPlainObject(config.weights)) {
+    return ['weights is missing'];
+  }
+  return Object.keys(config.weights)
+    .filter((name) => {
+      const value = weightOf(config, name);
+      return value === undefined || value < 0 || value > 1;
+    })
+    .map((name) => `weights.${name}.weight must be a number from 0 to 1`);
+}
+
+function mustBeBelow(config: LooseConfig, smaller: string, larger: string): string[] {
+  const small = weightOf(config, smaller);
+  const large = weightOf(config, larger);
+  if (small === undefined || large === undefined || small < large) {
+    return [];
+  }
+  return [`weights.${smaller}.weight must be below weights.${larger}.weight`];
+}
+
+/** Rule 2: migration is the largest weight (R10). */
+function checkMigrationLargest(config: LooseConfig): string[] {
+  if (weightOf(config, 'migration') === undefined) {
+    return ['weights.migration.weight is missing'];
+  }
+  return Object.keys(config.weights)
+    .filter((name) => name !== 'migration')
+    .flatMap((name) => mustBeBelow(config, name, 'migration'));
+}
+
+/** Rule 3: height is weaker than lit glass, stadium and trees (R13). */
+function checkHeightWeak(config: LooseConfig): string[] {
+  return ['litGlass', 'stadium', 'tree'].flatMap((larger) => mustBeBelow(config, 'height', larger));
+}
+
+/** The lakeshore factor never outweighs lit glass (R38, assumption). */
+function checkLakeshoreWeak(config: LooseConfig): string[] {
+  const lakeshore = weightOf(config, 'lakeshore');
+  const litGlass = weightOf(config, 'litGlass');
+  if (lakeshore !== undefined && litGlass !== undefined && lakeshore > litGlass) {
+    return ['weights.lakeshore.weight must not be above weights.litGlass.weight'];
+  }
+  return [];
+}
+
+function checkWeightOrder(config: LooseConfig): string[] {
+  if (!isPlainObject(config.weights)) {
+    return [];
+  }
+  return [
+    ...checkMigrationLargest(config),
+    ...checkHeightWeak(config),
+    ...checkLakeshoreWeak(config),
+  ];
+}
+
+/** Rule 4: night thresholds in order and inside 0 to 1. */
+function checkThresholds(config: LooseConfig): string[] {
+  const { elevated, high } = config.thresholds ?? {};
+  const valid = Number.isFinite(elevated) && Number.isFinite(high);
+  if (!valid || elevated <= 0 || high <= elevated || high > 1) {
+    return ['thresholds must satisfy 0 < elevated < high <= 1'];
+  }
+  return [];
+}
+
+function isOrdered(pair: LooseConfig | undefined): boolean {
+  const { elevated, high } = pair ?? {};
+  return Number.isFinite(elevated) && Number.isFinite(high) && elevated > 0 && high > elevated;
+}
+
+/** Place thresholds: ordered, and never below the night thresholds (a place adds points). */
+function checkPlaceThresholds(config: LooseConfig): string[] {
+  if (!isOrdered(config.placeThresholds)) {
+    return ['placeThresholds must satisfy 0 < elevated < high'];
+  }
+  const { elevated, high } = config.placeThresholds;
+  const night = config.thresholds ?? {};
+  return elevated < night.elevated || high < night.high
+    ? ['placeThresholds must not be below thresholds']
+    : [];
+}
+
+/** Night part weights add up to 1, with the middle part highest (R37). */
+function checkNightParts(config: LooseConfig): string[] {
+  const { early, middle, late } = config.nightParts ?? {};
+  const parts = [early, middle, late];
+  if (!parts.every((part) => Number.isFinite(part) && part >= 0)) {
+    return ['nightParts early, middle and late must be numbers of 0 or more'];
+  }
+  const problems = [];
+  if (Math.abs(early + middle + late - 1) > SUM_TOLERANCE) {
+    problems.push('nightParts early, middle and late must add up to 1');
+  }
+  if (middle <= early || middle <= late) {
+    problems.push('nightParts.middle must be the largest part');
+  }
+  return problems;
+}
+
+function isValidSector(sector: unknown): boolean {
+  return (
+    Array.isArray(sector) &&
+    sector.length === 2 &&
+    sector.every((degrees) => Number.isFinite(degrees) && degrees >= 0 && degrees <= FULL_CIRCLE)
+  );
+}
+
+function checkWindSectors(config: LooseConfig, season: Season): string[] {
+  const sectors = config.wind?.[season]?.unfavorableFrom;
+  const valid = Array.isArray(sectors) && sectors.length > 0 && sectors.every(isValidSector);
+  return valid ? [] : [`wind.${season}.unfavorableFrom needs sectors like [135, 315]`];
+}
+
+function checkSeasonWindow(config: LooseConfig, season: Season): string[] {
+  const window = config.seasons?.[season];
+  const valid = Array.isArray(window) && window.length === 2 && window[0] < window[1];
+  return valid ? [] : [`seasons.${season} needs a start and end like ["03-15", "06-05"]`];
+}
+
+/** Rule 6: both seasons need wind sectors and date windows. */
+function checkSeasonsAndWind(config: LooseConfig): string[] {
+  return SEASON_NAMES.flatMap((season) => [
+    ...checkWindSectors(config, season),
+    ...checkSeasonWindow(config, season),
+  ]);
+}
+
+function isShare(value: unknown): boolean {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
+/** Weather scaling and light-wind share are shares from 0 to 1. */
+function checkShares(config: LooseConfig): string[] {
+  const problems = [];
+  if (!isShare(config.weatherScaling?.minimum)) {
+    problems.push('weatherScaling.minimum must be a number from 0 to 1');
+  }
+  if (!isShare(config.weatherOnly?.floorMinPoints)) {
+    problems.push('weatherOnly.floorMinPoints must be a number from 0 to 1');
+  }
+  if (!isShare(config.wind?.lightWindFactor)) {
+    problems.push('wind.lightWindFactor must be a number from 0 to 1');
+  }
+  return problems;
+}
+
+function checkVenueKinds(config: LooseConfig): string[] {
+  const kinds = config.weights?.stadium?.kinds;
+  const valid =
+    Array.isArray(kinds) && kinds.length > 0 && kinds.every((kind) => typeof kind === 'string');
+  return valid ? [] : ['weights.stadium.kinds must list venue kinds like "stadium"'];
+}
+
+function checkPositiveSettings(config: LooseConfig): string[] {
+  const weights = config.weights ?? {};
+  return [
+    ['weights.height.fullAtMeters', weights.height?.fullAtMeters],
+    ['weights.lakeshore.maxDistanceMeters', weights.lakeshore?.maxDistanceMeters],
+  ]
+    .filter(([, value]) => !Number.isFinite(value) || value <= 0)
+    .map(([path]) => `${path} must be a number above 0`);
+}
+
+/** Place settings used by the place factors. */
+function checkPlaceSettings(config: LooseConfig): string[] {
+  const problems = [...checkVenueKinds(config), ...checkPositiveSettings(config)];
+  if (!isShare(config.weights?.litGlass?.reasonAbove)) {
+    problems.push('weights.litGlass.reasonAbove must be a number from 0 to 1');
+  }
+  return problems;
+}
+
+/** Carry-over is smaller than a same-night contribution (R18). */
+function checkCarryOverSmaller(config: LooseConfig): string[] {
+  return mustBeBelow(config, 'carryOver', 'wind');
+}
+
+/** Level names used by the caps and floors must be real levels. */
+function checkLevels(config: LooseConfig): string[] {
+  const named = {
+    'weatherOnly.floorLevel': config.weatherOnly?.floorLevel,
+    'weatherOnly.capLevel': config.weatherOnly?.capLevel,
+    missingMigrationCap: config.missingMigrationCap,
+  };
+  return Object.entries(named)
+    .filter(([, level]) => !LEVELS.includes(level))
+    .map(([path]) => `${path} must be one of ${LEVELS.join(', ')}`);
+}
+
+/** Treatment discounts: none removes nothing, partial is below full, full stays below 1 (R40). */
+function checkTreatmentDiscount(config: LooseConfig): string[] {
+  const { none, partial, full } = config.treatmentDiscount ?? {};
+  const ordered = none === 0 && isShare(partial) && isShare(full) && partial <= full && full < 1;
+  return ordered ? [] : ['treatmentDiscount must satisfy none = 0 <= partial <= full < 1'];
+}
+
+/** The weather-only floor never sits above the cap, or the level rules would clash. */
+function checkFloorBelowCap(config: LooseConfig): string[] {
+  const floor = LEVELS.indexOf(config.weatherOnly?.floorLevel);
+  const cap = LEVELS.indexOf(config.weatherOnly?.capLevel);
+  return floor <= cap ? [] : ['weatherOnly.floorLevel must not be above weatherOnly.capLevel'];
+}
+
+/** Rule 5: every reason key a factor can return needs wording in config. */
+function checkReasonKeys(config: LooseConfig, requiredReasonKeys: string[]): string[] {
+  const reasons = config.reasons ?? {};
+  return requiredReasonKeys
+    .filter((key) => typeof reasons[key] !== 'string' || reasons[key].trim() === '')
+    .map((key) => `reasons.${key} is missing or empty`);
+}
+
+/** Run every rule and return all problems together. */
+export function checkAll(config: LooseConfig, requiredReasonKeys: string[]): string[] {
+  return [
+    ...checkEvidence(config),
+    ...checkWeightValues(config),
+    ...checkWeightOrder(config),
+    ...checkThresholds(config),
+    ...checkPlaceThresholds(config),
+    ...checkNightParts(config),
+    ...checkShares(config),
+    ...checkPlaceSettings(config),
+    ...checkCarryOverSmaller(config),
+    ...checkSeasonsAndWind(config),
+    ...checkLevels(config),
+    ...checkTreatmentDiscount(config),
+    ...checkFloorBelowCap(config),
+    ...checkReasonKeys(config, requiredReasonKeys),
+  ];
+}

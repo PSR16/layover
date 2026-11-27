@@ -3,6 +3,7 @@ import globals from 'globals';
 import sonarjs from 'eslint-plugin-sonarjs';
 import unicorn from 'eslint-plugin-unicorn';
 import prettier from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 
 // Readability rules: keep functions small, flat and clearly named.
 const readabilityRules = {
@@ -31,16 +32,23 @@ const readabilityRules = {
 export default [
   { ignores: ['dist/', 'coverage/', 'node_modules/'] },
   eslintJs.configs.recommended,
+  ...tseslint.configs.recommended,
   sonarjs.configs.recommended,
   {
     plugins: { unicorn },
-    rules: readabilityRules,
+    rules: {
+      ...readabilityRules,
+      // TypeScript checks undefined names and unused code itself; use its own unused-variable rule.
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
+    },
     languageOptions: { ecmaVersion: 2023, sourceType: 'module' },
   },
-  { files: ['src/**/*.js'], languageOptions: { globals: globals.browser } },
+  { files: ['src/**/*.ts'], languageOptions: { globals: globals.browser } },
   {
     // Pure logic: no DOM, no network, no browser globals (see tech.md).
-    files: ['src/lib/**/*.js'],
+    files: ['src/lib/**/*.ts'],
     languageOptions: { globals: {} },
     rules: {
       'no-restricted-globals': [
@@ -60,24 +68,25 @@ export default [
   },
   {
     // Build tools run in Node and may print to the console.
-    files: ['tools/**/*.js'],
+    files: ['tools/**/*.ts'],
     languageOptions: { globals: globals.node },
     rules: { 'no-console': 'off', 'no-magic-numbers': 'off' },
   },
   {
     // The risk config is the one place where raw numbers belong (R30).
-    files: ['src/lib/risk-config.js', 'src/config/**/*.js'],
+    files: ['src/lib/risk-config.ts', 'src/config/**/*.ts'],
     rules: { 'no-magic-numbers': 'off' },
   },
   {
     // Tests that run in a fake browser (happy-dom) may use document and window.
-    files: ['tests/**/*.dom.test.js'],
+    files: ['tests/**/*.dom.test.ts'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {
-    files: ['tests/**/*.js', '**/*.config.js'],
+    files: ['tests/**/*.ts', '**/*.config.js', '**/*.config.ts'],
     languageOptions: { globals: globals.node },
     rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
       'no-magic-numbers': 'off',
       'max-lines-per-function': 'off',
       'sonarjs/no-duplicate-string': 'off',

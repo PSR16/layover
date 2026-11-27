@@ -9,7 +9,7 @@
     "source": "Van Doren et al. 2021, Mendeley Data, DOI 10.17632/mjvt3yxdkv.2",
     "licence": "CC BY 4.0",
     "attribution": "Includes data derived from Van Doren et al. (2021), \"Dataset for Drivers of fatal bird collisions in an urban center\", Mendeley Data, DOI 10.17632/mjvt3yxdkv.2, licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Changes: selected nights, radar bird density converted to a 0 to 1 percentile within season, weather averaged into three night parts. The authors do not endorse Layover.",
-    "builtBy": "tools/export-chicago-dataset.py and tools/build-replay-nights.js",
+    "builtBy": "tools/export-chicago-dataset.py and tools/build-replay-nights.ts",
     "builtOn": "2026-11-26",
     "nightsConsidered": 3462,
     "assumptions": [

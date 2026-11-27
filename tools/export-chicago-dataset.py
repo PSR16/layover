@@ -6,7 +6,7 @@ Source: Mendeley Data, DOI 10.17632/mjvt3yxdkv.2, licensed CC BY 4.0
 (see docs/data-sources.md and docs/data-profile.md for how the authors coded the data).
 
 The raw files are large and stay outside the repo. This script reads the extracted files and
-writes plain CSV tables that tools/build-replay-nights.js turns into the committed replay file.
+writes plain CSV tables that tools/build-replay-nights.ts turns into the committed replay file.
 
 Setup (outside the repo):  python3 -m venv .venv && .venv/bin/pip install pandas openpyxl
 Usage:
