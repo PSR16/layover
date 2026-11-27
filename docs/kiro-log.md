@@ -78,6 +78,16 @@ How to use this file:
 - Update: Applied the recommended answers (R15 floor at `elevated`, missing-migration cap, surge rule to spec 4). My request: "make sure this engine is designed in an easily editable way". Added R30 to R35 (config as data, factor registry, validator, config override, trace) and wrote design.md with module layout, factor registry, config shape and validator rules.
 - Update: I explained the conflict (favorable wind drives migration volume, unfavorable wind raises collisions on heavy nights). User said "yes", so I rewrote steering rule 3 into two parts and changed the range to E1 to E17. Design task added to confirm wind-direction convention in Chen et al. 2024.
 
+
+### 2026-11-26 · TypeScript migration
+- Surface: IDE
+- What Kiro did: Renamed all of `src/`, `tests/`, `tools/` and `vite.config` from `.js` to `.ts` (git mv, history kept), typed `src/` in strict mode with shared types in `src/lib/types.ts`, added `npm run typecheck` to `npm run check`, moved ESLint to typescript-eslint, updated steering (tech, structure, research) and spec filename mentions.
+- Files: tsconfig.json, tsconfig.tools.json, eslint.config.js, package.json, src/**, tools/**, tests/**
+- Tests: 488 passing; lint, typecheck, format, secrets and build green. `tests/radar-nights-data.test.ts` needed `src/data/radar-nights.json` regenerated.
+- Update: Kiro recommended JSDoc plus `tsc`. My correction: "full rename". Kiro did the rename.
+- Commits: 15a92e7 (code), docs commit below
+- Update: Honest limits. Tests are not type-checked: 151 errors came from tests that pass bad inputs on purpose, so `tsconfig.test.json` was dropped. Installs used `--engine-strict=false` because local Node is v23.9.0 and a dev dependency wants 20.19, 22.13 or 24+. CI uses Node 22.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)

@@ -6,29 +6,29 @@ Status: DONE (Tasks 1 to 16). Spec 1 is finished; calibration follow-ups are lis
 
 ```
 src/
-  main.js                    router bootstrap
-  router.js                  hash router (R1, R2)
-  config/city.js             city config: Chicago default (R8)
+  main.ts                    router bootstrap
+  router.ts                  hash router (R1, R2)
+  config/city.ts             city config: Chicago default (R8)
   lib/
-    risk.js                  assessNight, assessPlace, rankPlaces (entry points)
-    risk-config.js           DEFAULT_CONFIG data only (R30)
-    risk-config-validate.js  validateConfig, mergeConfig (R32, R33)
-    risk-inputs.js           read conditions: night parts, season, wind and sky scores (pure helpers)
-    risk-night-factors.js    night factors, one small object per factor (R31)
-    risk-place-factors.js    place factors (Task 6)
-    risk-combine.js          combines factor outputs into a level (the only place that knows the math)
-    wind.js                  wind-sector and wind-shift helpers (degrees, season)
-    night-parts.js           split hourly values into early/middle/late using sunset and sunrise
-    season.js                season from date and config dates
-    weather-normalize.js     raw API JSON to the Conditions shape, averaged per night part (pure)
-  api/weather.js             Open-Meteo history, weather.gov live (fetch, timeout, fallback)
-  data/replay-nights.js      labelled replay nights and saved weather snapshots (R26, R28)
+    risk.ts                  assessNight, assessPlace, rankPlaces (entry points)
+    risk-config.ts           DEFAULT_CONFIG data only (R30)
+    risk-config-validate.ts  validateConfig, mergeConfig (R32, R33)
+    risk-inputs.ts           read conditions: night parts, season, wind and sky scores (pure helpers)
+    risk-night-factors.ts    night factors, one small object per factor (R31)
+    risk-place-factors.ts    place factors (Task 6)
+    risk-combine.ts          combines factor outputs into a level (the only place that knows the math)
+    wind.ts                  wind-sector and wind-shift helpers (degrees, season)
+    night-parts.ts           split hourly values into early/middle/late using sunset and sunrise
+    season.ts                season from date and config dates
+    weather-normalize.ts     raw API JSON to the Conditions shape, averaged per night part (pure)
+  api/weather.ts             Open-Meteo history, weather.gov live (fetch, timeout, fallback)
+  data/replay-nights.ts      labelled replay nights and saved weather snapshots (R26, R28)
   views/ components/         shell, sample-data badge, risk badge
   styles/tokens.css          navy and amber tokens, 44 px control size
-tests/                       one test file per lib module, plus risk.property.test.js
+tests/                       one test file per lib module, plus risk.property.test.ts
 ```
 
-Dependencies point inward: `lib` imports only other `lib` files. `api/` calls `lib/weather-normalize.js`, never the other way.
+Dependencies point inward: `lib` imports only other `lib` files. `api/` calls `lib/weather-normalize.ts`, never the other way.
 
 ## 2. Data shapes
 
@@ -91,7 +91,7 @@ Why two levels: a coordinator needs "tonight is high" (surge decision, spec 4) a
 Each factor is a pure function with one job:
 
 ```js
-// src/lib/risk-night-factors.js and risk-place-factors.js
+// src/lib/risk-night-factors.ts and risk-place-factors.ts
 export const NIGHT_FACTORS = [migrationFactor, windFactor, windShiftFactor,
   visibilityFactor, carryOverFactor, seasonFactor];
 export const PLACE_FACTORS = [litGlassFactor, treeFactor, kindFactor, heightFactor, lakeshoreFactor];
@@ -101,14 +101,14 @@ export const PLACE_FACTORS = [litGlassFactor, treeFactor, kindFactor, heightFact
 // apply the weather-only cap and floor (R15). NIGHT_REASON_KEYS feeds validator rule 5.
 ```
 
-- Adding a factor: write the function, add it to the list, add its entry to the config. `risk-combine.js` loops over the list and does not change (R31).
-- Each function stays under the ESLint limits (complexity 8, 40 lines). Wind-sector math sits in `wind.js` so factor functions stay small.
+- Adding a factor: write the function, add it to the list, add its entry to the config. `risk-combine.ts` loops over the list and does not change (R31).
+- Each function stays under the ESLint limits (complexity 8, 40 lines). Wind-sector math sits in `wind.ts` so factor functions stay small.
 - A factor returns `reasonKey`, not text. The text comes from config (R33), so wording is editable without touching code.
 - A factor whose input is missing returns `points: 0` and lists the input in `missing` (R22).
 
 ## 5. Config (the other part you edit)
 
-One plain object in `src/lib/risk-config.js`. Pure data, no functions, so it can later load from JSON, a coordinator screen or calibration output.
+One plain object in `src/lib/risk-config.ts`. Pure data, no functions, so it can later load from JSON, a coordinator screen or calibration output.
 
 ```js
 export const DEFAULT_CONFIG = {
@@ -171,30 +171,30 @@ Numbers above are placeholders chosen to satisfy the rules in R10, R13 and the t
 
 | Requirement | Where |
 |---|---|
-| R9, R24, R34 | `risk.js` result shape; reasons from `config.reasons`; UI never reads `trace` |
+| R9, R24, R34 | `risk.ts` result shape; reasons from `config.reasons`; UI never reads `trace` |
 | R10, R13, R32 | validator rules 2 and 3 |
 | R11, R12 | monotone factors: points are non-decreasing in migration and litGlass |
-| R14 | `lightMultiplier` in `risk-combine.js` applies to place light points only |
+| R14 | `lightMultiplier` in `risk-combine.ts` applies to place light points only |
 | R15 | `weatherOnly` floor and cap applied after threshold lookup |
-| R16, R17 | `wind.js` sectors and shift check; `windFactor`, `windShiftFactor` |
+| R16, R17 | `wind.ts` sectors and shift check; `windFactor`, `windShiftFactor` |
 | R18 | `carryOverFactor` reads `previousNights`; weight below same-night wind weight |
 | R19 | `seasonFactor` adds `fallBonus` |
 | R20, R21 | `kindFactor`, `treeFactor`; no compass field exists in the Place shape |
 | R22 | `missing` arrays collected; `missingMigrationCap` applied |
-| R37 | `night-parts.js`; `nightParts` weights in config; single-value fallback |
-| R38 | `lakeshoreFactor`; `wind.js` westerly check; city shoreline reference in `config/city.js` |
-| R40 | `treatmentDiscount` in config; applied in `risk-combine.js` to the 'light' group; validator checks order and full < 1 |
+| R37 | `night-parts.ts`; `nightParts` weights in config; single-value fallback |
+| R38 | `lakeshoreFactor`; `wind.ts` westerly check; city shoreline reference in `config/city.ts` |
+| R40 | `treatmentDiscount` in config; applied in `risk-combine.ts` to the 'light' group; validator checks order and full < 1 |
 | R39 | lit-share input rule documented in Place shape; unit test on the coding helper |
 | R36 | credits component on both views |
 | R25 | `rankPlaces` sort key (level, points, id) |
-| R26 to R29 | `data/replay-nights.js`, `api/weather.js`, `weather-normalize.js` |
-| R1 to R8 | `router.js`, `styles/tokens.css`, `components/sample-badge`, `config/city.js` |
+| R26 to R29 | `data/replay-nights.ts`, `api/weather.ts`, `weather-normalize.ts` |
+| R1 to R8 | `router.ts`, `styles/tokens.css`, `components/sample-badge`, `config/city.ts` |
 
 ## 7. Weather and replay flow
 
 1. User picks a night: Tonight (live) or a replay night.
-2. Replay: `api/weather.js` requests Open-Meteo history for the city center and the night window (hourly wind speed, wind direction, low cloud cover, visibility). The raw JSON goes through `weather-normalize.js`, which uses sunset and sunrise (from `suncalc`, pinned exactly) to average the hours into the three night parts of `Conditions.weather`. Radar nights take migration from the committed derived table (see section 10).
-3. On timeout (5 s) or error: use the saved snapshot in `replay-nights.js`, badge "Saved weather" (R28).
+2. Replay: `api/weather.ts` requests Open-Meteo history for the city center and the night window (hourly wind speed, wind direction, low cloud cover, visibility). The raw JSON goes through `weather-normalize.ts`, which uses sunset and sunrise (from `suncalc`, pinned exactly) to average the hours into the three night parts of `Conditions.weather`. Radar nights take migration from the committed derived table (see section 10).
+3. On timeout (5 s) or error: use the saved snapshot in `replay-nights.ts`, badge "Saved weather" (R28).
 4. Live: weather.gov for the city center, same normalizer. Migration is the sample level, badge "Sample migration level" (R29).
 5. `assessNight` returns the result. The view shows the level, the reasons and the badges.
 
@@ -247,62 +247,62 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 
 ### Built in Task 9a: radar replay nights
 
-- **Two steps.** `tools/export-chicago-dataset.py` (Python, reads the raw Excel, radar and weather files outside the repo) writes three small tables. `tools/build-replay-nights.js` (Node) reads them, reuses `getNightTimes` and `summarizeNight`, ranks migration with `src/lib/percentile.js` and writes `src/data/radar-nights.json`. The pure steps are in `tools/replay-nights-core.js` and are unit tested.
+- **Two steps.** `tools/export-chicago-dataset.py` (Python, reads the raw Excel, radar and weather files outside the repo) writes three small tables. `tools/build-replay-nights.ts` (Node) reads them, reuses `getNightTimes` and `summarizeNight`, ranks migration with `src/lib/percentile.ts` and writes `src/data/radar-nights.json`. The pure steps are in `tools/replay-nights-core.ts` and are unit tested.
 - **16 nights** (from 3,462 survey days): per season the 4 largest mortality events, the 2 quietest nights with the lights mostly on, and the 2 busiest-migration nights with at most 1 bird found. Every night is `source: 'replay'`, labelled "Replay night, radar-derived migration", and the file carries the CC BY 4.0 attribution.
 - **Migration** is the local radar bird density within 32 km, ranked as a percentile among nights of the same season, per night part. **Weather** is Midway hourly reports averaged per part; a ceiling under 1,500 m counts as low cloud (assumption). **Lit share** counts only code YN, weighted by window length. Survey counts sit in a `reference` block for checking only.
 - **First look at the engine on these nights (preview for Task 11, not a result):** all 8 mortality events score `elevated` at night level, none `high`. Quiet nights are `low`. Place level (a lit arena with the day's real lit share) is `high` for 7 of 8 events, but also for all 4 busy few-bird nights, including the 2018-05-21 spring night with low visibility and a lit share of 0.92 where only 1 bird was found, and the 2016-05-10 fog night with a lit share of 0.56 and no birds. The engine separates quiet nights well and over-warns on busy nights. Whether the lit share, which is already an input, should weigh more at the place level is the first question for Task 11.
 
 ### Built in Task 9: replay nights module
 
-- `src/data/replay-nights.js` exports `REPLAY_NIGHTS` (18 nights in date order), `findReplayNight` and `RADAR_ATTRIBUTION` for the credits (R36). Radar nights come from `radar-nights.json`; the two news nights (night of 2026-10-16 and night of 2023-10-04) are defined in the module with hand-set migration (0.95, source `sample`, label "Replay night, sample migration level") and weather snapshots from `news-weather.json`, written by `tools/build-news-weather.js` (network needed, run only to refresh).
-- `src/lib/data-source.js`: `effectiveSource` treats a missing or unknown source as `sample` (R7). `src/lib/replay-conditions.js`: `conditionsFromReplay` copies only night, migration and weather, so notes, links and survey counts never reach the engine.
+- `src/data/replay-nights.ts` exports `REPLAY_NIGHTS` (18 nights in date order), `findReplayNight` and `RADAR_ATTRIBUTION` for the credits (R36). Radar nights come from `radar-nights.json`; the two news nights (night of 2026-10-16 and night of 2023-10-04) are defined in the module with hand-set migration (0.95, source `sample`, label "Replay night, sample migration level") and weather snapshots from `news-weather.json`, written by `tools/build-news-weather.ts` (network needed, run only to refresh).
+- `src/lib/data-source.ts`: `effectiveSource` treats a missing or unknown source as `sample` (R7). `src/lib/replay-conditions.ts`: `conditionsFromReplay` copies only night, migration and weather, so notes, links and survey counts never reach the engine.
 - **Saved weather is the weather for replay nights.** Radar nights (2000 to 2020) cannot be fetched live, and the news nights are saved so the demo works offline. Task 10 uses the live request only for tonight, and falls back to a saved snapshot labelled "Saved weather" (R28).
 - **The JSON files are imported by Vite and Vitest.** Plain Node needs an import attribute for JSON, so quick scripts that import the data module should run with `npx vite-node`.
 - **First look at the news nights:** 2023-10-04 has wind from the south-southwest and cloud thickening to 100% by dawn (the unfavorable fall pattern in E2) and scores 0.62, `elevated`. 2026-10-16 has favorable north-northwest wind and scores 0.48, `elevated`. A lit glass building scores `high` on both (0.98 and 0.76). The 2023 migration level and date are unconfirmed.
 
 ### Built in Task 10: weather client
 
-- `src/api/weather.js`: `fetchHistoricalWeather` (Open-Meteo), `fetchTonightWeather` (weather.gov: points lookup, then gridpoint forecast, grid address cached in memory), `loadReplayWeather` and `loadTonightWeather` (never throw; always return a result with `source`, `label`, `provider` and, after a failure, `error: { reason, status? }`). Reasons: `timeout`, `network`, `http`, `invalid`, `empty`. The default timeout is 5 seconds, set with an AbortController.
+- `src/api/weather.ts`: `fetchHistoricalWeather` (Open-Meteo), `fetchTonightWeather` (weather.gov: points lookup, then gridpoint forecast, grid address cached in memory), `loadReplayWeather` and `loadTonightWeather` (never throw; always return a result with `source`, `label`, `provider` and, after a failure, `error: { reason, status? }`). Reasons: `timeout`, `network`, `http`, `invalid`, `empty`. The default timeout is 5 seconds, set with an AbortController.
 - **Replay nights:** a record with `liveWeather: true` (the two news nights) is requested live and falls back to its saved snapshot labelled "Saved weather" on any failure. Radar nights have `liveWeather: false` and use the saved snapshot with no request.
 - **Tonight:** on failure the result is `source: 'unavailable'`, label "Weather unavailable", weather left out, and the engine reports the missing inputs (R22). There is no saved snapshot for tonight.
-- `src/lib/tonight.js`: `nightOfTonight(now, location)` picks the night whose sunrise is still ahead, using the city's time zone. The city config (Task 12) must therefore include `timeZone`.
-- **Dependencies are injected** (`fetchFn`, `timeoutMs`, `now`, `cache`), so tests use fake responses saved in `tests/fixtures` and the helpers in `tests/helpers/fake-fetch.js`. No test touches the network.
+- `src/lib/tonight.ts`: `nightOfTonight(now, location)` picks the night whose sunrise is still ahead, using the city's time zone. The city config (Task 12) must therefore include `timeZone`.
+- **Dependencies are injected** (`fetchFn`, `timeoutMs`, `now`, `cache`), so tests use fake responses saved in `tests/fixtures` and the helpers in `tests/helpers/fake-fetch.ts`. No test touches the network.
 - **Not yet checked in a real browser:** weather.gov and Open-Meteo are believed to allow cross-origin requests from a web page, and a browser sends its own User-Agent. Check both when the tonight panel is built (Task 15). If weather.gov blocks the page, a small server-side proxy on Railway is the fix.
 
 ### Built in Task 11: calibration
 
-- **Method.** `tools/calibrate-risk.js` scores all 3,141 survey nights with radar as the survey building (untreated, that day's real lit share), trains on years to 2012 and tests on later years. The statistics are in `tools/calibration-metrics.js` (tested). Full results and caveats are in `docs/calibration-report.md`.
-- **Config 0.2.0.** New night thresholds 0.37 and 0.47 and new `placeThresholds` 0.67 and 0.79, so `high` is about the top 15% of train nights. The validator (`risk-config-rules.js`) checks both pairs and that the place pair is not below the night pair. `combine` picks the pair by whether a place is given.
-- **Chicago overlay.** `src/config/chicago-risk.js` replaces the wind sectors (spring south [135, 225], fall west [225, 315]) and adds a dated note; label "Chicago lakefront, one site, untreated building". It is passed as the override argument. The default config keeps the E2 (New York) sectors. R41 and R42 record both rules.
-- **Pins.** `tests/replay-calibration.test.js` pins the night-level and building-level result for each of the 18 replay nights and checks the patterns the research expects. Known false alarms (three busy nights with 0 or 1 bird found) and one miss (2004-03-20) are pinned on purpose.
+- **Method.** `tools/calibrate-risk.ts` scores all 3,141 survey nights with radar as the survey building (untreated, that day's real lit share), trains on years to 2012 and tests on later years. The statistics are in `tools/calibration-metrics.ts` (tested). Full results and caveats are in `docs/calibration-report.md`.
+- **Config 0.2.0.** New night thresholds 0.37 and 0.47 and new `placeThresholds` 0.67 and 0.79, so `high` is about the top 15% of train nights. The validator (`risk-config-rules.ts`) checks both pairs and that the place pair is not below the night pair. `combine` picks the pair by whether a place is given.
+- **Chicago overlay.** `src/config/chicago-risk.ts` replaces the wind sectors (spring south [135, 225], fall west [225, 315]) and adds a dated note; label "Chicago lakefront, one site, untreated building". It is passed as the override argument. The default config keeps the E2 (New York) sectors. R41 and R42 record both rules.
+- **Pins.** `tests/replay-calibration.test.ts` pins the night-level and building-level result for each of the 18 replay nights and checks the patterns the research expects. Known false alarms (three busy nights with 0 or 1 bird found) and one miss (2004-03-20) are pinned on purpose.
 - **Tried and dropped.** Scaling lit glass by migration did not improve AUC. A higher wind weight added about 0.003 AUC.
 - **Open question.** The spring low-visibility boost (E2) is not visible at this site (7 spring heavy nights under 5 km visibility, no events). Left as is because the sample is small. Spec 1b can revisit it with more weather detail.
 
 ### Built in Task 12: city config and theme
 
-- **City config.** `src/config/city.js` has the Chicago config (id, name, centre, time zone `America/Chicago`, the Chicago risk overlay and label, and a coarse lake shoreline) and `getCity(id)`, which falls back to Chicago for an unknown id (and for names like `__proto__`). `src/lib/city-config.js` validates a city, turns it into the location the weather code reads (`locationOf`) and computes the distance to the lake (`lakeDistanceMeters`, null when the city has no shoreline). `src/lib/geo.js` holds the ground-distance maths.
+- **City config.** `src/config/city.ts` has the Chicago config (id, name, centre, time zone `America/Chicago`, the Chicago risk overlay and label, and a coarse lake shoreline) and `getCity(id)`, which falls back to Chicago for an unknown id (and for names like `__proto__`). `src/lib/city-config.ts` validates a city, turns it into the location the weather code reads (`locationOf`) and computes the distance to the lake (`lakeDistanceMeters`, null when the city has no shoreline). `src/lib/geo.ts` holds the ground-distance maths.
 - **The shoreline is sample data.** Eleven hand-set points, good to a few hundred metres, marked `source: 'sample'` with a note. Spec 2 replaces it with a shoreline from the map data. The tests only check that lakefront venues come out under 1 km and the Loop over 1.5 km, not exact distances.
-- **Theme.** `src/styles/tokens.css` (navy surfaces, amber accent, risk and sample colors, 44 px control size, 18 px base text) and `src/styles/base.css` (page defaults, the 44 by 44 px rule for buttons, links styled as controls, inputs, selects and summaries, a visible focus ring). `main.js` loads both.
-- **Contrast is tested.** `tests/styles-tokens.test.js` reads the token file and checks every text color against all three surfaces at 4.5:1 or better, dark text on the amber button, control edges and the focus ring at 3:1, the 44 px size, and that the base styles use no hard-coded colors. Lowest text contrast: muted text on the raised surface, 7.8:1.
+- **Theme.** `src/styles/tokens.css` (navy surfaces, amber accent, risk and sample colors, 44 px control size, 18 px base text) and `src/styles/base.css` (page defaults, the 44 by 44 px rule for buttons, links styled as controls, inputs, selects and summaries, a visible focus ring). `main.ts` loads both.
+- **Contrast is tested.** `tests/styles-tokens.test.ts` reads the token file and checks every text color against all three surfaces at 4.5:1 or better, dark text on the amber button, control edges and the focus ring at 3:1, the 44 px size, and that the base styles use no hard-coded colors. Lowest text contrast: muted text on the raised surface, 7.8:1.
 - **Not yet seen in a browser.** The checks are numeric. A real 390 px screenshot is part of Task 15.
 
 ### Built in Task 13: router and shell
 
-- `src/lib/route.js` (`resolveRoute`, pure), `src/router.js` (`startRouter`, takes the window as a parameter so tests use a fake one), `src/views/app-shell.js` (header, two view links with `aria-current` on the active one, a main area), placeholder `volunteer-view.js` and `org-view.js`, and `main.js` wiring them. An empty or unknown hash is rewritten to `#volunteer` with `replaceState`, so it adds no history entry and the back button is not trapped.
+- `src/lib/route.ts` (`resolveRoute`, pure), `src/router.ts` (`startRouter`, takes the window as a parameter so tests use a fake one), `src/views/app-shell.ts` (header, two view links with `aria-current` on the active one, a main area), placeholder `volunteer-view.ts` and `org-view.ts`, and `main.ts` wiring them. An empty or unknown hash is rewritten to `#volunteer` with `replaceState`, so it adds no history entry and the back button is not trapped.
 - Views are built with DOM calls and `textContent`, never `innerHTML` (R5).
-- **DOM tests** run in `happy-dom` (exact-pinned dev dependency) in files named `*.dom.test.js`, which get browser globals in the lint config. `main.dom.test.js` starts the real `main.js` and checks all four hash cases.
+- **DOM tests** run in `happy-dom` (exact-pinned dev dependency) in files named `*.dom.test.ts`, which get browser globals in the lint config. `main.dom.test.ts` starts the real `main.ts` and checks all four hash cases.
 
 ### Built in Task 14: badges and credits
 
-- `src/lib/data-labels.js` decides the words: `nightBadge` (a record's own label, such as "Replay night, radar-derived migration", or "Sample data" when the source is missing), `migrationBadge` ("Radar-derived migration" or "Sample migration level"), `weatherBadge` (the provider name, "Saved weather" or "Weather unavailable") and `riskWord` (Low, Elevated or High, anything else throws). `src/lib/credits.js` builds the credits list: the Chicago dataset text when it is used, and "© OpenStreetMap contributors" with a link when map data is used.
-- `src/components/badge.js` (`createBadge`, `createRiskBadge`) and `credits.js` build the elements with `textContent`, so a hostile string stays text (tested with an `<img onerror>` and a `<script>` string). Credits links open in a new tab with `rel="noopener noreferrer"`, and there are no logos.
+- `src/lib/data-labels.ts` decides the words: `nightBadge` (a record's own label, such as "Replay night, radar-derived migration", or "Sample data" when the source is missing), `migrationBadge` ("Radar-derived migration" or "Sample migration level"), `weatherBadge` (the provider name, "Saved weather" or "Weather unavailable") and `riskWord` (Low, Elevated or High, anything else throws). `src/lib/credits.ts` builds the credits list: the Chicago dataset text when it is used, and "© OpenStreetMap contributors" with a link when map data is used.
+- `src/components/badge.ts` (`createBadge`, `createRiskBadge`) and `credits.ts` build the elements with `textContent`, so a hostile string stays text (tested with an `<img onerror>` and a `<script>` string). Credits links open in a new tab with `rel="noopener noreferrer"`, and there are no logos.
 - `src/styles/components.css` styles badges and credits from tokens only. Every badge carries a word; color is never the only signal. The style tests check that components.css uses only token colors that were contrast-checked.
 - Reading note: the risk badge draws its text in capitals with CSS; the text itself is the word "High", so screen readers say it normally.
 
 ### Built in Task 15: the night panel
 
-- **Plain data first.** `src/lib/night-model.js` (`buildNightModel`) runs the engine with the city overlay and returns the title, risk level, reasons, condition rows in words, badges, what is missing and whether the dataset credit is needed. Tonight uses a sample migration level the user picks (Light 0.2, Moderate 0.5, Heavy 0.9), always labelled sample (R29).
-- **Views.** `night-board.js` (a `dl` departures board), `night-selector.js` (two labelled selects), `night-section.js` (loads weather, redraws, ignores older answers, redraws without a new request when only the sample level changes, keeps focus on the select). Both views use the section. `src/selection.js` keeps the choice when you switch views. `src/app.js` takes loaders and city as parameters, so tests start the real app with fake weather.
+- **Plain data first.** `src/lib/night-model.ts` (`buildNightModel`) runs the engine with the city overlay and returns the title, risk level, reasons, condition rows in words, badges, what is missing and whether the dataset credit is needed. Tonight uses a sample migration level the user picks (Light 0.2, Moderate 0.5, Heavy 0.9), always labelled sample (R29).
+- **Views.** `night-board.ts` (a `dl` departures board), `night-selector.ts` (two labelled selects), `night-section.ts` (loads weather, redraws, ignores older answers, redraws without a new request when only the sample level changes, keeps focus on the select). Both views use the section. `src/selection.ts` keeps the choice when you switch views. `src/app.ts` takes loaders and city as parameters, so tests start the real app with fake weather.
 - **Honest cloud wording.** Forecast weather only has total sky cover. The panel says "Cloudy (total cover)" and "Heavy cloud cover may pull birds toward lit buildings", not "low cloud", when the weather result carries the `lowCloudFromSkyCover` note.
 - **Checked in a real browser.** A 390 px screenshot of the built app (headless Chrome, inside a 390 px frame) shows the page padding, amber current-view link, labelled selects, badges and board without horizontal scrolling. **The live weather.gov request worked from the page**, so the cross-origin question from Task 10 is answered for weather.gov. Open-Meteo for the news nights was not exercised in the browser. A first screenshot showed two bugs, now fixed: no page padding, and the two view links running together without button styling.
 - **Not yet checked:** a replay night in the browser (the unit tests cover it), and a real phone.

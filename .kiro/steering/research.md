@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: ["src/lib/risk*", "src/lib/**/*.js", ".kiro/specs/**/*.md", "tests/**"]
+fileMatchPattern: ["src/lib/risk*", "src/lib/**/*.ts", ".kiro/specs/**/*.md", "tests/**"]
 ---
 # Evidence rules for the risk model
  

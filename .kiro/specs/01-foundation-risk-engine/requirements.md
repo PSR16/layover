@@ -32,7 +32,7 @@ Out (later specs): map and Overpass (spec 2), slots and volunteer journey (spec 
 
 - **R36.** The app SHALL include a credits section on both views that shows the attribution text in `docs/data-sources.md` for the Van Doren et al. 2021 dataset (CC BY 4.0) whenever any value derived from it is used, and "© OpenStreetMap contributors" wherever map or building data appears.
 
-## C. Risk engine (`src/lib/risk.js`, pure, no DOM or network)
+## C. Risk engine (`src/lib/risk.ts`, pure, no DOM or network)
 
 - **R9.** The risk engine SHALL return only `low`, `elevated` or `high`, each with at least one plain-language reason. It SHALL NOT return a number, a death count or a "birds at risk" figure in any user-facing field. (Product rule.)
 - **R10.** Migration intensity SHALL be the largest single weight. (E1, E3, E5)

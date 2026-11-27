@@ -3,9 +3,11 @@ inclusion: always
 ---
 # Tech stack
 
-- Build: Vite, vanilla JavaScript (ES modules). No UI framework.
+- Build: Vite, TypeScript (ES modules). No UI framework. Imports keep the `.ts` extension (`import { x } from './x.ts'`).
 - Map: Leaflet with OpenStreetMap tiles. Keep the required attribution visible.
 - Building data: Overpass API (OpenStreetMap). Handle timeouts, rate limits and empty results with a visible fallback.
+- Types: `npm run typecheck` runs `tsc` in strict mode on `src/` and in lenient mode on `tools/` and `vite.config.ts`. Tests are not type-checked (they pass bad inputs on purpose); Vitest only transpiles them. Shared types live in `src/lib/types.ts`. Avoid `any`; the one exception is the config validator, which treats its input as untrusted.
+- Tools in `tools/` run with `npx vite-node tools/<file>.ts`.
 - Tests: Vitest for unit tests, fast-check for property-based tests. Run with `npm test`.
 
 ## Conventions
@@ -20,5 +22,5 @@ inclusion: always
 - Git hooks (Husky): pre-commit runs lint-staged (ESLint, Prettier, secretlint) and `npm test`; commit-msg runs commitlint; pre-push runs `npm run check`. Never bypass with `--no-verify`.
 - Readability limits are ESLint errors: complexity 8, cognitive complexity 10, depth 3, 40 lines per function, names of 3+ characters, no abbreviations, no nested ternaries. Write small functions with descriptive names and early returns.
 - `package.json` and `package-lock.json` change together. Dependencies are pinned exactly (`.npmrc`).
-- Node 22.12 or newer (`.nvmrc`).
+- Node 22.12 or newer (`.nvmrc`). Use Node 22 LTS or 24 locally; Node 23 fails the engine check of some dev dependencies.
 - CI: GitHub Actions. Deploy: Railway, linked to the GitHub repo, builds on push to `main`. Work happens on branches and reaches `main` only when the user merges (see git.md). Vite `base` stays `/`.
