@@ -57,7 +57,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 14. Sample-data badge and risk badge.** (branch `feat/spec1-task-14-badges`)
   `components/sample-badge` and `components/risk-badge`. Use `escapeHtml` or `textContent`. Badges for "Sample data", "Replay night", "Saved weather", "Sample migration level".
   Requirements: R5, R6, R7, R36. Tests: unit tests that render to a detached element and check labels, escaping and the credits text.
-- [ ] **Task 15. Night selector and tonight panel.**
+- [x] **Task 15. Night selector and tonight panel.** (branch `feat/spec1-task-15-tonight-panel`, commits 347d392, c9c4506, 3a62dee, a105764, c15e4d0; screenshot `docs/screenshots/task-15-volunteer-390px.png`)
   A departures-board style panel on `#volunteer` and `#org` showing the selected night (tonight or replay), its level, reasons and badges. Controls are at least 44 px.
   Requirements: R4, R6, R9, R24, R27 to R29. Tests: view unit tests; manual 390 px Playwright screenshot.
 - [ ] **Task 16. Close-out.**
