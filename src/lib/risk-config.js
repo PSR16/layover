@@ -10,7 +10,7 @@
  * Wind directions are where the wind comes FROM, in degrees (E1, E2).
  */
 export const DEFAULT_CONFIG = {
-  version: '0.1.0',
+  version: '0.2.0',
 
   notes: [
     {
@@ -37,10 +37,20 @@ export const DEFAULT_CONFIG = {
         'Added treatmentDiscount (R40, E22), weatherOnly.floorMinPoints (assumption) and the reasons quiet and birdSafeGlass for the combine step.',
       evidence: ['E22', 'E2'],
     },
+    {
+      date: '2026-11-26',
+      change:
+        'Version 0.2.0: night thresholds 0.37 and 0.47 and new placeThresholds 0.67 and 0.79, set from the top 15 percent of Chicago survey nights in the train years 2000 to 2012 and checked on 2013 to 2020. The old 0.35 and 0.70 never reached high at night level. One site, untreated building.',
+      evidence: ['E1', 'E5'],
+    },
   ],
 
-  // Total points at or above these values give the level (assumption, see design section 3).
-  thresholds: { elevated: 0.35, high: 0.7 },
+  // Total points at or above these values give the level. Night and place totals have different
+  // scales (a place adds its own points to the night's), so each has its own pair. Both were set
+  // so that `high` is about the top 15 percent of 3,141 Chicago survey nights in the train years
+  // 2000 to 2012 (E5; docs/calibration-report.md). Heuristic, one site, untreated building.
+  thresholds: { elevated: 0.37, high: 0.47 },
+  placeThresholds: { elevated: 0.67, high: 0.79 },
 
   // Migration level (0 to 1) bands, used to pick the reason wording (assumption).
   migrationBands: { moderate: 0.4, heavy: 0.7 },

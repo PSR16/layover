@@ -94,6 +94,23 @@ describe('validateConfig rejection rules', () => {
     expect(problemsFor((config) => delete config.thresholds)).toContain(message);
   });
 
+  it('place thresholds must be ordered and not below the night thresholds', () => {
+    const ordered = 'placeThresholds must satisfy 0 < elevated < high';
+    expect(
+      problemsFor((config) => (config.placeThresholds = { elevated: 1, high: 0.9 })),
+    ).toContain(ordered);
+    expect(problemsFor((config) => delete config.placeThresholds)).toContain(ordered);
+    expect(
+      problemsFor((config) => (config.placeThresholds = { elevated: 0.5, high: 1.4 })),
+    ).toEqual([]);
+    expect(
+      problemsFor((config) => (config.placeThresholds = { elevated: 0.2, high: 1.4 })),
+    ).toContain('placeThresholds must not be below thresholds');
+    expect(
+      problemsFor((config) => (config.placeThresholds = { elevated: 0.5, high: 0.45 })),
+    ).not.toEqual([]);
+  });
+
   it('rule 5: reason keys the factors need must have wording', () => {
     const options = { requiredReasonKeys: ['litGlass', 'brandNewReason'] };
     expect(validateConfig(DEFAULT_CONFIG, options)).toEqual([

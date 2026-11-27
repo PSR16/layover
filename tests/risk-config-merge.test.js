@@ -100,7 +100,7 @@ describe('mergeConfig', () => {
     expect(result.version).toBe('0.2.0');
     expect(result.weights.wind.weight).toBeCloseTo(0.2, 9);
     expect(result.weights.wind.evidence).toEqual(DEFAULT_CONFIG.weights.wind.evidence);
-    expect(result.thresholds).toEqual({ elevated: 0.35, high: 0.75 });
+    expect(result.thresholds).toEqual({ elevated: DEFAULT_CONFIG.thresholds.elevated, high: 0.75 });
     expect(DEFAULT_CONFIG).toEqual(before);
   });
 

@@ -93,9 +93,13 @@ describe('assessNight', () => {
 
 describe('config overrides (R33)', () => {
   it('reports the config version used and applies overrides', () => {
-    expect(assessNight(conditions()).configVersion).toBe('0.1.0');
-    const result = assessNight(conditions(), { version: '0.1.1', thresholds: { high: 0.95 } });
-    expect(result.configVersion).toBe('0.1.1');
+    expect(assessNight(conditions()).configVersion).toBe('0.2.0');
+    const result = assessNight(conditions(), {
+      version: '0.2.1',
+      thresholds: { high: 0.95 },
+      placeThresholds: { high: 1.2 },
+    });
+    expect(result.configVersion).toBe('0.2.1');
     expect(result.level).toBe('elevated');
   });
 

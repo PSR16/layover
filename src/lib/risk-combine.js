@@ -124,8 +124,9 @@ export function combine({ entries, conditions, place, config }) {
   const trace = traceFor(entries, lightFactor);
   const totalPoints = trace.reduce((total, line) => total + line.contribution, 0);
   const level = migrationLevel(conditions.migration, config);
+  const thresholds = place ? config.placeThresholds : config.thresholds;
   const adjusted = adjustLevel(
-    levelFromPoints(totalPoints, config.thresholds),
+    levelFromPoints(totalPoints, thresholds),
     { migration: level, weatherPoints: sumPoints(entries, 'weather') },
     config,
   );
@@ -147,7 +148,7 @@ export function combine({ entries, conditions, place, config }) {
       totalPoints,
       lightMultiplier: light.value,
       treatmentMultiplier: treatment.value,
-      levelBeforeAdjustments: levelFromPoints(totalPoints, config.thresholds),
+      levelBeforeAdjustments: levelFromPoints(totalPoints, thresholds),
     },
   };
 }

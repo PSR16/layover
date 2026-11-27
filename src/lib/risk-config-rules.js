@@ -110,7 +110,7 @@ function checkWeightOrder(config) {
   ];
 }
 
-/** Rule 4: level thresholds in order and inside 0 to 1. */
+/** Rule 4: night thresholds in order and inside 0 to 1. */
 function checkThresholds(config) {
   const { elevated, high } = config.thresholds ?? {};
   const valid = Number.isFinite(elevated) && Number.isFinite(high);
@@ -118,6 +118,23 @@ function checkThresholds(config) {
     return ['thresholds must satisfy 0 < elevated < high <= 1'];
   }
   return [];
+}
+
+function isOrdered(pair) {
+  const { elevated, high } = pair ?? {};
+  return Number.isFinite(elevated) && Number.isFinite(high) && elevated > 0 && high > elevated;
+}
+
+/** Place thresholds: ordered, and never below the night thresholds (a place adds points). */
+function checkPlaceThresholds(config) {
+  if (!isOrdered(config.placeThresholds)) {
+    return ['placeThresholds must satisfy 0 < elevated < high'];
+  }
+  const { elevated, high } = config.placeThresholds;
+  const night = config.thresholds ?? {};
+  return elevated < night.elevated || high < night.high
+    ? ['placeThresholds must not be below thresholds']
+    : [];
 }
 
 /** Night part weights add up to 1, with the middle part highest (R37). */
@@ -256,6 +273,7 @@ export function checkAll(config, requiredReasonKeys) {
     ...checkWeightValues(config),
     ...checkWeightOrder(config),
     ...checkThresholds(config),
+    ...checkPlaceThresholds(config),
     ...checkNightParts(config),
     ...checkShares(config),
     ...checkPlaceSettings(config),
