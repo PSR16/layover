@@ -36,7 +36,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 9a. Build the radar-night table.** (branch `feat/spec1-task-09a-radar-night-table`, commits 5c4b9e8, dcc2999, b5e948f, a92c76d, 4e89eb3)
   Decide where the build script lives (design point 6). Read the raw dataset (outside the repo), pick nights (design section 10), scale radar migration to percentile within season, average weather per night part, and write a small derived file with the attribution header.
   Requirements: R26, R36. Tests: unit tests on the percentile scaling and night-part averaging using a tiny fixture.
-- [ ] **Task 9. Replay-night data.**
+- [x] **Task 9. Replay-night data.** (branch `feat/spec1-task-09-replay-nights-data`, commits 5214105, fdd5e5b)
   `data/replay-nights.js`: the radar nights from Task 9a plus the night of 2026-10-16 and the night of 2023-10-04, each with a labelled migration level, a note on its source, and a saved weather snapshot. All records carry `source`.
   Requirements: R7, R26, R28. Tests: every record has a source and a note; missing source is treated as `sample`.
 - [ ] **Task 10. Weather API client.**
