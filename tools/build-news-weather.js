@@ -12,32 +12,12 @@
  */
 import { writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
+import { openMeteoUrl } from '../src/api/weather.js';
 import { normalizeOpenMeteo } from '../src/lib/weather-normalize.js';
 
 const LOCATION = { name: 'Chicago, Illinois', latitude: 41.88, longitude: -87.63 };
 const NIGHTS = ['2026-10-16', '2023-10-04'];
-const ENDPOINT = 'https://historical-forecast-api.open-meteo.com/v1/forecast';
-const MILLISECONDS_PER_DAY = 86_400_000;
 const DECIMALS = 100;
-
-function nextDay(isoDate) {
-  return new Date(Date.parse(`${isoDate}T00:00:00Z`) + MILLISECONDS_PER_DAY)
-    .toISOString()
-    .slice(0, 10);
-}
-
-function requestUrl(night) {
-  const query = new URLSearchParams({
-    latitude: String(LOCATION.latitude),
-    longitude: String(LOCATION.longitude),
-    start_date: night,
-    end_date: nextDay(night),
-    hourly: 'wind_speed_10m,wind_direction_10m,cloud_cover_low,visibility',
-    wind_speed_unit: 'ms',
-    timezone: 'GMT',
-  });
-  return `${ENDPOINT}?${query}`;
-}
 
 function rounded(part) {
   if (!part) {
@@ -49,7 +29,7 @@ function rounded(part) {
 }
 
 async function snapshotFor(night) {
-  const response = await fetch(requestUrl(night));
+  const response = await fetch(openMeteoUrl(night, LOCATION));
   if (!response.ok) {
     throw new Error(`Open-Meteo returned ${response.status} for ${night}`);
   }
@@ -57,7 +37,7 @@ async function snapshotFor(night) {
   const parts = Object.fromEntries(
     Object.entries(weather).map(([part, values]) => [part, rounded(values)]),
   );
-  return { weather: parts, notes, requestUrl: requestUrl(night) };
+  return { weather: parts, notes, requestUrl: openMeteoUrl(night, LOCATION) };
 }
 
 async function main() {
