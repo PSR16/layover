@@ -17,8 +17,12 @@ const MIDWAY_SOURCE = 'Chicago Midway Airport hourly reports (NOAA ISD 725340-14
 /** Credit text for the Chicago dataset (CC BY 4.0). Show it wherever these nights are used (R36). */
 export const RADAR_ATTRIBUTION = radarData.meta.attribution;
 
+// Radar nights (2000 to 2020) are outside what the weather API can give, so their saved
+// Midway reports are the weather (`liveWeather: false`). News nights are requested live and
+// fall back to the saved snapshot (R27, R28).
 const RADAR_NIGHTS = radarData.nights.map((night) => ({
   ...night,
+  liveWeather: false,
   weatherSource: MIDWAY_SOURCE,
   weatherSavedOn: radarData.meta.builtOn,
 }));
@@ -38,6 +42,7 @@ const NEWS_NIGHTS = [
     season: 'fall',
     kind: 'news-event',
     source: 'sample',
+    liveWeather: true,
     label: 'Replay night, sample migration level',
     migration: { level: 0.95, source: 'sample' },
     ...snapshotOf('2026-10-16'),
@@ -57,6 +62,7 @@ const NEWS_NIGHTS = [
     season: 'fall',
     kind: 'news-event',
     source: 'sample',
+    liveWeather: true,
     label: 'Replay night, sample migration level',
     migration: { level: 0.95, source: 'sample' },
     ...snapshotOf('2023-10-04'),

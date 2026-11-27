@@ -67,6 +67,15 @@ describe('REPLAY_NIGHTS records (R6, R7, R26, R28)', () => {
     }
   });
 
+  it('marks radar nights as saved-weather only and news nights as fetchable (R27, R28)', () => {
+    for (const night of radarNights) {
+      expect(night.liveWeather).toBe(false);
+    }
+    for (const night of newsNights) {
+      expect(night.liveWeather).toBe(true);
+    }
+  });
+
   it('carries a saved weather snapshot with a source and date for every night (R28)', () => {
     for (const night of REPLAY_NIGHTS) {
       expect(night.weatherSource.length).toBeGreaterThan(5);
