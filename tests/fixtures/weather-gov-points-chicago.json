@@ -1,0 +1,10 @@
+{
+  "note": "Trimmed copy of a weather.gov points response for 41.88,-87.63 saved 2026-11-26 for tests.",
+  "properties": {
+    "gridId": "LOT",
+    "gridX": 76,
+    "gridY": 73,
+    "forecastGridData": "https://api.weather.gov/gridpoints/LOT/76,73",
+    "timeZone": "America/Chicago"
+  }
+}
