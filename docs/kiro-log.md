@@ -107,6 +107,7 @@ How to use this file:
 - Requirements / evidence: R1 to R29 (spec 2 numbering); E1, E22, E23
 - Tests: none yet (requirements only)
 - Update: Marked as assumptions: the 500 kB extract budget, the 8 s Overpass timeout, the 200-point shoreline and the OSM tile policy.
+- Update: My correction: "they wouldn't know and right now it's a bit too far fetched to have this feature". Kiro had asked whether coordinators should set Lit, Not lit or Not known per night. Removed that question and added R30: no per-night lit status input; hotspots keep one fixed sample lighting assumption.
 
 ---
 

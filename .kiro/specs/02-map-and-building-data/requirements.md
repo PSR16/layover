@@ -49,6 +49,7 @@ Out (later specs): routes and slots (spec 3), coordinator tools (spec 4), shared
 ## E. Scoring places
 
 - **R17.** WHEN the user chooses a night (spec 1), the app SHALL score each hotspot and each building with a known height through `assessPlace` for that night's conditions, using the Chicago overlay. Buildings with nothing known except a footprint SHALL NOT be scored.
+- **R30.** The app SHALL NOT let anyone set whether a building is lit on a given night. Nobody knows that reliably, so tonight's lit status is not an input in this spec or the next one. Hotspots carry one fixed, hand-set lighting assumption (R6), shown as sample.
 - **R18.** WHEN lighting is unknown (the usual case outside hotspots), the app SHALL say "Lighting not known" and SHALL NOT assume lit or unlit. The reason text SHALL say the level uses what is known. (Spec 1 R22)
 - **R19.** The map and list SHALL show only `low`, `elevated` or `high`, each with plain reasons. They SHALL NOT show a number, a bird count or a casualty figure. (Product rule)
 - **R20.** Scoring SHALL be a pure function of the night's conditions and the building records, with no DOM, and SHALL give the same ranking for the same inputs.
@@ -86,5 +87,4 @@ Out (later specs): routes and slots (spec 3), coordinator tools (spec 4), shared
 2. **Overpass in the browser.** Is a live query worth the failure modes for a demo, or should the first version use only the static extract and add Overpass later? The product notes call for Overpass with a fallback.
 3. **Hotspot list.** Who curates it and how often? Only the three sites above are backed by the news and the dataset. Adding more needs a source for each.
 4. **Tiles.** OpenStreetMap's public tile server is for light use. Is a demo fine, or do we pick a hosted tile provider with a free tier?
-5. **Lit status.** The only lighting evidence is McCormick Place (Van Doren 2021). Should tonight's lit status for a hotspot be a switch the coordinator sets (Lit, Not lit, Not known)? It fits spec 4 but changes the risk list now.
-6. **Names.** Many buildings have no name (about 10% to 44% do). Is "Unnamed building near <street>" enough, or do we need a reverse lookup?
+5. **Names.** Many buildings have no name (about 10% to 44% do). Is "Unnamed building near <street>" enough, or do we need a reverse lookup?
