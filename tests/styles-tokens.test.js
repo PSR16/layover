@@ -129,7 +129,13 @@ describe('component styles', () => {
     const used = new Set(
       [...componentsCss.matchAll(/var\((--color-[a-z-]+)\)/g)].map((match) => match[1]),
     );
-    const checked = new Set([...TEXT_COLORS, '--color-control-edge', '--color-focus']);
+    const checked = new Set([
+      ...TEXT_COLORS,
+      ...SURFACES,
+      '--color-control-edge',
+      '--color-focus',
+      '--color-on-accent',
+    ]);
     for (const name of used) {
       expect(checked.has(name), name).toBe(true);
     }
