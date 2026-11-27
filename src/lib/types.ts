@@ -279,3 +279,23 @@ export interface BuildingRecord {
   /** Every source that contributed to this record (spec 2 R32). */
   sources: string[];
 }
+/** A building on the curated list, with hand-set values and a dated note (spec 2 R6 to R10). */
+export interface Hotspot {
+  id: string;
+  name: string;
+  /** Why it is on the list, in plain words. */
+  reason: string;
+  match: {
+    buildingId?: string;
+    osmId?: string;
+    /** Used when no ID matches: the building with this name nearest to `near`. */
+    near: Coordinate;
+    maxDistanceMeters: number;
+  };
+  kind?: string;
+  /** Share of glass that is lit, 0 to 1. Left out when nobody knows it. */
+  litGlassShare?: number;
+  treeNear?: boolean;
+  birdSafeTreatment?: TreatmentStatus;
+  note: { text: string; date: string; evidence: string[] };
+}
