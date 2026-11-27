@@ -54,7 +54,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 13. Hash router.** (branch `feat/spec1-task-13-hash-router`, commits e4662b7, 0791ad7, 65d0c86, 903ff07, 19887f4)
   `router.js` and `main.js`: `#volunteer`, `#org`, unknown or empty hash falls back to `#volunteer`.
   Requirements: R1, R2. Tests: unit tests with a fake location object; no DOM needed in the router logic.
-- [ ] **Task 14. Sample-data badge and risk badge.**
+- [x] **Task 14. Sample-data badge and risk badge.** (branch `feat/spec1-task-14-badges`)
   `components/sample-badge` and `components/risk-badge`. Use `escapeHtml` or `textContent`. Badges for "Sample data", "Replay night", "Saved weather", "Sample migration level".
   Requirements: R5, R6, R7, R36. Tests: unit tests that render to a detached element and check labels, escaping and the credits text.
 - [ ] **Task 15. Night selector and tonight panel.**
