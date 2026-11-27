@@ -132,6 +132,18 @@ How to use this file:
 - Update: Prettier had reformatted the extract JSON into 40 percent larger files. `src/data/buildings-*.json` is now in `.prettierignore`.
 - Commits: 3119ddf, 70a3344, plus the CLI and data commit below.
 
+
+### 2026-11-27 · Spec 2 · Task 3 / real lake shoreline
+- Surface: IDE
+- What Kiro did: Replaced the hand-set sample shoreline with Lake Michigan's shore from OpenStreetMap. `tools/build-shoreline.ts` asks Overpass for the member ways of the "Lake Michigan" relation inside a box, `tools/shoreline-core.ts` joins them end to end (the main chain is 60 ways, 88 km, 3,641 points) and simplifies to 199 points. `src/config/city.ts` now reads `src/data/chicago-shoreline.json` with `source: 'map'`.
+- Files: tools/build-shoreline.ts, tools/shoreline-core.ts, tools/extract-geometry.ts (`simplifyLine`), src/data/chicago-shoreline.json, src/config/city.ts, tests/shoreline-core.test.ts, tests/shoreline-data.test.ts, tests/city-config.test.ts
+- Requirements / evidence: spec 2 R15, R16; spec 1 R38
+- Tests: 12 added or changed; 539 passing. Replay calibration pins did not change. Distances to the lake: McCormick Place 568 m, Soldier Field 595 m, Kellogg Global Hub 133 m, Willis Tower 2,105 m, middle of the lake 12 km.
+- Update: The first Overpass query used `natural=coastline` and returned nothing, because OpenStreetMap does not tag the Great Lakes that way. The public server also answered 406 without a User-Agent header and 502 when busy, then worked on a retry. The build script now sets a User-Agent and retries. The raw answer is saved outside the repo.
+- Update: Mutation checks: reversing the south-to-north test and dropping the shared-point skip while joining both made tests fail.
+- Update: Left out on purpose: small harbour and pier pieces that do not join the main line. The OpenStreetMap credit is not yet shown for the shoreline, since the night panel does not use it; it comes with the place list (Task 7).
+- Commits: 2483165, 1614539.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)
