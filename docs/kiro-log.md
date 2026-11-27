@@ -166,6 +166,15 @@ How to use this file:
 - Update: Mutation checks: scoring bare footprints, listing a hotspot twice and hiding the lit assumption all made tests fail. Preferring the map kind over the hotspot kind did NOT, because Soldier Field has the same kind in both. Kiro added a test with differing kinds and the mutant now fails.
 - Update: Design change: ties are broken by the engine order (level, points, id), not by name. A name tie-break adds nothing.
 
+### 2026-11-27 · Spec 2 · Task 6 / building sources and merging
+- Surface: IDE. Branch `feat/spec2-task-06-building-source`, cut from `feat/spec2-task-05-place-ranking` because Task 5 is not merged to main yet.
+- What Kiro did: `src/lib/building-source.ts` (`mergeSources`: earlier source wins, later fills missing fields, `sources` lists every contributor, same-source records never merge), `footprint-overlap.ts` (fixed 16 by 16 grid sample of the smaller footprint, merge above 50%), `source-types.ts`, and `src/api/sources.ts` (static source by dynamic import, `loadBuildings` with `Promise.allSettled`, result lists loaded and failed sources).
+- Files: src/lib/building-source.ts, footprint-overlap.ts, source-types.ts, src/api/sources.ts, tests/building-source.test.ts, building-source.property.test.ts, sources.test.ts
+- Requirements / evidence: spec 2 R12, R31, R32, R33
+- Tests: 22 added (4 property: deterministic, never loses a building, no rewrite of an existing name, contributor count); 597 passing, `npm run check` passes. Commits: 077ed4f, f3addae.
+- Update: Mutation checks all caught: later-wins precedence (4 tests), overlap threshold 0 and 0.99 (1 each), overlap share forced to 1 (1), fill without the missing check (2). One survivor: `<` to `<=` in the bounding-box prefilter. It is equivalent, since a shared edge gives no sample points inside both footprints anyway.
+- Update: The first property test was wrong, not the code: it forbade the later source from filling a missing name. Fixed the test. New types went to `source-types.ts` because adding them put `types.ts` over the 250-line limit. "Smaller" footprint is judged by bounding box area, a heuristic (design risk 6).
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)

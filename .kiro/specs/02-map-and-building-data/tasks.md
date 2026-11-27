@@ -1,6 +1,6 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Tasks 1 to 5 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Tasks 1 to 6 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
@@ -17,7 +17,7 @@ Status: IN PROGRESS (Tasks 1 to 5 done). Format: `Task N. Title` then requiremen
 
 ## Phase 2: Sources
 
-- [ ] **Task 6. BuildingSource interface and static source.** `building-source.ts` with `mergeSources`, `api/sources.ts` with the static source (dynamic import of the area JSON).
+- [x] **Task 6. BuildingSource interface and static source.** (branch `feat/spec2-task-06-building-source`, commits 077ed4f, f3addae) `building-source.ts` with `mergeSources`, `api/sources.ts` with the static source (dynamic import of the area JSON).
   Requirements: R31 to R33, R12. Tests: merge precedence, adjacent buildings do not merge, one failing source does not block another.
 
 ## Phase 3: Screens
