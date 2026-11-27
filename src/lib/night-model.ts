@@ -36,7 +36,10 @@ export interface NightModel {
   reasons: string[];
   missing: string[];
   rows: ConditionRow[];
+  /** The two labels always visible: what kind of night, and where the weather came from. */
   badges: Badge[];
+  /** Other labels, shown under the Details control. */
+  details: Badge[];
   usesDataset: boolean;
 }
 
@@ -134,19 +137,19 @@ function lowCloudWords(part: Part, config: RiskConfig): string {
   return percent < CLEAR_BELOW_PERCENT ? 'Clear' : 'Some cloud';
 }
 
-function nightBadges({
+function visibleBadges({ record, weatherResult }: ModelInput): Badge[] {
+  const night = record ? nightBadge(record) : nightBadge({ source: 'sample' });
+  return [night, weatherBadge(weatherResult)];
+}
+function detailBadges({
   record,
-  weatherResult,
   migration,
   city,
-}: ModelInput & { migration: Migration }): Badge[] {
-  const badges: Badge[] = record
-    ? [nightBadge(record)]
-    : [nightBadge({ source: 'sample' }), { text: 'Tonight', tone: 'live' }];
+}: Pick<ModelInput, 'record' | 'city'> & { migration: Migration }): Badge[] {
+  const badges: Badge[] = [];
   if (record?.migration?.source !== 'replay') {
     badges.push(migrationBadge(migration));
   }
-  badges.push(weatherBadge(weatherResult));
   if (city?.riskLabel) {
     badges.push({ text: city.riskLabel, tone: 'notice' });
   }
@@ -209,12 +212,13 @@ export function buildNightModel({
   const risk = assessNight({ night, migration, weather }, overridesFor(city, weatherResult));
   const part = shownPart(weather);
   return {
-    title: record ? `Night of ${night}` : `Tonight, night of ${night}`,
+    title: record ? `Night of ${night}` : `Tonight, ${night}`,
     level: risk.level,
     reasons: risk.reasons,
     missing: risk.missingInputs.map((name) => MISSING_WORDS[name] ?? name),
     rows: conditionRows({ migration, part, weatherResult, config }),
-    badges: nightBadges({ record, weatherResult, migration, city }),
+    badges: visibleBadges({ record, weatherResult }),
+    details: detailBadges({ record, migration, city }),
     usesDataset: record?.migration?.source === 'replay',
   };
 }

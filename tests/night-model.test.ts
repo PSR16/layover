@@ -63,11 +63,8 @@ describe('buildNightModel for a replay night', () => {
   });
 
   it('labels the night as a radar replay with saved weather and the Chicago label (R6, R28)', () => {
-    expect(texts(model.badges)).toEqual([
-      'Replay night, radar-derived migration',
-      'Saved weather',
-      'Chicago lakefront, one site, untreated building',
-    ]);
+    expect(texts(model.badges)).toEqual(['Replay night, radar-derived migration', 'Saved weather']);
+    expect(texts(model.details)).toEqual(['Chicago lakefront, one site, untreated building']);
   });
 
   it('describes conditions in words', () => {
@@ -99,7 +96,7 @@ describe('buildNightModel for a news night', () => {
     const record = findReplayNight('news-2026-10-16');
     const model = buildNightModel({ record, weatherResult: saved(record), city: CHICAGO });
     expect(texts(model.badges)).toContain('Replay night, sample migration level');
-    expect(texts(model.badges)).toContain('Sample migration level');
+    expect(texts(model.details)).toContain('Sample migration level');
     expect(model.usesDataset).toBe(false);
   });
 });
@@ -109,12 +106,10 @@ describe('buildNightModel for tonight (R29)', () => {
 
   it('labels everything as sample or live and names the night', () => {
     const model = buildNightModel({ ...base, weatherResult: live('2026-11-26') });
-    expect(model.title).toBe('Tonight, night of 2026-11-26');
-    expect(texts(model.badges)).toEqual([
-      'Sample data',
-      'Tonight',
+    expect(model.title).toBe('Tonight, 2026-11-26');
+    expect(texts(model.badges)).toEqual(['Sample data', 'Weather from weather.gov']);
+    expect(texts(model.details)).toEqual([
       'Sample migration level',
-      'Weather from weather.gov',
       'Chicago lakefront, one site, untreated building',
     ]);
     expect(model.usesDataset).toBe(false);
@@ -210,6 +205,7 @@ describe('what the panel never shows (product rule)', () => {
       const words = [
         ...model.reasons,
         ...texts(model.badges),
+        ...texts(model.details),
         ...model.rows.map((row) => row.value),
       ].join(' ');
       expect(words).not.toMatch(/\b(dead|death|died|kill|casualt|fatal)/i);

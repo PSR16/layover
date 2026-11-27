@@ -1,6 +1,5 @@
 /**
- * The two controls above the board: which night to look at, and (for tonight) which sample
- * migration level to use. Plain labelled selects, sized by the 44 px control rule (R4).
+ * The night picker below the board, and the sample migration level picker that sits under Details. Plain labelled selects, sized by the 44 px control rule (R4).
  */
 import type { ReplayNight } from '../lib/types.ts';
 import type { SelectionState } from '../selection.ts';
@@ -49,32 +48,33 @@ export interface SelectorOptions {
   onChange: (changes: Partial<SelectionState>) => void;
   idPrefix?: string;
 }
+/** The night picker: tonight first, then the saved replay nights. */
 export function createNightSelector(
   page: Document,
   { records, state, tonightId, onChange, idPrefix = 'night' }: SelectorOptions,
 ): HTMLElement {
-  const form = page.createElement('div');
-  form.className = 'selector';
-  const night = labelledSelect(page, { id: `${idPrefix}-select`, label: 'Night' });
-  addOption(page, night.select, tonightId, 'Tonight (live weather)');
+  const field = labelledSelect(page, { id: `${idPrefix}-select`, label: 'Change night' });
+  addOption(page, field.select, tonightId, 'Tonight (live weather)');
   for (const record of records) {
-    addOption(page, night.select, record.id, replayOptionText(record));
+    addOption(page, field.select, record.id, replayOptionText(record));
   }
-  night.select.value = state.nightId;
-  night.select.addEventListener('change', () => onChange({ nightId: night.select.value }));
-  form.append(night.wrapper);
-
-  if (state.nightId === tonightId) {
-    const level = labelledSelect(page, {
-      id: `${idPrefix}-level`,
-      label: 'Sample migration level',
-    });
-    for (const [key, entry] of Object.entries(SAMPLE_LEVELS)) {
-      addOption(page, level.select, key, entry.label);
-    }
-    level.select.value = state.sampleLevel;
-    level.select.addEventListener('change', () => onChange({ sampleLevel: level.select.value }));
-    form.append(level.wrapper);
+  field.select.value = state.nightId;
+  field.select.addEventListener('change', () => onChange({ nightId: field.select.value }));
+  return field.wrapper;
+}
+/** The sample migration level picker. Only tonight uses it, so the caller decides when to show it. */
+export function createSampleLevelSelector(
+  page: Document,
+  { state, onChange, idPrefix = 'night' }: Pick<SelectorOptions, 'state' | 'onChange' | 'idPrefix'>,
+): HTMLElement {
+  const field = labelledSelect(page, {
+    id: `${idPrefix}-level`,
+    label: 'Sample migration level',
+  });
+  for (const [key, entry] of Object.entries(SAMPLE_LEVELS)) {
+    addOption(page, field.select, key, entry.label);
   }
-  return form;
+  field.select.value = state.sampleLevel;
+  field.select.addEventListener('change', () => onChange({ sampleLevel: field.select.value }));
+  return field.wrapper;
 }

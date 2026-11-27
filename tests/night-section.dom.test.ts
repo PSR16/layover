@@ -28,12 +28,13 @@ async function choose(context, selectId, value) {
 }
 
 describe('night selector (R4)', () => {
-  it('has labelled selects for the night and, for tonight, the sample migration level', async () => {
+  it('has a labelled night select and, for tonight, a sample migration level select under Details', async () => {
     await mount();
-    expect(container.querySelector('label[for="test-select"]').textContent).toBe('Night');
+    expect(container.querySelector('label[for="test-select"]').textContent).toBe('Change night');
     expect(container.querySelector('label[for="test-level"]').textContent).toBe(
       'Sample migration level',
     );
+    expect(container.querySelector('.details #test-level')).not.toBeNull();
     const options = [...container.querySelectorAll('#test-select option')];
     expect(options).toHaveLength(19);
     expect(options[0].textContent).toBe('Tonight (live weather)');
@@ -54,6 +55,22 @@ describe('night selector (R4)', () => {
   });
 });
 
+describe('details control', () => {
+  it('shows at most two labels outside Details and keeps the rest inside it', async () => {
+    await mount();
+    expect(
+      container.querySelectorAll('.board > .badge, .board-title ~ .board-badges .badge'),
+    ).toHaveLength(2);
+    expect(container.querySelector('details > summary').textContent).toBe('Details');
+    expect(container.querySelectorAll('details .badge').length).toBeGreaterThan(0);
+  });
+  it('stays open while the sample migration level changes', async () => {
+    const { context } = await mount();
+    container.querySelector('details').open = true;
+    await choose(context, 'test-level', 'heavy');
+    expect(container.querySelector('details').open).toBe(true);
+  });
+});
 describe('night board (R6, R9, R27, R28)', () => {
   it('loads tonight on mount and shows a status line while it waits', async () => {
     const context = fakeContext(fakeLoaders());
@@ -125,7 +142,7 @@ describe('night board (R6, R9, R27, R28)', () => {
     await mount(loaders);
     expect(container.textContent).toContain('Weather unavailable');
     expect(container.querySelector('.board-missing').textContent).toContain('wind');
-    expect(container.querySelector('.risk-badge')).not.toBeNull();
+    expect(container.querySelector('.risk-word')).not.toBeNull();
   });
 
   it('stops listening when told to', async () => {

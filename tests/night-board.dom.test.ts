@@ -24,29 +24,25 @@ function render(data) {
 }
 
 describe('renderNightBoard', () => {
-  it('shows the title, badges, risk word, reasons and condition rows as a board (R6, R9)', () => {
+  it('leads with the risk word, then the reasons, the conditions and the labels (R6, R9)', () => {
     const container = render(model());
-    expect(container.querySelector('h3').textContent).toBe('Night of 2018-05-01');
-    expect(container.querySelector('.badge').textContent).toBe('Sample data');
-    const rows = [...container.querySelectorAll('.board-row')];
-    expect(rows.map((row) => row.querySelector('dt').textContent)).toEqual([
-      'Risk',
-      'Why',
-      'Migration',
-      'Wind',
-    ]);
-    expect(rows[0].querySelector('dd').textContent).toBe('High');
-    expect(rows[1].querySelectorAll('li')).toHaveLength(1);
-    expect(rows[3].querySelector('dd').textContent).toBe('From the S at 9.0 m/s');
+    expect(container.querySelector('h2').textContent).toBe('Night of 2018-05-01');
+    expect(container.querySelector('.risk-answer').textContent).toBe('High risk');
+    expect(container.querySelector('.risk-word').classList).toContain('risk-high');
+    expect(container.querySelectorAll('.board-reasons li')).toHaveLength(1);
+    expect(container.querySelector('.board-badges .badge').textContent).toBe('Sample data');
+    const terms = [...container.querySelectorAll('.conditions dt')];
+    expect(terms.map((term) => term.textContent)).toEqual(['Migration', 'Wind']);
+    expect(container.querySelectorAll('.conditions dd')[1].textContent).toBe(
+      'From the S at 9.0 m/s',
+    );
   });
-
-  it('uses a description list, so the board reads as labelled pairs for screen readers', () => {
+  it('uses a description list, so conditions read as labelled pairs for screen readers', () => {
     const container = render(model());
-    expect(container.querySelector('dl.board')).not.toBeNull();
-    expect(container.querySelectorAll('dt')).toHaveLength(4);
-    expect(container.querySelectorAll('dd')).toHaveLength(4);
+    expect(container.querySelector('dl.conditions')).not.toBeNull();
+    expect(container.querySelectorAll('dt')).toHaveLength(2);
+    expect(container.querySelectorAll('dd')).toHaveLength(2);
   });
-
   it('shows no note when nothing is missing, and a plain note when something is', () => {
     expect(render(model()).querySelector('.board-missing')).toBeNull();
     const note = render(model({ missing: ['wind', 'visibility and cloud'] })).querySelector(
@@ -73,7 +69,7 @@ describe('renderNightBoard', () => {
   it('replaces what was in the container on each render', () => {
     const container = render(model());
     renderNightBoard(container, model({ title: 'Another night' }));
-    expect(container.querySelectorAll('h3')).toHaveLength(1);
-    expect(container.querySelector('h3').textContent).toBe('Another night');
+    expect(container.querySelectorAll('h2')).toHaveLength(1);
+    expect(container.querySelector('h2').textContent).toBe('Another night');
   });
 });

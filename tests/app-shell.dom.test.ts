@@ -53,16 +53,16 @@ describe('createShell', () => {
 });
 
 describe('views', () => {
-  it('render their heading into the container, replacing what was there', async () => {
+  it('render the night panel into the container, replacing what was there', async () => {
     const container = document.createElement('div');
     container.textContent = 'old';
     const stopVolunteer = renderVolunteerView(container, fakeContext());
-    expect(container.querySelector('h2').textContent).toBe('Volunteer');
+    expect(container.querySelectorAll('section[aria-label="Tonight"]')).toHaveLength(1);
     expect(container.textContent).not.toContain('old');
     stopVolunteer();
     const stopOrg = renderOrgView(container, fakeContext());
-    expect(container.querySelector('h2').textContent).toBe('Organization');
-    expect(container.querySelectorAll('h2')).toHaveLength(1);
+    expect(container.querySelectorAll('section[aria-label="Tonight"]')).toHaveLength(1);
+    expect(container.querySelector('#org-select')).not.toBeNull();
     stopOrg();
     await settle();
   });

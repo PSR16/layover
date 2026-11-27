@@ -13,12 +13,15 @@ import { locationOf } from '../lib/city-config.ts';
 import { createCredits } from '../components/credits.ts';
 import { TONIGHT_ID } from '../selection.ts';
 import { renderNightBoard } from './night-board.ts';
-import { createNightSelector } from './night-selector.ts';
+import { createDetails, type DetailsSlots } from './night-details.ts';
+import { createNightSelector, createSampleLevelSelector } from './night-selector.ts';
+import { createBadge } from '../components/badge.ts';
 
 export type SectionOptions = AppContext & { idPrefix?: string };
 interface Slots {
-  selector: HTMLElement;
   board: HTMLElement;
+  selector: HTMLElement;
+  details: DetailsSlots;
   credits: HTMLElement;
 }
 interface Loaded {
@@ -49,13 +52,13 @@ function loadFor({
 }
 
 function createSlots(page: Document, container: HTMLElement): Slots {
-  const [selector, board, credits] = ['div', 'div', 'div'].map((tag) =>
+  const [board, selector, credits] = ['div', 'div', 'div'].map((tag) =>
     page.createElement(tag),
   ) as [HTMLElement, HTMLElement, HTMLElement];
-  container.replaceChildren(selector, board, credits);
-  return { selector, board, credits };
+  const details = createDetails(page);
+  container.replaceChildren(board, selector, details.root, credits);
+  return { board, selector, details, credits };
 }
-
 interface DrawArguments {
   page: Document;
   slots: Slots;
@@ -67,6 +70,7 @@ function drawBoard({ page, slots, options, loaded, state }: DrawArguments & { lo
   const { city, datasetAttribution } = options;
   const model = buildNightModel({ record, weatherResult, sampleLevel: state.sampleLevel, city });
   renderNightBoard(slots.board, model);
+  slots.details.badges.replaceChildren(...model.details.map((badge) => createBadge(page, badge)));
   const credits = buildCredits({
     datasetAttribution: model.usesDataset ? datasetAttribution : undefined,
   });
@@ -75,16 +79,15 @@ function drawBoard({ page, slots, options, loaded, state }: DrawArguments & { lo
 
 function drawSelector({ page, slots, options, state }: DrawArguments) {
   const { records, store, idPrefix } = options;
-  const selector = createNightSelector(page, {
-    records,
-    state,
-    tonightId: TONIGHT_ID,
-    onChange: store.set,
-    idPrefix,
-  });
-  slots.selector.replaceChildren(selector);
+  const choices = { state, onChange: store.set, idPrefix };
+  slots.selector.replaceChildren(
+    createNightSelector(page, { ...choices, records, tonightId: TONIGHT_ID }),
+  );
+  const isTonight = state.nightId === TONIGHT_ID;
+  slots.details.level.replaceChildren(
+    ...(isTonight ? [createSampleLevelSelector(page, choices)] : []),
+  );
 }
-
 /**
  * @returns {() => void} stops listening to the selection store
  */
