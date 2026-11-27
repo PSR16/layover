@@ -233,7 +233,7 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 
 ### Additional open points
 
-6. **Where the build script lives.** The repo is JavaScript only. Options: a Node script under `tools/` that reads CSVs exported once from the dataset, or a Python script kept in `docs/`. The raw files are R and Excel based, so the first export step needs Python or R either way. Decide before Task 9 and update `structure.md` if a `tools/` folder is added.
+6. **Where the build script lives (decided in Task 9a: `tools/`).** The repo is JavaScript only. Options: a Node script under `tools/` that reads CSVs exported once from the dataset, or a Python script kept in `docs/`. The raw files are R and Excel based, so the first export step needs Python or R either way. Decide before Task 9 and update `structure.md` if a `tools/` folder is added.
 7. **Lake reference.** A single shoreline distance needs a Lake Michigan shoreline line from OSM. Spec 2 supplies it. Until then, sample places carry hand-set `lakeDistanceMeters`, labelled sample.
 
 ### Built in Task 7: notes and limits
@@ -243,3 +243,10 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 - **Engines are built from factor lists** (`createRiskEngine`). A factor with a reason key missing from the config makes the engine refuse to start (validator rule 5).
 - **Limit: place levels are dominated by the night.** A place's total is night points plus place points on the same thresholds. On a heavy night almost every place scores `high`, so the level separates places poorly and the points break the ties. Task 11 (replay checks) and spec 1b should decide whether places need their own thresholds or a relative rating.
 - **Limit: 0.9 migration with rough fall weather scores 0.69**, just under the `high` threshold of 0.70. The thresholds are placeholders until calibration.
+
+### Built in Task 9a: radar replay nights
+
+- **Two steps.** `tools/export-chicago-dataset.py` (Python, reads the raw Excel, radar and weather files outside the repo) writes three small tables. `tools/build-replay-nights.js` (Node) reads them, reuses `getNightTimes` and `summarizeNight`, ranks migration with `src/lib/percentile.js` and writes `src/data/radar-nights.json`. The pure steps are in `tools/replay-nights-core.js` and are unit tested.
+- **16 nights** (from 3,462 survey days): per season the 4 largest mortality events, the 2 quietest nights with the lights mostly on, and the 2 busiest-migration nights with at most 1 bird found. Every night is `source: 'replay'`, labelled "Replay night, radar-derived migration", and the file carries the CC BY 4.0 attribution.
+- **Migration** is the local radar bird density within 32 km, ranked as a percentile among nights of the same season, per night part. **Weather** is Midway hourly reports averaged per part; a ceiling under 1,500 m counts as low cloud (assumption). **Lit share** counts only code YN, weighted by window length. Survey counts sit in a `reference` block for checking only.
+- **First look at the engine on these nights (preview for Task 11, not a result):** all 8 mortality events score `elevated` at night level, none `high`. Quiet nights are `low`. Place level (a lit arena with the day's real lit share) is `high` for 7 of 8 events, but also for all 4 busy few-bird nights, including the 2018-05-21 spring night with low visibility and a lit share of 0.92 where only 1 bird was found, and the 2016-05-10 fog night with a lit share of 0.56 and no birds. The engine separates quiet nights well and over-warns on busy nights. Whether the lit share, which is already an input, should weigh more at the place level is the first question for Task 11.
