@@ -39,7 +39,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 9. Replay-night data.** (branch `feat/spec1-task-09-replay-nights-data`, commits 5214105, fdd5e5b)
   `data/replay-nights.js`: the radar nights from Task 9a plus the night of 2026-10-16 and the night of 2023-10-04, each with a labelled migration level, a note on its source, and a saved weather snapshot. All records carry `source`.
   Requirements: R7, R26, R28. Tests: every record has a source and a note; missing source is treated as `sample`.
-- [ ] **Task 10. Weather API client.**
+- [x] **Task 10. Weather API client.** (branch `feat/spec1-task-10-weather-client`, commits 43ef557, 83a4978, 1758a8c, 1b9c3a5, b7458a2)
   `api/weather.js`: Open-Meteo history, weather.gov live, 5 s timeout, fall back to the saved snapshot with a "Saved weather" flag.
   Requirements: R27 to R29. Tests: mocked fetch for success, timeout and error.
 - [ ] **Task 11. Replay-night assessment checks.**
