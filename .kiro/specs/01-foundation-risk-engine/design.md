@@ -277,3 +277,11 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 - **Pins.** `tests/replay-calibration.test.js` pins the night-level and building-level result for each of the 18 replay nights and checks the patterns the research expects. Known false alarms (three busy nights with 0 or 1 bird found) and one miss (2004-03-20) are pinned on purpose.
 - **Tried and dropped.** Scaling lit glass by migration did not improve AUC. A higher wind weight added about 0.003 AUC.
 - **Open question.** The spring low-visibility boost (E2) is not visible at this site (7 spring heavy nights under 5 km visibility, no events). Left as is because the sample is small. Spec 1b can revisit it with more weather detail.
+
+### Built in Task 12: city config and theme
+
+- **City config.** `src/config/city.js` has the Chicago config (id, name, centre, time zone `America/Chicago`, the Chicago risk overlay and label, and a coarse lake shoreline) and `getCity(id)`, which falls back to Chicago for an unknown id (and for names like `__proto__`). `src/lib/city-config.js` validates a city, turns it into the location the weather code reads (`locationOf`) and computes the distance to the lake (`lakeDistanceMeters`, null when the city has no shoreline). `src/lib/geo.js` holds the ground-distance maths.
+- **The shoreline is sample data.** Eleven hand-set points, good to a few hundred metres, marked `source: 'sample'` with a note. Spec 2 replaces it with a shoreline from the map data. The tests only check that lakefront venues come out under 1 km and the Loop over 1.5 km, not exact distances.
+- **Theme.** `src/styles/tokens.css` (navy surfaces, amber accent, risk and sample colors, 44 px control size, 18 px base text) and `src/styles/base.css` (page defaults, the 44 by 44 px rule for buttons, links styled as controls, inputs, selects and summaries, a visible focus ring). `main.js` loads both.
+- **Contrast is tested.** `tests/styles-tokens.test.js` reads the token file and checks every text color against all three surfaces at 4.5:1 or better, dark text on the amber button, control edges and the focus ring at 3:1, the 44 px size, and that the base styles use no hard-coded colors. Lowest text contrast: muted text on the raised surface, 7.8:1.
+- **Not yet seen in a browser.** The checks are numeric. A real 390 px screenshot is part of Task 15.
