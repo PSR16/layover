@@ -119,3 +119,13 @@ export function roundRing(ring: RingPoint[], decimals: number): RingPoint[] {
     roundTo(latitude, decimals),
   ]);
 }
+/** Fewer points for an open line, keeping both ends and the shape within `toleranceMeters`. */
+export function simplifyLine(line: RingPoint[], toleranceMeters: number): RingPoint[] {
+  const minimumPoints = 3;
+  if (line.length <= minimumPoints) {
+    return line;
+  }
+  const kept: boolean[] = line.map(() => false);
+  markKept(toFlat(line), [0, line.length - 1], toleranceMeters, kept);
+  return line.filter((_point, index) => kept[index]);
+}
