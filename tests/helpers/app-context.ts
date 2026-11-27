@@ -38,6 +38,7 @@ export function fakeContext(loaders = fakeLoaders()) {
     records: REPLAY_NIGHTS,
     store: createSelectionStore(),
     loaders,
+    loadBuildings: async () => ({ buildings: [], loaded: [], failed: [] }),
     datasetAttribution: RADAR_ATTRIBUTION,
   };
 }

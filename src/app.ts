@@ -4,6 +4,7 @@
  * network. main.ts calls this with the real page.
  */
 import type { AppContext, WeatherLoaders } from './context.ts';
+import { loadAllAreas } from './api/sources.ts';
 import { loadReplayWeather, loadTonightWeather } from './api/weather.ts';
 import { DEFAULT_CITY_ID, getCity } from './config/city.ts';
 import { RADAR_ATTRIBUTION, REPLAY_NIGHTS } from './data/replay-nights.ts';
@@ -27,7 +28,7 @@ const REAL_LOADERS: WeatherLoaders = {
 export interface AppOptions {
   root: HTMLElement;
   browserWindow: Window;
-  deps?: { loaders?: WeatherLoaders; city?: City };
+  deps?: { loaders?: WeatherLoaders; city?: City; loadBuildings?: AppContext['loadBuildings'] };
 }
 export function startApp({ root, browserWindow, deps = {} }: AppOptions): () => void {
   const context: AppContext = {
@@ -35,6 +36,7 @@ export function startApp({ root, browserWindow, deps = {} }: AppOptions): () => 
     records: REPLAY_NIGHTS,
     store: createSelectionStore(),
     loaders: deps.loaders ?? REAL_LOADERS,
+    loadBuildings: deps.loadBuildings ?? (() => loadAllAreas()),
     datasetAttribution: RADAR_ATTRIBUTION,
   };
   const shell = createShell(root);

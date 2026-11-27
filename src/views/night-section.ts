@@ -9,6 +9,7 @@ import type { ReplayNight, WeatherResult } from '../lib/types.ts';
 import type { SelectionState } from '../selection.ts';
 import { buildCredits } from '../lib/credits.ts';
 import { buildNightModel } from '../lib/night-model.ts';
+import { nightScoring, type NightScoring } from '../lib/night-conditions.ts';
 import { locationOf } from '../lib/city-config.ts';
 import { createCredits } from '../components/credits.ts';
 import { TONIGHT_ID } from '../selection.ts';
@@ -17,7 +18,11 @@ import { createDetails, type DetailsSlots } from './night-details.ts';
 import { createNightSelector, createSampleLevelSelector } from './night-selector.ts';
 import { createBadge } from '../components/badge.ts';
 
-export type SectionOptions = AppContext & { idPrefix?: string };
+export type SectionOptions = AppContext & {
+  idPrefix?: string;
+  /** Called each time the board is drawn, with what the place list needs to score buildings. */
+  onScoring?: (scoring: NightScoring) => void;
+};
 interface Slots {
   board: HTMLElement;
   selector: HTMLElement;
@@ -70,6 +75,9 @@ function drawBoard({ page, slots, options, loaded, state }: DrawArguments & { lo
   const { city, datasetAttribution } = options;
   const model = buildNightModel({ record, weatherResult, sampleLevel: state.sampleLevel, city });
   renderNightBoard(slots.board, model);
+  options.onScoring?.(
+    nightScoring({ record, weatherResult, sampleLevel: state.sampleLevel, city }),
+  );
   slots.details.badges.replaceChildren(...model.details.map((badge) => createBadge(page, badge)));
   const credits = buildCredits({
     datasetAttribution: model.usesDataset ? datasetAttribution : undefined,
