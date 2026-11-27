@@ -258,3 +258,12 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 - **Saved weather is the weather for replay nights.** Radar nights (2000 to 2020) cannot be fetched live, and the news nights are saved so the demo works offline. Task 10 uses the live request only for tonight, and falls back to a saved snapshot labelled "Saved weather" (R28).
 - **The JSON files are imported by Vite and Vitest.** Plain Node needs an import attribute for JSON, so quick scripts that import the data module should run with `npx vite-node`.
 - **First look at the news nights:** 2023-10-04 has wind from the south-southwest and cloud thickening to 100% by dawn (the unfavorable fall pattern in E2) and scores 0.62, `elevated`. 2026-10-16 has favorable north-northwest wind and scores 0.48, `elevated`. A lit glass building scores `high` on both (0.98 and 0.76). The 2023 migration level and date are unconfirmed.
+
+### Built in Task 10: weather client
+
+- `src/api/weather.js`: `fetchHistoricalWeather` (Open-Meteo), `fetchTonightWeather` (weather.gov: points lookup, then gridpoint forecast, grid address cached in memory), `loadReplayWeather` and `loadTonightWeather` (never throw; always return a result with `source`, `label`, `provider` and, after a failure, `error: { reason, status? }`). Reasons: `timeout`, `network`, `http`, `invalid`, `empty`. The default timeout is 5 seconds, set with an AbortController.
+- **Replay nights:** a record with `liveWeather: true` (the two news nights) is requested live and falls back to its saved snapshot labelled "Saved weather" on any failure. Radar nights have `liveWeather: false` and use the saved snapshot with no request.
+- **Tonight:** on failure the result is `source: 'unavailable'`, label "Weather unavailable", weather left out, and the engine reports the missing inputs (R22). There is no saved snapshot for tonight.
+- `src/lib/tonight.js`: `nightOfTonight(now, location)` picks the night whose sunrise is still ahead, using the city's time zone. The city config (Task 12) must therefore include `timeZone`.
+- **Dependencies are injected** (`fetchFn`, `timeoutMs`, `now`, `cache`), so tests use fake responses saved in `tests/fixtures` and the helpers in `tests/helpers/fake-fetch.js`. No test touches the network.
+- **Not yet checked in a real browser:** weather.gov and Open-Meteo are believed to allow cross-origin requests from a web page, and a browser sends its own User-Agent. Check both when the tonight panel is built (Task 15). If weather.gov blocks the page, a small server-side proxy on Railway is the fix.
