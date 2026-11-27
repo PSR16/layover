@@ -15,6 +15,7 @@ layover/
     api/                Overpass and other fetch code
     data/               Labelled sample data
     styles/             CSS (navy and amber tokens, 44px control sizes)
+  tools/                One-off build scripts (Node, plus one Python export). Not part of the app bundle.
   tests/                Vitest and fast-check tests, mirroring src/lib
   docs/                 research.md (evidence table), kiro-log.md (build journal)
   .kiro/
