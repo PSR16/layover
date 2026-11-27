@@ -120,6 +120,18 @@ How to use this file:
 - Update: Mutation check: closing the footprint check made a test fail. Removing `Number.isFinite` on longitude did not, because `Math.abs(NaN) <= 180` is already false, so that check is redundant and the mutant is equivalent.
 - Update: The first version of the "outside the globe" test used the wrong axis and passed for the wrong reason; the test failed against the code, so Kiro fixed the test.
 
+
+### 2026-11-27 · Spec 2 · Task 2 / building extract and size budget
+- Surface: IDE
+- What Kiro did: Built `tools/extract-geometry.ts` (area, centre, Douglas-Peucker at 1 m, rounding), `tools/extract-records.ts` (Overture feature to slim record, OSM ID, kind only for stadium and arena, keep known buildings and bare footprints of 150 m² or more) and `tools/build-building-extract.ts`. Wrote `src/data/buildings-{loop,lakefront,evanston}.json`.
+- Files: tools/extract-*.ts, tools/build-building-extract.ts, src/data/buildings-*.json, tests/extract-geometry.test.ts, tests/extract-records.test.ts, tests/buildings-data.test.ts, .prettierignore
+- Requirements / evidence: spec 2 R1, R2, R3, R4
+- Result: 3,493 of 4,015 buildings kept (loop 1,114 of 1,464, lakefront 1,612 of 1,777, evanston 767 of 774). 260,598 bytes gzipped against the 500,000 budget, so nothing needed cutting. Overture release 2026-11-18.0.
+- Tests: 37 added; 527 passing in total.
+- Update: The data test found a real bug that the unit tests had not: a building of 0.04 m height rounded to 0.0 and was kept with a height of 0. Fixed so a height that rounds to zero is left out, and added the case to the unit test.
+- Update: Prettier had reformatted the extract JSON into 40 percent larger files. `src/data/buildings-*.json` is now in `.prettierignore`.
+- Commits: 3119ddf, 70a3344, plus the CLI and data commit below.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)

@@ -1,12 +1,12 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Task 1 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Tasks 1 and 2 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
 - [x] **Task 1. Building types and validation.** (branch `feat/spec2-task-01-building-types`) `buildings.ts`: `BuildingRecord`, `validateBuilding` (finite coordinates, closed ring, ID present), height and kind stay missing when missing. Types go in `types.ts`.
   Requirements: R3, R4, R14. Tests: unit; property: an invalid record never passes validation.
-- [ ] **Task 2. Extract build script and budget check.** `tools/build-building-extract.ts` and its pure helpers (filter, Douglas-Peucker, rounding, sort). Run on the three Overture GeoJSON files, print per-area size and what each rule dropped, write the three JSON files with a header. Fail above 500 kB gzipped.
+- [x] **Task 2. Extract build script and budget check.** (branch `feat/spec2-task-02-building-extract`, commits 3119ddf, 70a3344) `tools/build-building-extract.ts` and its pure helpers (filter, Douglas-Peucker, rounding, sort). Run on the three Overture GeoJSON files, print per-area size and what each rule dropped, write the three JSON files with a header. Fail above 500 kB gzipped.
   Requirements: R1, R2, R3, R5. Tests: helpers (simplify keeps the ring closed, rounding, determinism: same input, same bytes). Decision point: if the budget fails, stop and tell the user before dropping more.
 - [ ] **Task 3. Shoreline.** `tools/build-shoreline.ts` (OSM coastline for Lake Michigan near Chicago and Evanston, at most 200 points), `shoreline.ts` (simplify, distance), replace the sample shoreline in `config/city.ts`, update the credit.
   Requirements: R15, R16, spec 1 R38. Tests: distance is 0 on the line and never negative; a missing shoreline gives no distance. Re-run the Chicago calibration pins and report any change.
