@@ -102,17 +102,34 @@ How to use this file:
 | Commit | Spec task finished | Test, small commits, log hashes | | | |
 | Mobile check | Manual | Playwright 390px screenshots | | | |
 
+**Git hooks (Husky), counted from this session by Kiro:** these are not the Kiro agent hooks above, whose firing counts were not recorded.
+- commitlint rejected 2 commits for a subject over 72 characters (Task 6 and Task 9). Both were reworded and recommitted; no hook was bypassed.
+- The pre-commit lint and test step blocked 3 commit attempts: an unused constant in `tonight.js` (Task 10), and an unused variable and a nested-callback error in `geo.test.js` (Task 12, two attempts).
+- The Commit hook prompt (`.kiro/hooks/test-and-commit-task`) was changed during Task 1 work to check the branch first and never commit on `main`.
+
 **Me:** Which hook saved the most time or caught the most important problem?
 
 ## 4. Spec-driven development
 - Spec structure: requirements (EARS, with evidence IDs) → design (weights table with sources) → tasks (ordered, IDs per task)
-- Requirements I changed (before → after, why):
+- Requirements I changed (before → after, why), as recorded by Kiro from my instructions:
+  - Trained status: approval flow dropped, a `trained` flag shown next to a person is enough ("if that's too much right now, we don't have to have those linked").
+  - First city Chicago, with the October 2026 Northwestern night as a replay night, instead of Columbus (R26).
+  - Added R40 (bird-safe treatment discount) after I pointed out McCormick Place is now bird-friendly, and R36 (credits) once the dataset licence was confirmed CC BY 4.0.
+  - Product rule: plain-text credits and links to data sources are allowed ("label BirdCast is fine").
 - Design changes I pushed for:
+  - An easily editable risk engine (config as data, one object per factor, a validator, config overrides), which became R30 to R35.
+  - A branch per task with merges only when I ask, written into the steering files.
+  - A future spec 6 (building history and route recommendations) so the early specs leave room for it.
 - Task order changes:
+  - Task 9a (build the radar-night table) was inserted before Task 9 once the Chicago dataset arrived.
+  - Task 11 grew from "check two replay nights" into a calibration over 3,141 nights with held-out years, and I was asked to approve its proposals before anything was applied.
 - Moments the spec prevented rework:
+  - Config as data (R30): applying the calibration changed config files, a new `placeThresholds` pair and one line in the combine step, not the factor code. The Chicago wind rules became a data-only overlay.
+  - Injectable factor lists (R31): the calibration tool tried "lit glass scaled by migration" without touching the engine, and it did not help.
+  - The validator (R32) refused an override that raised the night threshold above the place threshold, which is how the new `placeThresholds` rule showed up in a test.
 
 **Vibe-coding comparison (deliberate experiment):**
-- Feature tried without a spec:
+- Feature tried without a spec: not done yet (no vibe-coding comparison has been run).
 - Result vs spec-driven version (time, bugs, rework):
 
 **Me:** Overall comparison in 2–3 sentences.
@@ -144,3 +161,20 @@ How to use this file:
 
 ## 7. Property-based testing
 > Update 2026-11-26: the earlier timeline entries were dropped when this file was reformatted; they remain in git history (commit 3aa598a).
+
+39 property checks (fast-check) across 18 test files, with the main ones below. Recorded by Kiro from this session.
+
+| Area | Properties | Requirement |
+|---|---|---|
+| Risk engine (`risk.property.test.js`, 12) | level is always low, elevated or high with at least one reason; same input gives the same output; more migration or more lit glass never lowers the level; a light-migration night is never high; minimal migration with clearly unfavorable weather is at least elevated; fall points at least spring points; facade compass direction changes nothing; removing any input still gives a result and names it; no migration data caps at elevated; treatment never raises points; ranking does not depend on input order | R9, R11, R12, R15, R19, R21, R22, R25, R40 |
+| Factors (night 2, place 4) | finite non-negative points, a known reason key, a missing list; migration and lit glass monotone; compass direction ignored | R10 to R12, R21 |
+| Config (validator and merge, 4) | any config the validator accepts has migration largest, height weakest, ordered thresholds; a config built to follow the rules is accepted | R32 |
+| Helpers (season, wind 4, night parts, tonight, geo 2, percentile, lighting, route, normalizers, weather client) | wrapping and symmetry of angles, circular mean, every reading in the night kept exactly once, ranks stay between 0 and 1, the weather client never throws and always returns weather | R16, R17, R25, R27 to R29, R37 |
+| Calibration statistics (2) | AUC flips to 1 minus itself when scores are negated, Spearman stays in range | R26 |
+
+**Counterexamples and what they turned out to be (honest record):**
+- No property test has failed on engine code once written. The problems properties surfaced were in the tests: a date generator that produced invalid dates (season test), and rounding to milliseconds that put a reading just past sunrise inside the night (night-parts test).
+- The validator property was close to empty at first: only 8 of 20,000 random configs passed validation, so "accepted configs obey the rules" almost never ran. Narrowed the generators and added a count that fails below 10 accepted.
+- A design issue found while writing the monotonicity property for R11 and R15: a weather floor that applied only to light-migration nights would make the level drop as migration rose. The floor now applies on any night with enough unfavorable weather.
+- Real bugs came from unit tests and real data, not properties: an invalid time returned `undefined` instead of `null` in the night-part lookup, `getCity('__proto__')` returned the object prototype, and a screenshot showed no page padding and unstyled links.
+- To check the properties can fail, Kiro broke the code on purpose in four places each for the engine and the weather client (for example, removing the floor or the missing-migration cap) and every break was caught by at least one test.
