@@ -291,3 +291,10 @@ Open-Meteo history may lag by a few days, which is fine for past nights.
 - `src/lib/route.js` (`resolveRoute`, pure), `src/router.js` (`startRouter`, takes the window as a parameter so tests use a fake one), `src/views/app-shell.js` (header, two view links with `aria-current` on the active one, a main area), placeholder `volunteer-view.js` and `org-view.js`, and `main.js` wiring them. An empty or unknown hash is rewritten to `#volunteer` with `replaceState`, so it adds no history entry and the back button is not trapped.
 - Views are built with DOM calls and `textContent`, never `innerHTML` (R5).
 - **DOM tests** run in `happy-dom` (exact-pinned dev dependency) in files named `*.dom.test.js`, which get browser globals in the lint config. `main.dom.test.js` starts the real `main.js` and checks all four hash cases.
+
+### Built in Task 14: badges and credits
+
+- `src/lib/data-labels.js` decides the words: `nightBadge` (a record's own label, such as "Replay night, radar-derived migration", or "Sample data" when the source is missing), `migrationBadge` ("Radar-derived migration" or "Sample migration level"), `weatherBadge` (the provider name, "Saved weather" or "Weather unavailable") and `riskWord` (Low, Elevated or High, anything else throws). `src/lib/credits.js` builds the credits list: the Chicago dataset text when it is used, and "© OpenStreetMap contributors" with a link when map data is used.
+- `src/components/badge.js` (`createBadge`, `createRiskBadge`) and `credits.js` build the elements with `textContent`, so a hostile string stays text (tested with an `<img onerror>` and a `<script>` string). Credits links open in a new tab with `rel="noopener noreferrer"`, and there are no logos.
+- `src/styles/components.css` styles badges and credits from tokens only. Every badge carries a word; color is never the only signal. The style tests check that components.css uses only token colors that were contrast-checked.
+- Reading note: the risk badge draws its text in capitals with CSS; the text itself is the word "High", so screen readers say it normally.
