@@ -94,6 +94,7 @@ How to use this file:
 - What Kiro did: Audited the volunteer screen at 390 px against `.kiro/steering/ux.md`, then rebuilt the night panel. The risk word is now the largest thing on screen, reasons and conditions use the body font, two labels show by default and the rest sit under Details with the sample migration level picker. Removed the view heading and the "coming" sentences.
 - Files: src/views/night-board.ts, night-details.ts, night-selector.ts, night-section.ts, volunteer-view.ts, org-view.ts, src/lib/night-model.ts (new `details` list), src/styles/components.css, tokens.css
 - Tests: 490 passing; tests for the old layout were rewritten, two added for Details.
+- Commits: a0e225d
 - Screenshot: yes (docs/screenshots/ux-night-panel-before-390px.png, ux-night-panel-after-390px.png, before and after at 1280 px, ux-org-after-390px.png)
 - Update: Before the build I asked two questions and you said yes to both: the org view shows the same panel with no placeholder text, and the sample level picker moves under Details.
 - Update: Credits stay visible below Details instead of inside it, because the dataset needs a visible credit (CC BY 4.0). That differs from what I proposed.
