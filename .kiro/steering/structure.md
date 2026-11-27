@@ -20,7 +20,7 @@ layover/
   tests/                Vitest and fast-check tests, mirroring src/lib
   docs/                 research.md (evidence table), kiro-log.md (build journal)
   .kiro/
-    steering/           product.md, tech.md, structure.md, research.md, git.md, kiro-journal.md
+    steering/           product.md, tech.md, structure.md, research.md, git.md, kiro-journal.md, ux.md
     specs/              Requirements, design, tasks
 ```
 
