@@ -159,6 +159,50 @@ describe('buildNightModel for tonight (R29)', () => {
   });
 });
 
+describe('cloud wording for forecast total cover', () => {
+  it('says total cover, not low cloud, when the weather came from the forecast stand-in', () => {
+    const cloudy = {
+      ...live('2026-11-26', { windFromDegrees: 20, windSpeedMps: 9, lowCloudPercent: 95 }),
+      notes: ['lowCloudFromSkyCover'],
+    };
+    const clear = {
+      ...live('2026-11-26', { windFromDegrees: 20, windSpeedMps: 9, lowCloudPercent: 5 }),
+      notes: ['lowCloudFromSkyCover'],
+    };
+    const cloud = (weatherResult) =>
+      buildNightModel({ record: null, weatherResult, city: CHICAGO }).rows.find(
+        (row) => row.label === 'Cloud',
+      ).value;
+    expect(cloud(cloudy)).toBe('Cloudy (total cover)');
+    expect(cloud(clear)).toBe('Clear (total cover)');
+  });
+
+  it('words the cloud reason as total cover too, so it does not claim low cloud', () => {
+    const forecast = {
+      ...live('2026-11-26', { windFromDegrees: 20, windSpeedMps: 9, lowCloudPercent: 95 }),
+      notes: ['lowCloudFromSkyCover'],
+    };
+    const model = buildNightModel({ record: null, weatherResult: forecast, city: CHICAGO });
+    expect(model.reasons).toContain('Heavy cloud cover may pull birds toward lit buildings.');
+    expect(model.reasons).not.toContain('Low cloud pulls birds toward lit buildings.');
+    const real = buildNightModel({
+      record: null,
+      weatherResult: live('2026-11-26'),
+      city: CHICAGO,
+    });
+    expect(real.reasons).toContain('Low cloud pulls birds toward lit buildings.');
+  });
+
+  it('still says low cloud when the weather has a real low-cloud value', () => {
+    const model = buildNightModel({
+      record: null,
+      weatherResult: live('2026-11-26'),
+      city: CHICAGO,
+    });
+    expect(model.rows.find((row) => row.label === 'Cloud').value).toBe('Low cloud');
+  });
+});
+
 describe('what the panel never shows (product rule)', () => {
   it('uses no bird counts or casualty words in reasons, rows or badges', () => {
     for (const night of REPLAY_NIGHTS) {

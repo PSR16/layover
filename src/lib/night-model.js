@@ -55,7 +55,24 @@ function visibilityWords(part, config) {
   return `${low ? 'Low' : 'Good'}, ${part.visibilityKm.toFixed(0)} km`;
 }
 
-function cloudWords(part, config) {
+function cloudWords(part, config, notes) {
+  const isTotalCover = notes.includes('lowCloudFromSkyCover');
+  if (isTotalCover) {
+    return totalCoverWords(part);
+  }
+  return lowCloudWords(part, config);
+}
+
+/** Forecast cover is total cloud, used as a stand-in for low cloud, so say it in those words. */
+function totalCoverWords(part) {
+  if (!Number.isFinite(part?.lowCloudPercent)) {
+    return 'Not known';
+  }
+  const cover = part.lowCloudPercent < CLEAR_BELOW_PERCENT ? 'Clear' : 'Cloudy';
+  return `${cover} (total cover)`;
+}
+
+function lowCloudWords(part, config) {
   if (!Number.isFinite(part?.lowCloudPercent)) {
     return 'Not known';
   }
@@ -77,6 +94,27 @@ function nightBadges({ record, weatherResult, migration, city }) {
     badges.push({ text: city.riskLabel, tone: 'notice' });
   }
   return badges;
+}
+
+function conditionRows({ migration, part, weatherResult, config }) {
+  const notes = weatherResult.notes ?? [];
+  return [
+    { label: 'Migration', value: migrationWords(migration, config) },
+    { label: 'Wind', value: windWords(part) },
+    { label: 'Visibility', value: visibilityWords(part, config) },
+    { label: 'Cloud', value: cloudWords(part, config, notes) },
+  ];
+}
+
+const TOTAL_COVER_REASON = 'Heavy cloud cover may pull birds toward lit buildings.';
+
+/** Config overrides for this night: the city's own, plus honest wording when cloud is total cover. */
+function overridesFor(city, weatherResult) {
+  const overrides = { ...city?.riskOverrides };
+  if ((weatherResult.notes ?? []).includes('lowCloudFromSkyCover')) {
+    overrides.reasons = { lowCloud: TOTAL_COVER_REASON };
+  }
+  return overrides;
 }
 
 function sampleMigration(sampleLevel) {
@@ -101,19 +139,14 @@ export function buildNightModel({
   const night = record ? record.night : weatherResult.night;
   const migration = record ? record.migration : sampleMigration(sampleLevel);
   const weather = weatherResult.weather;
-  const risk = assessNight({ night, migration, weather }, city?.riskOverrides);
+  const risk = assessNight({ night, migration, weather }, overridesFor(city, weatherResult));
   const part = shownPart(weather);
   return {
     title: record ? `Night of ${night}` : `Tonight, night of ${night}`,
     level: risk.level,
     reasons: risk.reasons,
     missing: risk.missingInputs.map((name) => MISSING_WORDS[name] ?? name),
-    rows: [
-      { label: 'Migration', value: migrationWords(migration, config) },
-      { label: 'Wind', value: windWords(part) },
-      { label: 'Visibility', value: visibilityWords(part, config) },
-      { label: 'Cloud', value: cloudWords(part, config) },
-    ],
+    rows: conditionRows({ migration, part, weatherResult, config }),
     badges: nightBadges({ record, weatherResult, migration, city }),
     usesDataset: record?.migration?.source === 'replay',
   };
