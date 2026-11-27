@@ -75,3 +75,30 @@ export function circularMeanDegrees(directions) {
   }
   return normalizeDegrees((Math.atan2(east, north) * HALF_CIRCLE) / Math.PI);
 }
+
+const COMPASS_POINTS = [
+  'N',
+  'NNE',
+  'NE',
+  'ENE',
+  'E',
+  'ESE',
+  'SE',
+  'SSE',
+  'S',
+  'SSW',
+  'SW',
+  'WSW',
+  'W',
+  'WNW',
+  'NW',
+  'NNW',
+];
+
+/** Compass name of a direction, for example 337 gives 'NNW'. */
+export function compassPoint(degrees) {
+  const slice = FULL_CIRCLE / COMPASS_POINTS.length;
+  return COMPASS_POINTS[
+    Math.floor((normalizeDegrees(degrees) + slice / 2) / slice) % COMPASS_POINTS.length
+  ];
+}
