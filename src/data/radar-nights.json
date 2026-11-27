@@ -1,0 +1,665 @@
+{
+  "meta": {
+    "title": "Radar replay nights from the McCormick Place dataset",
+    "site": {
+      "name": "McCormick Place Lakeside Center, Chicago",
+      "latitude": 41.8514,
+      "longitude": -87.6168
+    },
+    "source": "Van Doren et al. 2021, Mendeley Data, DOI 10.17632/mjvt3yxdkv.2",
+    "licence": "CC BY 4.0",
+    "attribution": "Includes data derived from Van Doren et al. (2021), \"Dataset for Drivers of fatal bird collisions in an urban center\", Mendeley Data, DOI 10.17632/mjvt3yxdkv.2, licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Changes: selected nights, radar bird density converted to a 0 to 1 percentile within season, weather averaged into three night parts. The authors do not endorse Layover.",
+    "builtBy": "tools/export-chicago-dataset.py and tools/build-replay-nights.js",
+    "builtOn": "2026-11-26",
+    "nightsConsidered": 3462,
+    "assumptions": [
+      "Night of D is sunset on D to sunrise on D+1; the dawn survey on D+1 is matched to it.",
+      "Migration is the local radar bird density within 32 km (land and lake), scans with at most half of the area masked as weather, averaged per night part and ranked as a percentile among all nights of the same season (spring means day of year under 200).",
+      "Weather is Chicago Midway hourly routine reports averaged per night part. A ceiling under 1,500 m counts as low cloud (100 percent), otherwise 0.",
+      "Lit share counts only lighting code YN as lit, weighted by window length.",
+      "Counts in \"reference\" are for checking the engine only. The interface never shows them.",
+      "The building was surveyed before its 2024 bird-safe treatment, so these nights describe an untreated building."
+    ]
+  },
+  "nights": [
+    {
+      "id": "radar-2000-10-14",
+      "night": "2000-10-14",
+      "season": "fall",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.761,
+        "middle": 0.751,
+        "late": 0.961,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 224.844,
+          "windSpeedMps": 1.95,
+          "lowCloudPercent": 0,
+          "visibilityKm": 15.691
+        },
+        "middle": {
+          "windFromDegrees": 207.486,
+          "windSpeedMps": 4.375,
+          "lowCloudPercent": 0,
+          "visibilityKm": 15.289
+        },
+        "late": {
+          "windFromDegrees": 277.187,
+          "windSpeedMps": 2.78,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2000-10-15",
+        "birdsFound": 149,
+        "litShare": 0.941
+      }
+    },
+    {
+      "id": "radar-2001-10-12",
+      "night": "2001-10-12",
+      "season": "fall",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.808,
+        "middle": 0.771,
+        "late": 0.506,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 179.923,
+          "windSpeedMps": 3.1,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 180,
+          "windSpeedMps": 2.7,
+          "lowCloudPercent": 100,
+          "visibilityKm": 13.679
+        },
+        "late": {
+          "windFromDegrees": 148.08,
+          "windSpeedMps": 3.6,
+          "lowCloudPercent": 100,
+          "visibilityKm": 11.265
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2001-10-13",
+        "birdsFound": 65,
+        "litShare": 1
+      }
+    },
+    {
+      "id": "radar-2002-05-05",
+      "night": "2002-05-05",
+      "season": "spring",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.988,
+        "middle": 0.984,
+        "late": 0.993,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 193.33,
+          "windSpeedMps": 5.633,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 196.67,
+          "windSpeedMps": 6.867,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 206.636,
+          "windSpeedMps": 7.2,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2002-05-06",
+        "birdsFound": 120,
+        "litShare": 1
+      }
+    },
+    {
+      "id": "radar-2004-03-20",
+      "night": "2004-03-20",
+      "season": "spring",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.158,
+        "middle": 0.46,
+        "late": null,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 327.543,
+          "windSpeedMps": 11.05,
+          "lowCloudPercent": 25,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 327.486,
+          "windSpeedMps": 9,
+          "lowCloudPercent": 100,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 330,
+          "windSpeedMps": 7.9,
+          "lowCloudPercent": 33.333,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2004-03-21",
+        "birdsFound": 80,
+        "litShare": 0.956
+      }
+    },
+    {
+      "id": "radar-2007-09-07",
+      "night": "2007-09-07",
+      "season": "fall",
+      "kind": "busy-few-birds",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.984,
+        "middle": 0.996,
+        "late": 0.987,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 290,
+          "windSpeedMps": 2.975,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 43.223,
+          "windSpeedMps": 4.633,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 60,
+          "windSpeedMps": 3.35,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "Heavy migration but almost nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2007-09-08",
+        "birdsFound": 1,
+        "litShare": 0.815
+      }
+    },
+    {
+      "id": "radar-2007-10-08",
+      "night": "2007-10-08",
+      "season": "fall",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.967,
+        "middle": 0.994,
+        "late": 0.997,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 290,
+          "windSpeedMps": 6.2,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 303.364,
+          "windSpeedMps": 3.225,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 243.998,
+          "windSpeedMps": 3,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2007-10-09",
+        "birdsFound": 71,
+        "litShare": 0.919
+      }
+    },
+    {
+      "id": "radar-2008-05-06",
+      "night": "2008-05-06",
+      "season": "spring",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.954,
+        "middle": 0.868,
+        "late": 0.89,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 206.67,
+          "windSpeedMps": 4.267,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 220,
+          "windSpeedMps": 7.9,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 213.33,
+          "windSpeedMps": 5.3,
+          "lowCloudPercent": 33.333,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2008-05-07",
+        "birdsFound": 58,
+        "litShare": 1
+      }
+    },
+    {
+      "id": "radar-2008-10-30",
+      "night": "2008-10-30",
+      "season": "fall",
+      "kind": "quiet",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.008,
+        "middle": 0.005,
+        "late": 0.018,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 186.002,
+          "windSpeedMps": 4.3,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 207.505,
+          "windSpeedMps": 4.75,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 206.002,
+          "windSpeedMps": 4.1,
+          "lowCloudPercent": 0,
+          "visibilityKm": 15.771
+        }
+      },
+      "note": "Low migration, lights mostly on, nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2008-10-31",
+        "birdsFound": 0,
+        "litShare": 1
+      }
+    },
+    {
+      "id": "radar-2011-03-15",
+      "night": "2011-03-15",
+      "season": "spring",
+      "kind": "quiet",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.135,
+        "middle": 0.005,
+        "late": 0.07,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windSpeedMps": 1.025,
+          "lowCloudPercent": 100,
+          "visibilityKm": 14.886,
+          "windFromDegrees": 240
+        },
+        "middle": {
+          "windFromDegrees": 230,
+          "windSpeedMps": 1.275,
+          "lowCloudPercent": 0,
+          "visibilityKm": 11.265
+        },
+        "late": {
+          "windFromDegrees": 235.038,
+          "windSpeedMps": 2.575,
+          "lowCloudPercent": 0,
+          "visibilityKm": 9.656
+        }
+      },
+      "note": "Low migration, lights mostly on, nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2011-03-16",
+        "birdsFound": 0,
+        "litShare": 0.829
+      }
+    },
+    {
+      "id": "radar-2013-10-07",
+      "night": "2013-10-07",
+      "season": "fall",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.989,
+        "middle": 0.99,
+        "late": 0.964,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 132.28,
+          "windSpeedMps": 2.325,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windSpeedMps": 2.175,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093,
+          "windFromDegrees": 173.33
+        },
+        "late": {
+          "windFromDegrees": 187.993,
+          "windSpeedMps": 1.62,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2013-10-08",
+        "birdsFound": 103,
+        "litShare": 0.793
+      }
+    },
+    {
+      "id": "radar-2016-03-04",
+      "night": "2016-03-04",
+      "season": "spring",
+      "kind": "quiet",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.278,
+        "middle": 0.008,
+        "late": 0.232,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 169.813,
+          "windSpeedMps": 4.52,
+          "lowCloudPercent": 20,
+          "visibilityKm": 13.277
+        },
+        "middle": {
+          "windFromDegrees": 172.495,
+          "windSpeedMps": 3.475,
+          "lowCloudPercent": 100,
+          "visibilityKm": 6.84
+        },
+        "late": {
+          "windFromDegrees": 205,
+          "windSpeedMps": 3.475,
+          "lowCloudPercent": 100,
+          "visibilityKm": 10.058
+        }
+      },
+      "note": "Low migration, lights mostly on, nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2016-03-05",
+        "birdsFound": 0,
+        "litShare": 1
+      }
+    },
+    {
+      "id": "radar-2016-05-10",
+      "night": "2016-05-10",
+      "season": "spring",
+      "kind": "busy-few-birds",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.983,
+        "middle": 0.997,
+        "late": 0.996,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 83.835,
+          "windSpeedMps": 2.9,
+          "lowCloudPercent": 100,
+          "visibilityKm": 6.974
+        },
+        "middle": {
+          "windFromDegrees": 60,
+          "windSpeedMps": 2.767,
+          "lowCloudPercent": 100,
+          "visibilityKm": 0.402
+        },
+        "late": {
+          "windFromDegrees": 43.33,
+          "windSpeedMps": 2.6,
+          "lowCloudPercent": 100,
+          "visibilityKm": 1.609
+        }
+      },
+      "note": "Heavy migration but almost nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2016-05-11",
+        "birdsFound": 0,
+        "litShare": 0.564
+      }
+    },
+    {
+      "id": "radar-2016-10-16",
+      "night": "2016-10-16",
+      "season": "fall",
+      "kind": "quiet",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.066,
+        "middle": 0.003,
+        "late": 0,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 127.505,
+          "windSpeedMps": 3.725,
+          "lowCloudPercent": 50,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 172.457,
+          "windSpeedMps": 4.475,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 192.007,
+          "windSpeedMps": 5.46,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "Low migration, lights mostly on, nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2016-10-17",
+        "birdsFound": 0,
+        "litShare": 0.846
+      }
+    },
+    {
+      "id": "radar-2018-05-01",
+      "night": "2018-05-01",
+      "season": "spring",
+      "kind": "mortality-event",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.874,
+        "middle": 0.885,
+        "late": 0.889,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 200,
+          "windSpeedMps": 7.975,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 213.33,
+          "windSpeedMps": 7.9,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windFromDegrees": 220,
+          "windSpeedMps": 7.533,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "One of the largest dawn finds of its season at the survey building (before treatment).",
+      "reference": {
+        "surveyDate": "2018-05-02",
+        "birdsFound": 157,
+        "litShare": 1
+      }
+    },
+    {
+      "id": "radar-2018-05-21",
+      "night": "2018-05-21",
+      "season": "spring",
+      "kind": "busy-few-birds",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.965,
+        "middle": 0.992,
+        "late": 0.972,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 16.165,
+          "windSpeedMps": 2.067,
+          "lowCloudPercent": 100,
+          "visibilityKm": 2.682
+        },
+        "middle": {
+          "windFromDegrees": 25,
+          "windSpeedMps": 1.567,
+          "lowCloudPercent": 100,
+          "visibilityKm": 2.682
+        },
+        "late": {
+          "windFromDegrees": 32.604,
+          "windSpeedMps": 2.233,
+          "lowCloudPercent": 100,
+          "visibilityKm": 2.146
+        }
+      },
+      "note": "Heavy migration but almost nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2018-05-22",
+        "birdsFound": 1,
+        "litShare": 0.92
+      }
+    },
+    {
+      "id": "radar-2020-09-13",
+      "night": "2020-09-13",
+      "season": "fall",
+      "kind": "busy-few-birds",
+      "source": "replay",
+      "label": "Replay night, radar-derived migration",
+      "migration": {
+        "early": 0.979,
+        "middle": 0.99,
+        "late": 0.997,
+        "source": "replay"
+      },
+      "weather": {
+        "early": {
+          "windFromDegrees": 66.67,
+          "windSpeedMps": 2.267,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "middle": {
+          "windFromDegrees": 70,
+          "windSpeedMps": 0.525,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        },
+        "late": {
+          "windSpeedMps": 0,
+          "lowCloudPercent": 0,
+          "visibilityKm": 16.093
+        }
+      },
+      "note": "Heavy migration but almost nothing found at dawn.",
+      "reference": {
+        "surveyDate": "2020-09-14",
+        "birdsFound": 0,
+        "litShare": 0.519
+      }
+    }
+  ]
+}
