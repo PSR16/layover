@@ -1,6 +1,6 @@
 # Spec 1: Foundation and risk engine (tasks)
 
-Status: DRAFT. Order matters: pure logic first (testable alone), then data, then API, then UI. Each task is one commit. Run `npm test` before every commit.
+Status: DONE (Tasks 1 to 16). Spec 1 is finished; calibration follow-ups are listed in design.md and docs/calibration-report.md.
 Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash.
 
 ## Phase 1: Risk engine (pure logic)
@@ -60,7 +60,7 @@ Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` an
 - [x] **Task 15. Night selector and tonight panel.** (branch `feat/spec1-task-15-tonight-panel`, commits 347d392, c9c4506, 3a62dee, a105764, c15e4d0; screenshot `docs/screenshots/task-15-volunteer-390px.png`)
   A departures-board style panel on `#volunteer` and `#org` showing the selected night (tonight or replay), its level, reasons and badges. Controls are at least 44 px.
   Requirements: R4, R6, R9, R24, R27 to R29. Tests: view unit tests; manual 390 px Playwright screenshot.
-- [ ] **Task 16. Close-out.**
+- [x] **Task 16. Close-out.** (branch `feat/spec1-task-16-closeout`)
   Run `npm run check`. Update `docs/kiro-log.md` sections 3, 4 and 7 (property tests, counterexamples found, requirements changed). Mark the spec done.
   Tests: `npm run check` passes.
 

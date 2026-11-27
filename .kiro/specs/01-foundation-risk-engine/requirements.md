@@ -1,6 +1,6 @@
 # Spec 1: Foundation and risk engine (requirements)
 
-Status: DRAFT for review. Design and tasks drafted. Updated for night parts (R37), radar replay nights (R26), lakeshore (R38) and lit-share coding (R39).
+Status: DONE (Tasks 1 to 16). Spec 1 is finished; calibration follow-ups are listed in design.md and docs/calibration-report.md.
 Evidence IDs (E1 to E23) refer to `docs/research.md`. Requirements marked **[assumption]** have no direct evidence and say so.
 
 ## Scope

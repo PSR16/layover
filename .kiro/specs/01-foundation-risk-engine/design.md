@@ -1,6 +1,6 @@
 # Spec 1: Foundation and risk engine (design)
 
-Status: DRAFT. Follows `requirements.md` (R1 to R35). Numbers below are starting values, all marked as assumptions until calibrated (research rule 1).
+Status: DONE (Tasks 1 to 16). Spec 1 is finished; calibration follow-ups are listed in design.md and docs/calibration-report.md.
 
 ## 1. Module layout
 
