@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loadBuildings, staticSource, BUILDING_SOURCES } from '../src/api/sources.ts';
+import { loadAllAreas, loadBuildings, staticSource, BUILDING_SOURCES } from '../src/api/sources.ts';
 import { makeBuilding } from './helpers/buildings.ts';
 const working = (id, buildings) => ({
   id,
@@ -79,5 +79,26 @@ describe('loadBuildings (spec 2 R12, R32, R33)', () => {
       heightMeters: 30,
       sources: ['static', 'live'],
     });
+  });
+});
+describe('loadAllAreas', () => {
+  it('joins the three study areas and keeps a building that sits in two areas once', async () => {
+    const shared = makeBuilding('shared');
+    const source = {
+      id: 'fake',
+      load: async (area) => ({
+        buildings: [shared, makeBuilding(`only-${area}`, { latitude: 41.9 })],
+        savedOn: '2026-11-27',
+        fromCache: false,
+      }),
+    };
+    const result = await loadAllAreas([source]);
+    expect(result.buildings.map((building) => building.id).sort()).toEqual([
+      'only-evanston',
+      'only-lakefront',
+      'only-loop',
+      'shared',
+    ]);
+    expect(result.failed).toEqual([]);
   });
 });

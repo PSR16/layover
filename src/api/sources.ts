@@ -54,3 +54,19 @@ export async function loadBuildings(
   result.buildings = mergeSources(lists.map((load) => load.buildings));
   return result;
 }
+
+const AREAS: Area[] = ['loop', 'lakefront', 'evanston'];
+/** Load every study area and join them. A building that sits in two areas appears once. */
+export async function loadAllAreas(
+  sources: BuildingSource[] = BUILDING_SOURCES,
+): Promise<MergedBuildings> {
+  const results = await Promise.all(AREAS.map((area) => loadBuildings(area, sources)));
+  const byId = new Map(
+    results.flatMap(({ buildings }) => buildings).map((building) => [building.id, building]),
+  );
+  return {
+    buildings: [...byId.values()],
+    loaded: results.flatMap(({ loaded }) => loaded),
+    failed: results.flatMap(({ failed }) => failed),
+  };
+}

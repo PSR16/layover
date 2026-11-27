@@ -114,3 +114,9 @@ describe('buildCredits (R36)', () => {
     expect(buildCredits({ usesMapData: true })[0].text).toBe('© OpenStreetMap contributors');
   });
 });
+describe('building data credits (spec 2 R5)', () => {
+  it('names Overture and OpenStreetMap when building data is shown', () => {
+    const ids = buildCredits({ usesBuildingData: true }).map((credit) => credit.id);
+    expect(ids).toEqual(['overture', 'openstreetmap']);
+  });
+});
