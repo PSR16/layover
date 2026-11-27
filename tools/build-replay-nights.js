@@ -8,26 +8,10 @@
  * The raw dataset stays outside the repo. Only the small chosen-nights file is committed, with the
  * CC BY 4.0 attribution (docs/data-sources.md, requirement R36).
  */
-import { readFileSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
-import path from 'node:path';
+import { writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
-import {
-  addMigrationLevels,
-  buildCandidate,
-  cellNumber,
-  chooseNights,
-  parseCsv,
-  radarReading,
-  toReplayNight,
-  weatherReading,
-} from './replay-nights-core.js';
-
-const SITE = {
-  name: 'McCormick Place Lakeside Center, Chicago',
-  latitude: 41.8514,
-  longitude: -87.6168,
-};
+import { chooseNights, toReplayNight } from './replay-nights-core.js';
+import { DEFAULT_DATA_DIRECTORY, SITE, loadCandidates } from './chicago-data.js';
 
 const ATTRIBUTION =
   'Includes data derived from Van Doren et al. (2021), "Dataset for Drivers of fatal bird collisions in an urban center", ' +
@@ -44,27 +28,8 @@ const ASSUMPTIONS = [
   'The building was surveyed before its 2024 bird-safe treatment, so these nights describe an untreated building.',
 ];
 
-function readTable(directory, name) {
-  return parseCsv(readFileSync(path.join(directory, name), 'utf8'));
-}
-
-function loadInputs(directory) {
-  const surveys = readTable(directory, 'collisions_daily.csv').map((row) => ({
-    surveyDate: row.survey_date,
-    birdsFound: cellNumber(row.total_birds),
-    litShare: cellNumber(row.lit_share),
-  }));
-  const scans = readTable(directory, 'radar_scans.csv').map(radarReading);
-  const weather = readTable(directory, 'isd_hourly.csv').map(weatherReading);
-  return { surveys, scans, weather };
-}
-
 function build(directory, builtOn) {
-  const { surveys, scans, weather } = loadInputs(directory);
-  const candidates = surveys
-    .filter((survey) => survey.litShare !== undefined && survey.birdsFound !== undefined)
-    .map((survey) => buildCandidate(survey, scans, weather, SITE));
-  const withLevels = addMigrationLevels(candidates);
+  const withLevels = loadCandidates(directory);
   return {
     meta: {
       title: 'Radar replay nights from the McCormick Place dataset',
@@ -74,7 +39,7 @@ function build(directory, builtOn) {
       attribution: ATTRIBUTION,
       builtBy: 'tools/export-chicago-dataset.py and tools/build-replay-nights.js',
       builtOn,
-      nightsConsidered: candidates.length,
+      nightsConsidered: withLevels.length,
       assumptions: ASSUMPTIONS,
     },
     nights: chooseNights(withLevels).map(toReplayNight),
@@ -86,7 +51,7 @@ function main() {
     options: {
       data: {
         type: 'string',
-        default: path.join(homedir(), 'Documents/Development/layover-data/derived'),
+        default: DEFAULT_DATA_DIRECTORY,
       },
       out: { type: 'string', default: 'src/data/radar-nights.json' },
       'built-on': { type: 'string', default: new Date().toISOString().slice(0, 10) },
