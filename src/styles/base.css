@@ -1,0 +1,57 @@
+/* Base page styles. Uses only tokens from tokens.css. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+}
+
+a {
+  color: var(--color-accent);
+}
+
+/* R4: every interactive control is at least 44 by 44 px. */
+button,
+[role='button'],
+a.control,
+input:not([type='hidden']),
+select,
+summary {
+  min-width: var(--control-min-size);
+  min-height: var(--control-min-size);
+}
+
+button,
+select,
+input {
+  border: 2px solid var(--color-control-edge);
+  border-radius: var(--radius);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: inherit;
+  padding: var(--space-2) var(--space-4);
+}
+
+button.primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 700;
+}
+
+button.primary:hover {
+  background: var(--color-accent-strong);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}

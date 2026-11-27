@@ -1,0 +1,50 @@
+/*
+ * Design tokens for the night-airport theme: dark navy with warm amber (product rules).
+ * Every text color is at least 4.5:1 against the surfaces it sits on, and control edges and the
+ * focus ring are at least 3:1. tests/styles-tokens.test.js checks this, so change a color there
+ * first. Risk is never shown by color alone: badges also carry a word (low, elevated, high).
+ */
+:root {
+  /* Surfaces */
+  --color-bg: #0a1224;
+  --color-surface: #111c36;
+  --color-surface-raised: #182646;
+
+  /* Text */
+  --color-text: #eef2fb;
+  --color-text-muted: #aebbd6;
+
+  /* Amber accent: buttons, departures-board highlights */
+  --color-accent: #ffb547;
+  --color-accent-strong: #ffc971;
+  --color-on-accent: #1a1204;
+
+  /* Edges of controls and the keyboard focus ring (at least 3:1, non-text) */
+  --color-control-edge: #6f86ba;
+  --color-focus: #ffd98a;
+
+  /* Risk words, used with a text label */
+  --color-risk-low: #7fd6a4;
+  --color-risk-elevated: #ffc247;
+  --color-risk-high: #ff8f80;
+
+  /* Sample and replay labels (product rule: sample data is always labelled) */
+  --color-sample: #b9a8ff;
+
+  /* Size: every interactive control is at least 44 by 44 px (R4) */
+  --control-min-size: 44px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --radius: 8px;
+
+  /* Type: large and readable outdoors at night */
+  --font-size-base: 1.125rem;
+  --font-size-small: 1rem;
+  --font-size-large: 1.5rem;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-board: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --line-height: 1.5;
+}
