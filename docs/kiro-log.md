@@ -186,6 +186,20 @@ How to use this file:
 - Update: Real finding from the screenshot: with the real extract, the 2023 news night lists only the three hotspots. Ordinary buildings with a height alone stay low, and only Soldier Field has a venue kind from the map. The list is short until more buildings get a kind or lit-glass data.
 - Screenshot: yes (docs/screenshots/places-list-390px.png, places-list-1280px.png; no horizontal overflow at either width). Headless Chrome ignored the 390 px window and cropped the page, so the shots were retaken with Playwright.
 
+### 2026-11-27 · Spec 2 · Task 8 / map
+- Surface: IDE. Branch `feat/spec2-task-08-map`, cut from `main` (Task 7 was already merged).
+- What Kiro did: `src/map/map-view.ts` takes the Leaflet module as an argument (OpenStreetMap tiles with attribution always on, `divIcon` markers built as buttons with the risk word as text, animation off for reduced motion). `load-leaflet.ts` imports Leaflet and its CSS dynamically. `views/places-map.ts` is the "Show map" / "Hide map" panel, with a "Could not load the map" state and a retry. `lib/map-markers.ts` (marker specs and bounds) and `lib/place-selection.ts` (one selected place shared by rows and markers) are pure. The tile URL is one value in `config/map.ts`. Leaflet had no types, so `map/leaflet-types.ts` describes the part we use and `leaflet-shim.d.ts` declares the module.
+- Files: src/map/*, src/views/places-map.ts, places-section.ts, src/lib/map-markers.ts, place-selection.ts, src/config/map.ts, src/styles/components.css, tests/map-view.dom.test.ts, places-map.dom.test.ts, map-markers.test.ts, place-selection.test.ts, map-bundle.test.ts, tests/helpers/fake-leaflet.ts
+- Requirements / evidence: spec 2 R5, R21, R22, R25, R26, R27, R28
+- Tests: 636 passing in 60 files, `npm run check` passes. New: unit, DOM with a fake Leaflet (no network), properties for marker bounds and for the selection store. A build check shows Leaflet in its own chunk (150 kB, 43 kB gzipped) and out of the main one, and `tests/map-bundle.test.ts` fails on any static Leaflet import.
+- Mutation checks, all caught: no risk word on markers (1 test), reduced motion ignored (1), marker press not selecting the row (1), map loaded before the button press (2), static Leaflet import (bundle test).
+- Commits: 965b386, c328429, beb1193, 1ea878e
+- Screenshot: yes (docs/screenshots/task-08-map-390px.png, task-08-map-1280px.png). Playwright, no horizontal overflow at either width; markers and zoom buttons measured at 44 px tall, the toggle at 47 px.
+- Update: Credits (R5) were already added in Task 7. Checked: Overture and OpenStreetMap each appear once; a test now covers it. Nothing duplicated.
+- Update: Design change. The design said one shared "selection store", but the existing store holds the night and re-fetches weather on every change, so the place selection is a separate small store owned by the places section.
+- Update: Mistakes and fixes. The styles test rejected my first attribution link colour (`--color-accent-strong` is not a checked token), so it uses `--color-accent`. The map status line first used `role="status"` and broke the list's empty-state tests that look for the first status; it now uses `aria-live`. One commit failed commitlint (capital "Leaflet" in the subject) and was recommitted lowercase; no hook was bypassed.
+- Update: Limits. Tonight's live weather scores everything low, so the screenshots use the 2023 news night. The map shows only the places currently on the list (top 10, plus "Show more"), and each list change refits the view. With the real extract only three sites appear, so the map is mostly empty space. Marker clustering is not built. Tiles come from the public OpenStreetMap server (demo use, assumption in the design).
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)
