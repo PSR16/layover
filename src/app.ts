@@ -4,7 +4,7 @@
  * network. main.ts calls this with the real page.
  */
 import type { AppContext, WeatherLoaders } from './context.ts';
-import { loadAllAreas } from './api/sources.ts';
+import { loadAllAreas, staticSource } from './api/sources.ts';
 import { loadReplayWeather, loadTonightWeather } from './api/weather.ts';
 import { DEFAULT_CITY_ID, getCity } from './config/city.ts';
 import { RADAR_ATTRIBUTION, REPLAY_NIGHTS } from './data/replay-nights.ts';
@@ -28,7 +28,12 @@ const REAL_LOADERS: WeatherLoaders = {
 export interface AppOptions {
   root: HTMLElement;
   browserWindow: Window;
-  deps?: { loaders?: WeatherLoaders; city?: City; loadBuildings?: AppContext['loadBuildings'] };
+  deps?: {
+    loaders?: WeatherLoaders;
+    city?: City;
+    loadBuildings?: AppContext['loadBuildings'];
+    loadLiveBuildings?: AppContext['loadLiveBuildings'];
+  };
 }
 export function startApp({ root, browserWindow, deps = {} }: AppOptions): () => void {
   const context: AppContext = {
@@ -36,7 +41,9 @@ export function startApp({ root, browserWindow, deps = {} }: AppOptions): () => 
     records: REPLAY_NIGHTS,
     store: createSelectionStore(),
     loaders: deps.loaders ?? REAL_LOADERS,
-    loadBuildings: deps.loadBuildings ?? (() => loadAllAreas()),
+    loadBuildings: deps.loadBuildings ?? (() => loadAllAreas([staticSource])),
+    loadLiveBuildings:
+      deps.loadLiveBuildings ?? (deps.loadBuildings ? undefined : () => loadAllAreas()),
     datasetAttribution: RADAR_ATTRIBUTION,
   };
   const shell = createShell(root);

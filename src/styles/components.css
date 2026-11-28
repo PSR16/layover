@@ -274,3 +274,11 @@ a.control[aria-current='page'] {
 .leaflet-control-attribution a {
   color: var(--color-accent);
 }
+/* Live OpenStreetMap status line under the place list heading */
+.live-line {
+  margin-bottom: var(--space-3);
+}
+.live-line .board-status {
+  max-width: 40rem;
+  margin: 0 0 var(--space-2);
+}

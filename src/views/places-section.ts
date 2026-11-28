@@ -14,6 +14,8 @@ import { rankCandidates, type RankedCandidate } from '../lib/place-ranking.ts';
 import { buildMarkerSpecs } from '../lib/map-markers.ts';
 import { createPlaceSelection, type PlaceSelection } from '../lib/place-selection.ts';
 import type { LeafletModule } from '../map/leaflet-types.ts';
+import { LIVE_SOURCE_ID } from '../lib/overpass-parse.ts';
+import { createLiveLine } from './live-line.ts';
 import { createMapPanel, type MapPanel } from './places-map.ts';
 import type { MergedBuildings } from '../lib/source-types.ts';
 import type { City, Hotspot } from '../lib/types.ts';
@@ -23,6 +25,8 @@ export const COMPACT_SIZE = 5;
 export interface PlacesOptions {
   city: City;
   loadBuildings: () => Promise<MergedBuildings>;
+  /** Adds the live OpenStreetMap source after the saved list is on screen (spec 2 R12). */
+  loadLiveBuildings?: () => Promise<MergedBuildings>;
   /** The curated sites. Defaults to the list in src/data/hotspots.ts. */
   hotspots?: Hotspot[];
   /** Loads Leaflet when "Show map" is pressed. Defaults to a dynamic import; tests pass a fake. */
@@ -45,6 +49,7 @@ interface Parts {
   page: Document;
   status: HTMLElement;
   list: HTMLElement;
+  live: HTMLElement;
   map: MapPanel | null;
   more: HTMLButtonElement;
   credits: HTMLElement;
@@ -65,6 +70,8 @@ function createParts(container: HTMLElement, options: PlacesOptions, state: Stat
   heading.className = 'board-title';
   heading.textContent = 'Places to check first';
   const status = page.createElement('div');
+  const live = page.createElement('div');
+  live.className = 'live-line';
   const list = page.createElement('ul');
   list.className = 'place-list';
   const more = page.createElement('button');
@@ -85,12 +92,13 @@ function createParts(container: HTMLElement, options: PlacesOptions, state: Stat
     heading,
     ...(map ? [map.element] : []),
     status,
+    live,
     list,
     ...(options.compact ? [] : [more]),
     credits,
   ];
   container.replaceChildren(...parts);
-  return { page, status, list, map, more, credits };
+  return { page, status, live, list, map, more, credits };
 }
 function messageNode(page: Document, text: string): HTMLElement {
   const node = page.createElement('p');
@@ -157,23 +165,50 @@ function showMore(parts: Parts, state: State) {
 function pageSizeOf(options: PlacesOptions): number {
   return options.compact ? COMPACT_SIZE : PAGE_SIZE;
 }
+function applyBuildings(
+  parts: Parts,
+  state: State,
+  options: PlacesOptions,
+  buildings: MergedBuildings['buildings'],
+) {
+  state.failed = buildings.length === 0;
+  state.candidates = buildPlaceCandidates(buildings, options.hotspots ?? HOTSPOTS, options.city);
+  if (!state.failed) {
+    const credits = createCredits(parts.page, buildCredits({ usesBuildingData: true }));
+    parts.credits.replaceChildren(...(credits ? [credits] : []));
+  }
+  if (!state.stopped) {
+    rank(state, pageSizeOf(options));
+    draw(parts, state);
+  }
+}
+/** The saved list first, then the live source on top of it. A live failure never removes the list. */
 function loadInto(parts: Parts, state: State, options: PlacesOptions) {
-  const settle = (buildings: MergedBuildings['buildings'], failed: boolean) => {
-    state.failed = failed;
-    state.candidates = buildPlaceCandidates(buildings, options.hotspots ?? HOTSPOTS, options.city);
-    if (!failed) {
-      const credits = createCredits(parts.page, buildCredits({ usesBuildingData: true }));
-      parts.credits.replaceChildren(...(credits ? [credits] : []));
+  const { loadLiveBuildings } = options;
+  const startLive = () => {
+    if (!loadLiveBuildings || state.stopped) {
+      return;
     }
-    if (!state.stopped) {
-      rank(state, pageSizeOf(options));
-      draw(parts, state);
-    }
+    const line = createLiveLine(
+      parts.live,
+      loadLiveBuildings,
+      (result) => {
+        if (
+          result.loaded.some((entry) => entry.id === LIVE_SOURCE_ID) &&
+          result.buildings.length > 0
+        ) {
+          applyBuildings(parts, state, options, result.buildings);
+        }
+      },
+      () => state.stopped,
+    );
+    void line.run();
   };
   options
     .loadBuildings()
-    .then((result) => settle(result.buildings, result.buildings.length === 0))
-    .catch(() => settle([], true));
+    .then((result) => applyBuildings(parts, state, options, result.buildings))
+    .catch(() => applyBuildings(parts, state, options, []))
+    .then(startLive);
 }
 export function mountPlacesSection(container: HTMLElement, options: PlacesOptions): PlacesSection {
   const state: State = {

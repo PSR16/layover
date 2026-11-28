@@ -22,13 +22,14 @@ describe('static source (spec 2 R31)', () => {
   it('rejects an unknown area', async () => {
     await expect(staticSource.load('mars')).rejects.toThrow('mars');
   });
-  it('is the first source in the list', () => {
+  it('is the first source in the list, with the live source second', () => {
     expect(BUILDING_SOURCES[0]).toBe(staticSource);
+    expect(BUILDING_SOURCES.map((source) => source.id)).toEqual(['static', 'openstreetmap']);
   });
 });
 describe('loadBuildings (spec 2 R12, R32, R33)', () => {
   it('reports the static extract as loaded for a real area', async () => {
-    const result = await loadBuildings('evanston');
+    const result = await loadBuildings('evanston', [staticSource]);
     expect(result.loaded).toEqual([
       { id: 'static', savedOn: expect.any(String), fromCache: false },
     ]);

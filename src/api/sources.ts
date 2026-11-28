@@ -4,6 +4,7 @@
  * source means one new module and one entry in `BUILDING_SOURCES`.
  */
 import { keepValidBuildings } from '../lib/buildings.ts';
+import { createLiveSource } from './overpass.ts';
 import { mergeSources } from '../lib/building-source.ts';
 import type { Area, BuildingSource, MergedBuildings, SourceLoad } from '../lib/source-types.ts';
 interface ExtractFile {
@@ -30,7 +31,9 @@ export const staticSource: BuildingSource = {
     };
   },
 };
-export const BUILDING_SOURCES: BuildingSource[] = [staticSource];
+/** The live OpenStreetMap source. It comes second, so the static extract wins a merge (R32). */
+export const liveSource: BuildingSource = createLiveSource();
+export const BUILDING_SOURCES: BuildingSource[] = [staticSource, liveSource];
 function reasonOf(error: unknown): string {
   return error instanceof Error && error.message ? error.message : 'Could not load';
 }

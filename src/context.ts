@@ -15,5 +15,7 @@ export interface AppContext {
   loaders: WeatherLoaders;
   /** Loads the building extracts for every study area (spec 2 R31). */
   loadBuildings: () => Promise<MergedBuildings>;
+  /** Loads every source, the live OpenStreetMap one included, and merges them (spec 2 R12, R31). */
+  loadLiveBuildings?: () => Promise<MergedBuildings>;
   datasetAttribution?: string;
 }
