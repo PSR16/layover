@@ -1,6 +1,6 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Tasks 1 to 11 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: DONE (Tasks 1 to 12 done; open items in the Task 12 log entry). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
@@ -38,5 +38,5 @@ Status: IN PROGRESS (Tasks 1 to 11 done). Format: `Task N. Title` then requireme
 
 ## Phase 5: Close-out
 
-- [ ] **Task 12. Review and log.** Mutation checks on the merge, shoreline and not-scored rules. Run `npm run check`. Fill the log sections (hooks, spec comparison, property tests). Update `structure.md` and `tech.md` if the layout changed.
+- [x] **Task 12. Review and log.** (branch `docs/spec2-task-12-closeout`, commit b4323ea) Mutation checks on the merge, shoreline and not-scored rules. Run `npm run check`. Fill the log sections (hooks, spec comparison, property tests). Update `structure.md` and `tech.md` if the layout changed.
   Requirements: all. Tests: full suite.
