@@ -154,7 +154,7 @@ describe('hostile text (R27)', () => {
   });
 });
 describe('org view', () => {
-  it('shows the place list under the night panel; the volunteer view has none yet', async () => {
+  it('shows the place list under the night panel', async () => {
     document.body.innerHTML = '<main id="app"></main>';
     const root = document.querySelector('#app');
     const stop = startApp({
@@ -170,9 +170,8 @@ describe('org view', () => {
       'Tonight',
       'Places',
     ]);
-    window.location.hash = '#volunteer';
-    await settle();
-    expect(root.querySelector('.place-list')).toBeNull();
+    expect(root.querySelector('.map-toggle')).not.toBeNull();
+    expect(root.querySelector('.place-more')).not.toBeNull();
     stop();
   });
 });
