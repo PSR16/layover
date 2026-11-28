@@ -200,6 +200,17 @@ How to use this file:
 - Update: Mistakes and fixes. The styles test rejected my first attribution link colour (`--color-accent-strong` is not a checked token), so it uses `--color-accent`. The map status line first used `role="status"` and broke the list's empty-state tests that look for the first status; it now uses `aria-live`. One commit failed commitlint (capital "Leaflet" in the subject) and was recommitted lowercase; no hook was bypassed.
 - Update: Limits. Tonight's live weather scores everything low, so the screenshots use the 2023 news night. The map shows only the places currently on the list (top 10, plus "Show more"), and each list change refits the view. With the real extract only three sites appear, so the map is mostly empty space. Marker clustering is not built. Tiles come from the public OpenStreetMap server (demo use, assumption in the design).
 
+### 2026-11-27 · Spec 2 · Task 9 / volunteer view list
+- Surface: IDE. Branch `feat/spec2-task-09-volunteer-list`, cut from `main`.
+- What Kiro did: `places-section.ts` gained a `compact` option (5 places, no map panel, no "Show more"). `volunteer-view.ts` now has the night panel, then the same list, scored through `onScoring` like the org view. Rows, labels (risk word, Sample data, lighting assumption, Unnamed building), detail and credits are the same code as the org list. No slot or management controls exist.
+- Files: src/views/places-section.ts, src/views/volunteer-view.ts, tests/volunteer-places.dom.test.ts, tests/places-section.dom.test.ts
+- Requirements / evidence: spec 2 R29, R28
+- Tests: 5 DOM tests added (5 rows, no map button, no Show more; same labels; no touch/catch wording or slot controls; hostile name as text; org view still has map button and 10 rows). The old org test line "volunteer view has no list" was replaced. 641 passing, `npm run check` passes.
+- Mutation checks, both caught by 1 test: `compact: false` in the volunteer view, and the compact size raised to 50.
+- Commits: 43179d1, a2485a1
+- Screenshot: yes (docs/screenshots/task-09-volunteer-390px.png, task-09-volunteer-1280px.png; Playwright core with the installed headless shell; no horizontal overflow, 0 map buttons).
+- Update: Honest notes. The limit of 5 is my choice; R29 only says "top places". With the real extract and the 2023 news night the list shows only the three hotspots (same limit as Task 7). Tonight's live weather scores low, so the default volunteer screen shows "No places score above low for this night" until a night with risk is picked. My first test used ids that sorted behind the hotspots, so the unnamed and hostile rows fell outside the top 5; fixed the tests, not the code.
+
 ---
 
 ## 1. Surfaces (IDE, CLI, Web, Crew)

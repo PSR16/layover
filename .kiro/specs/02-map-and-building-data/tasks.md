@@ -1,6 +1,6 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Tasks 1 to 8 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Tasks 1 to 9 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
@@ -26,7 +26,7 @@ Status: IN PROGRESS (Tasks 1 to 8 done). Format: `Task N. Title` then requiremen
   Requirements: R19, R22 to R24, R27, R28. Tests: DOM tests. Screenshots at 390 and 1280 px.
 - [x] **Task 8. Map.** (branch `feat/spec2-task-08-map`, commits 965b386, c328429, beb1193, 1ea878e) `map-view.ts` with the Leaflet module passed in, dynamic import, tile layer and attribution, text markers, 44 px controls, reduced motion, "Show map" button, selection kept in step with the list. Credits gain Overture and OpenStreetMap.
   Requirements: R5, R21, R22, R25, R26. Tests: fake Leaflet checks markers, attribution and focus. Bundle check. Screenshots.
-- [ ] **Task 9. Volunteer view list.** Top places read-only, same labels, no map button on load.
+- [x] **Task 9. Volunteer view list.** (branch `feat/spec2-task-09-volunteer-list`, commits 43179d1, a2485a1) Top places read-only (`compact` option on `places-section.ts`: 5 places, no map, no Show more), same labels, no map button on load.
   Requirements: R29. Tests: DOM; no copy tells anyone to touch a bird.
 
 ## Phase 4: Live OpenStreetMap source
