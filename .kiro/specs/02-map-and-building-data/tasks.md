@@ -1,6 +1,6 @@
 # Spec 2: Map and building data (tasks)
 
-Status: IN PROGRESS (Tasks 1 to 10 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
+Status: IN PROGRESS (Tasks 1 to 11 done). Format: `Task N. Title` then requirements, files, tests. Mark done with `[x]` and add the commit hash. One branch per task, `feat/spec2-task-NN-short-name`.
 
 ## Phase 1: Data (pure logic and build tools)
 
@@ -33,7 +33,7 @@ Status: IN PROGRESS (Tasks 1 to 10 done). Format: `Task N. Title` then requireme
 
 - [x] **Task 10. Overpass parse and client.** (branch `feat/spec2-task-10-overpass-client`, commits e75dc10, 5624446) `overpass-parse.ts` (drops bad records), `api/overpass.ts` (8 s timeout, cache with date, no user data sent).
   Requirements: R11, R13, R14. Tests: fake fetch for success, timeout, 429, empty, NaN coordinate; cache hit and miss; properties on parsing.
-- [ ] **Task 11. Live source in the source list.** Add the live source to `sources.ts`, show the fallback line with Retry when it fails, merge results.
+- [x] **Task 11. Live source in the source list.** (branch `feat/spec2-task-11-live-source`, commits 5cd3609, 70f3541, 9cc530d) Add the live source to `sources.ts`, show the fallback line with Retry when it fails, merge results.
   Requirements: R12, R31 to R33. Tests: DOM: fallback line and Retry; the app works with the live source failing.
 
 ## Phase 5: Close-out
