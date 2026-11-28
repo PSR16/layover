@@ -28,6 +28,10 @@ describe('mergeSources (spec 2 R32)', () => {
     const [merged] = mergeSources([[earlier], [later]]);
     expect(merged).toMatchObject({ name: 'Old name', heightMeters: 40, kind: 'arena' });
   });
+  it('fills a missing name from the later source', () => {
+    const [merged] = mergeSources([[from('static', 'a')], [from('live', 'b', { name: 'Hall' })]]);
+    expect(merged.name).toBe('Hall');
+  });
   it('does not merge adjacent buildings that only share an edge', () => {
     const left = from('static', 'a', { latitude: 41.88, longitude: -87.63 });
     const right = from('live', 'b', { latitude: 41.88, longitude: -87.63 + 0.0002 });
