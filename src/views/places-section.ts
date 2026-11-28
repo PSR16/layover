@@ -18,6 +18,8 @@ import { createMapPanel, type MapPanel } from './places-map.ts';
 import type { MergedBuildings } from '../lib/source-types.ts';
 import type { City, Hotspot } from '../lib/types.ts';
 export const PAGE_SIZE = 10;
+/** Places shown in the volunteer view. */
+export const COMPACT_SIZE = 5;
 export interface PlacesOptions {
   city: City;
   loadBuildings: () => Promise<MergedBuildings>;
@@ -25,6 +27,8 @@ export interface PlacesOptions {
   hotspots?: Hotspot[];
   /** Loads Leaflet when "Show map" is pressed. Defaults to a dynamic import; tests pass a fake. */
   loadLeafletModule?: () => Promise<LeafletModule>;
+  /** Read-only top places for the volunteer view: no map, no "Show more" (spec 2 R29). */
+  compact?: boolean;
 }
 export interface PlacesSection {
   /** Score the places for a night. Call again whenever the night changes. */
@@ -41,7 +45,7 @@ interface Parts {
   page: Document;
   status: HTMLElement;
   list: HTMLElement;
-  map: MapPanel;
+  map: MapPanel | null;
   more: HTMLButtonElement;
   credits: HTMLElement;
 }
@@ -70,12 +74,22 @@ function createParts(container: HTMLElement, options: PlacesOptions, state: Stat
   more.hidden = true;
   const credits = page.createElement('div');
   const { latitude, longitude } = options.city.center;
-  const map = createMapPanel(page, {
-    center: [latitude, longitude],
-    onSelect: (id) => selectFromMap(state, id),
-    loadLeafletModule: options.loadLeafletModule,
-  });
-  container.replaceChildren(heading, map.element, status, list, more, credits);
+  const map = options.compact
+    ? null
+    : createMapPanel(page, {
+        center: [latitude, longitude],
+        onSelect: (id) => selectFromMap(state, id),
+        loadLeafletModule: options.loadLeafletModule,
+      });
+  const parts = [
+    heading,
+    ...(map ? [map.element] : []),
+    status,
+    list,
+    ...(options.compact ? [] : [more]),
+    credits,
+  ];
+  container.replaceChildren(...parts);
   return { page, status, list, map, more, credits };
 }
 function messageNode(page: Document, text: string): HTMLElement {
@@ -117,28 +131,31 @@ function draw(parts: Parts, state: State) {
   parts.status.replaceChildren(...statusTexts(state).map((text) => messageNode(parts.page, text)));
   parts.more.hidden = true;
   appendRows(parts, state, 0, state.shown);
-  parts.map.setMarkers(buildMarkerSpecs(state.ranked.slice(0, state.shown)));
+  parts.map?.setMarkers(buildMarkerSpecs(state.ranked.slice(0, state.shown)));
   showSelection(state, state.selection.get());
 }
-function rank(state: State) {
+function rank(state: State, pageSize: number) {
   if (!state.candidates || !state.scoring) {
     return;
   }
   const { conditions, overrides } = state.scoring;
   const ranked = rankCandidates(state.candidates, conditions, overrides);
   state.ranked = ranked.filter((entry) => entry.level !== 'low');
-  state.shown = PAGE_SIZE;
+  state.shown = pageSize;
   state.selection.select(null);
 }
 function showMore(parts: Parts, state: State) {
   const first = state.shown;
   state.shown += PAGE_SIZE;
   appendRows(parts, state, first, state.shown);
-  parts.map.setMarkers(buildMarkerSpecs(state.ranked.slice(0, state.shown)));
+  parts.map?.setMarkers(buildMarkerSpecs(state.ranked.slice(0, state.shown)));
   const firstNew = state.ranked[first];
   if (firstNew) {
     state.rows.get(describePlace(firstNew).id)?.focus();
   }
+}
+function pageSizeOf(options: PlacesOptions): number {
+  return options.compact ? COMPACT_SIZE : PAGE_SIZE;
 }
 function loadInto(parts: Parts, state: State, options: PlacesOptions) {
   const settle = (buildings: MergedBuildings['buildings'], failed: boolean) => {
@@ -149,7 +166,7 @@ function loadInto(parts: Parts, state: State, options: PlacesOptions) {
       parts.credits.replaceChildren(...(credits ? [credits] : []));
     }
     if (!state.stopped) {
-      rank(state);
+      rank(state, pageSizeOf(options));
       draw(parts, state);
     }
   };
@@ -163,7 +180,7 @@ export function mountPlacesSection(container: HTMLElement, options: PlacesOption
     candidates: null,
     scoring: null,
     ranked: [],
-    shown: PAGE_SIZE,
+    shown: pageSizeOf(options),
     selection: createPlaceSelection(),
     failed: false,
     stopped: false,
@@ -172,7 +189,7 @@ export function mountPlacesSection(container: HTMLElement, options: PlacesOption
   const parts = createParts(container, options, state);
   state.selection.subscribe((id) => {
     showSelection(state, id);
-    parts.map.select(id);
+    parts.map?.select(id);
   });
   parts.more.addEventListener('click', () => showMore(parts, state));
   draw(parts, state);
@@ -180,12 +197,12 @@ export function mountPlacesSection(container: HTMLElement, options: PlacesOption
   return {
     update(scoring) {
       state.scoring = scoring;
-      rank(state);
+      rank(state, pageSizeOf(options));
       draw(parts, state);
     },
     stop() {
       state.stopped = true;
-      parts.map.destroy();
+      parts.map?.destroy();
     },
   };
 }
