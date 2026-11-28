@@ -13,7 +13,7 @@ async function start(hash) {
   stop = startApp({
     root: document.querySelector('#app'),
     browserWindow: window,
-    deps: { loaders },
+    deps: { loaders, loadBuildings: async () => ({ buildings: [], loaded: [], failed: [] }) },
   });
   await settle();
   return loaders;
